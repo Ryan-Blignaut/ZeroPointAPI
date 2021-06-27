@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * The {@code EventManager} class provides a mechanism to allow for dynamic loading of modules.
+ * The {@code EventManager} class provides a mechanism that allows for dynamic loading of modules.
  */
 public class EventManager
 {
