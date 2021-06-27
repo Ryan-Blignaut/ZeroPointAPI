@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "zero-point",
+  "version": "${version}",
+  "name": "Zero Point",
+  "description": "ZeroPoint client",
+  "authors": [
+    "TheSilverEcho"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/zero-point/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.thesilverecho.zeropoint.client.ZeroPointClient"
+    ]
+  },
+  "mixins": [
+    "zero-point.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.6",
+    "fabric": "*",
+    "minecraft": "1.17.x"
+  }
+}
