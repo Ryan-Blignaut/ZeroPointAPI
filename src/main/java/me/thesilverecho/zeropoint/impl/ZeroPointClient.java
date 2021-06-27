@@ -1,4 +1,4 @@
-package me.thesilverecho.zeropoint.client;
+package me.thesilverecho.zeropoint.impl;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
