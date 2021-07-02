@@ -28,6 +28,16 @@ public class EventManager
 	}
 
 	/**
+	 * Removes modules for class.
+	 *
+	 * @param moduleClass the class of the methods that will be deregistered.
+	 */
+	public static void deregister(Class<?> moduleClass)
+	{
+		EVENTS.get(moduleClass).clear();
+	}
+
+	/**
 	 * Helper method that will allow the method to be registered.
 	 *
 	 * @param method      to be registered.
@@ -35,10 +45,10 @@ public class EventManager
 	 */
 	private static void register(Method method, Class<?> moduleClass)
 	{
-		Class<?> indexClass = method.getParameterTypes()[0];
-		if (!EVENTS.containsKey(indexClass))
-			EVENTS.put(indexClass, new CopyOnWriteArrayList<>());
-		EVENTS.get(indexClass).add(new MethodData(moduleClass, method, method.getAnnotation(EventListener.class).priority()));
+//		Class<?> indexClass = method.getParameterTypes()[0];
+		if (!EVENTS.containsKey(moduleClass))
+			EVENTS.put(moduleClass, new CopyOnWriteArrayList<>());
+		EVENTS.get(moduleClass).add(new MethodData(moduleClass, method, method.getAnnotation(EventListener.class).priority()));
 	}
 
 	/**
