@@ -62,7 +62,6 @@ public class DynamicClassUtil
 			final String realPath = packageName + "." + directory;
 			String path = realPath.replace('.', '/');
 			final Enumeration<URL> resources = classLoader.getResources(path);
-
 			resources.asIterator().forEachRemaining(url -> dirs.add(new File(url.getFile())));
 		} catch (IOException e)
 		{

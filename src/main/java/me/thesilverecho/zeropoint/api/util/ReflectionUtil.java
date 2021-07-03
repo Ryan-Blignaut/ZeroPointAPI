@@ -12,7 +12,7 @@ public class ReflectionUtil
 	/**
 	 * Safely invokes a method using reflection.
 	 *
-	 * @param source the class(source) of the method to be called
+	 * @param source the class(source) instance of the method to be called
 	 * @param target the method(target) of the method to be called
 	 * @param args   the arguments that will be passed to the method
 	 */

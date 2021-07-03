@@ -29,5 +29,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventListener
 {
+	/**
+	 * Determines what module will be run first.
+	 *
+	 * @return the priority of the event
+	 */
 	byte priority() default 1;
 }

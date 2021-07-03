@@ -18,37 +18,55 @@ public class EventManager
 	 * Basic registration of modules
 	 * in this implementation only methods with the {@link EventListener} will be registered.
 	 *
-	 * @param moduleClass the class of the methods that will be registered.
+	 * @param moduleClass the class instance of the methods that will be registered.
 	 */
-	public static void register(Class<?> moduleClass)
+	public static void register(Object moduleClass)
 	{
-		for (Method method : moduleClass.getDeclaredMethods())
+		for (Method method : moduleClass.getClass().getDeclaredMethods())
 			if (method.isAnnotationPresent(EventListener.class))
 				register(method, moduleClass);
 	}
+
+
+	/**
+	 * Basic de-registration of modules
+	 * in this implementation only methods with the {@link EventListener} will be de-registered.
+	 *
+	 * @param moduleClass the class instance of the methods that will be de-registered.
+	 */
+	public static void deregister(Object moduleClass)
+	{
+		for (Method method : moduleClass.getClass().getDeclaredMethods())
+			if (method.isAnnotationPresent(EventListener.class))
+				deregister(method, moduleClass);
+	}
+
 
 	/**
 	 * Removes modules for class.
 	 *
 	 * @param moduleClass the class of the methods that will be deregistered.
 	 */
-	public static void deregister(Class<?> moduleClass)
+	public static void deregister(Method method, Object moduleClass)
 	{
-		EVENTS.get(moduleClass).clear();
+		Class<?> indexClass = method.getParameterTypes()[0];
+		if (!EVENTS.containsKey(indexClass))
+			return;
+		EVENTS.get(indexClass).remove(new MethodData(moduleClass, method, method.getAnnotation(EventListener.class).priority()));
 	}
 
 	/**
 	 * Helper method that will allow the method to be registered.
 	 *
 	 * @param method      to be registered.
-	 * @param moduleClass the class where the method can be found.
+	 * @param moduleClass the class instance where the method can be found.
 	 */
-	private static void register(Method method, Class<?> moduleClass)
+	private static void register(Method method, Object moduleClass)
 	{
-//		Class<?> indexClass = method.getParameterTypes()[0];
-		if (!EVENTS.containsKey(moduleClass))
-			EVENTS.put(moduleClass, new CopyOnWriteArrayList<>());
-		EVENTS.get(moduleClass).add(new MethodData(moduleClass, method, method.getAnnotation(EventListener.class).priority()));
+		Class<?> indexClass = method.getParameterTypes()[0];
+		if (!EVENTS.containsKey(indexClass))
+			EVENTS.put(indexClass, new CopyOnWriteArrayList<>());
+		EVENTS.get(indexClass).add(new MethodData(moduleClass, method, method.getAnnotation(EventListener.class).priority()));
 	}
 
 	/**
@@ -58,9 +76,12 @@ public class EventManager
 	 */
 	public static void call(BaseEvent event)
 	{
-		EVENTS.get(event.getClass())
-		      .stream()
-		      .sorted(Comparator.comparingInt(MethodData::priority))
-		      .forEach(methodData -> ReflectionUtil.invokeMethodSafe(methodData.source(), methodData.target(), event));
+		if (EVENTS.containsKey(event.getClass()))
+		{
+			EVENTS.get(event.getClass())
+			      .stream()
+			      .sorted(Comparator.comparingInt(MethodData::priority))
+			      .forEach(methodData -> ReflectionUtil.invokeMethodSafe(methodData.source(), methodData.target(), event));
+		}
 	}
 }

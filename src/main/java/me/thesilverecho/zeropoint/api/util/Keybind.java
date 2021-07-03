@@ -7,6 +7,9 @@ import static me.thesilverecho.zeropoint.api.util.Keybind.ClickType.*;
 
 public record Keybind(int code, Duration duration, Consumer<ClickType> consumer)
 {
+	/**
+	 * List containing all the keybinds registered.
+	 */
 	public static final ArrayList<Keybind> REGISTERED_KEYBINDS = new ArrayList<>();
 
 	public Keybind(int code, Duration duration, Consumer<ClickType> consumer)
