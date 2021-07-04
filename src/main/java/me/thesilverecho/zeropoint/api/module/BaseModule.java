@@ -4,6 +4,8 @@ import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.util.Keybind;
 import net.minecraft.client.MinecraftClient;
 
+import java.util.Objects;
+
 public class BaseModule implements IModule
 {
 	// Instance of MinecraftClient to prevent the need for constantly calling getInstance();
@@ -21,24 +23,11 @@ public class BaseModule implements IModule
 	 */
 	public BaseModule()
 	{
-
-		ClientModule annotation = this.getClass().getAnnotation(ClientModule.class);
-		this.enabled = annotation.active();
-		this.name = annotation.name();
-		this.description = annotation.description();
-		this.shouldDraw = annotation.shouldDraw();
-		this.keybind = new Keybind(annotation.keyBinding(), Keybind.Duration.TOGGLED, clickType ->
-		{
-			if (clickType == Keybind.ClickType.PRESSED)
-				this.toggle();
-		});
-		this.runToggleActions();
-
-//		this(null, null);
+		this(null, null);
 	}
 
 
-	/*public BaseModule(Boolean active, Integer key)
+	public BaseModule(Boolean active, Integer key)
 	{
 		ClientModule annotation = this.getClass().getAnnotation(ClientModule.class);
 		this.enabled = Objects.requireNonNullElseGet(active, annotation::active);
@@ -51,7 +40,7 @@ public class BaseModule implements IModule
 				this.toggle();
 		});
 		this.runToggleActions();
-	}*/
+	}
 
 	/**
 	 * Toggles the module on/off.

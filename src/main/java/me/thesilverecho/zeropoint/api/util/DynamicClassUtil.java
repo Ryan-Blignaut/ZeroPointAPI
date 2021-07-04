@@ -39,7 +39,7 @@ public class DynamicClassUtil
 	 * @param classLoader used for loading of classes
 	 * @return list of class locations
 	 */
-	private static ArrayList<String> getClasses(String packageName, String directory, ClassLoader classLoader)
+	public static ArrayList<String> getClasses(String packageName, String directory, ClassLoader classLoader)
 	{
 		final ArrayList<String> files = new ArrayList<>();
 		getDirs(packageName, directory, classLoader).forEach(file -> recursiveRetrieveFiles(files, packageName, file));

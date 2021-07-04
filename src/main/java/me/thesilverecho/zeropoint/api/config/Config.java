@@ -108,10 +108,9 @@ public class Config
 	private void saveConfig()
 	{
 
-		try
+		try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(configFile)))
 		{
 			ZeroPointApiLogger.debug("Has created new file: " + configFile.createNewFile());
-			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(configFile));
 			bufferedWriter.write(gson.toJson(config));
 		} catch (IOException e)
 		{
