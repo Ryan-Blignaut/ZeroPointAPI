@@ -1,11 +1,13 @@
 package me.thesilverecho.zeropoint.api.util;
 
+import me.thesilverecho.zeropoint.api.config.selector.ExcludedSelector;
+
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import static me.thesilverecho.zeropoint.api.util.Keybind.ClickType.*;
 
-public record Keybind(int code, Duration duration, Consumer<ClickType> consumer)
+public record Keybind(int code, Duration duration, @ExcludedSelector Consumer<ClickType> consumer)
 {
 	/**
 	 * List containing all the keybinds registered.

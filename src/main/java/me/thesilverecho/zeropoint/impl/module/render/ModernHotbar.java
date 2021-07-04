@@ -15,12 +15,8 @@ import org.lwjgl.glfw.GLFW;
 @ClientModule(name = "Modern Hotbar", active = true, keyBinding = GLFW.GLFW_KEY_F)
 public class ModernHotbar extends BaseModule
 {
-	@Override
-	public void onEnable()
-	{
-		super.onEnable();
-	}
 
+//	@ConfigSetting private int test = 1;
 	@EventListener
 	public void render(RenderHotbarEvent event)
 	{

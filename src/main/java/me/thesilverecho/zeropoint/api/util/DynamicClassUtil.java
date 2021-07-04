@@ -65,7 +65,7 @@ public class DynamicClassUtil
 			resources.asIterator().forEachRemaining(url -> dirs.add(new File(url.getFile())));
 		} catch (IOException e)
 		{
-			e.printStackTrace();
+			ZeroPointApiLogger.error("Error getting directories", e);
 		}
 		return dirs;
 	}
@@ -84,7 +84,6 @@ public class DynamicClassUtil
 				recursiveRetrieveFiles(files, packageName + "." + potentialFile.getName(), listFile);
 		else
 		{
-
 			final String fileNoClassExt = potentialFile.getName().substring(0, potentialFile.getName().length() - 6);
 			files.add(packageName + "." + fileNoClassExt);
 		}
@@ -113,7 +112,7 @@ public class DynamicClassUtil
 
 		} catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e)
 		{
-			e.printStackTrace();
+			ZeroPointApiLogger.error("Error registering class: " + file, e);
 		}
 		return Optional.empty();
 	}

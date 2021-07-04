@@ -26,14 +26,14 @@ public class ReflectionUtil
 			target.setAccessible(previousAccess);
 		} catch (IllegalAccessException | InvocationTargetException e)
 		{
-			e.printStackTrace();
+			ZeroPointApiLogger.error("Error invoking method: " + target.getName(), e);
 		}
 	}
 
 	/**
 	 * Safely gets the value of a field or null if unable.
 	 *
-	 * @param field the field that's value will be retrieved
+	 * @param field  the field that's value will be retrieved
 	 * @param source the instance of the class of the field
 	 * @return the fields value or null
 	 */
@@ -41,14 +41,14 @@ public class ReflectionUtil
 	{
 		try
 		{
-			boolean previousAccess = field.canAccess(source);
+			final boolean previousAccess = field.canAccess(source);
 			field.setAccessible(true);
 			final Object value = field.get(source);
 			field.setAccessible(previousAccess);
 			return value;
 		} catch (IllegalAccessException e)
 		{
-			e.printStackTrace();
+			ZeroPointApiLogger.error("Error getting field: " + field.getName(), e);
 		}
 		return null;
 	}
@@ -58,19 +58,19 @@ public class ReflectionUtil
 	 *
 	 * @param field  the field that's value will be modified
 	 * @param source the instance of the class of the field
-	 * @param value the value that will be set
+	 * @param value  the value that will be set
 	 */
 	public static void setObjValueSafe(Field field, Object source, Object value)
 	{
 		try
 		{
-			boolean previousAccess = field.canAccess(source);
+			final boolean previousAccess = field.canAccess(source);
 			field.setAccessible(true);
 			field.set(source, value);
 			field.setAccessible(previousAccess);
 		} catch (IllegalAccessException e)
 		{
-			e.printStackTrace();
+			ZeroPointApiLogger.error("Error setting field: " + field.getName(), e);
 		}
 	}
 

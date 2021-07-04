@@ -21,19 +21,37 @@ public class BaseModule implements IModule
 	 */
 	public BaseModule()
 	{
-		final ClientModule annotation = getClass().getAnnotation(ClientModule.class);
+
+		ClientModule annotation = this.getClass().getAnnotation(ClientModule.class);
 		this.enabled = annotation.active();
 		this.name = annotation.name();
-		this.shouldDraw = annotation.shouldDraw();
 		this.description = annotation.description();
+		this.shouldDraw = annotation.shouldDraw();
 		this.keybind = new Keybind(annotation.keyBinding(), Keybind.Duration.TOGGLED, clickType ->
 		{
 			if (clickType == Keybind.ClickType.PRESSED)
 				this.toggle();
 		});
 		this.runToggleActions();
+
+//		this(null, null);
 	}
 
+
+	/*public BaseModule(Boolean active, Integer key)
+	{
+		ClientModule annotation = this.getClass().getAnnotation(ClientModule.class);
+		this.enabled = Objects.requireNonNullElseGet(active, annotation::active);
+		this.name = annotation.name();
+		this.description = annotation.description();
+		this.shouldDraw = annotation.shouldDraw();
+		this.keybind = new Keybind(Objects.requireNonNullElseGet(key, annotation::keyBinding), Keybind.Duration.TOGGLED, clickType ->
+		{
+			if (clickType == Keybind.ClickType.PRESSED)
+				this.toggle();
+		});
+		this.runToggleActions();
+	}*/
 
 	/**
 	 * Toggles the module on/off.

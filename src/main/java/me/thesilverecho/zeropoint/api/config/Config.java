@@ -1,11 +1,10 @@
 package me.thesilverecho.zeropoint.api.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import me.thesilverecho.zeropoint.api.config.selector.ExcludedSelector;
 import me.thesilverecho.zeropoint.api.util.Pair;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
+import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.client.MinecraftClient;
 import org.apache.commons.io.IOUtils;
 
@@ -44,7 +43,20 @@ public class Config
 	 */
 	public Config(String fileName)
 	{
-		this(new GsonBuilder().setPrettyPrinting().create(), fileName);
+		this(new GsonBuilder().setExclusionStrategies(new ExclusionStrategy()
+		{
+			@Override
+			public boolean shouldSkipField(FieldAttributes f)
+			{
+				return f.getAnnotation(ExcludedSelector.class) != null;
+			}
+
+			@Override
+			public boolean shouldSkipClass(Class<?> clazz)
+			{
+				return clazz.getAnnotation(ExcludedSelector.class) != null;
+			}
+		}).setPrettyPrinting().create(), fileName);
 	}
 
 	/**
@@ -96,13 +108,14 @@ public class Config
 	private void saveConfig()
 	{
 
-		try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(configFile)))
+		try
 		{
-			configFile.createNewFile();
+			ZeroPointApiLogger.debug("Has created new file: " + configFile.createNewFile());
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(configFile));
 			bufferedWriter.write(gson.toJson(config));
 		} catch (IOException e)
 		{
-			e.printStackTrace();
+			ZeroPointApiLogger.error("Error saving config", e);
 		}
 
 	}
@@ -116,12 +129,13 @@ public class Config
 	{
 		try (final FileInputStream inputStream = new FileInputStream(this.configFile))
 		{
-			return new JsonParser().parse(IOUtils.toString(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
+			final String json = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+			return new JsonParser().parse(json.equals("") ? "{}" : json).getAsJsonObject();
 		} catch (IOException e)
 		{
-			e.printStackTrace();
+			ZeroPointApiLogger.error("Error reading settings file", e);
+			return new JsonObject();
 		}
-		return new JsonObject();
 	}
 
 	/**
@@ -137,6 +151,7 @@ public class Config
 		applyStream(field -> loadFieldToClass(field, instance), instance);
 		applyStream(field -> INSTANCES.add(new Pair<>(field, instance)), instance);
 	}
+
 	/**
 	 * Loads a fields from json to instance.
 	 *
@@ -156,7 +171,6 @@ public class Config
 	 */
 	private void loadFieldToJson(Object instance)
 	{
-
 		applyStream(field -> loadFieldToJson(field, instance), instance);
 	}
 
