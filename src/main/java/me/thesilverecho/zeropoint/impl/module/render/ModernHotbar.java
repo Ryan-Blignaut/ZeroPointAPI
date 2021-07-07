@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
+import me.thesilverecho.zeropoint.api.render.font.ClientFonts;
 import me.thesilverecho.zeropoint.impl.event.RenderHotbarEvent;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,7 +17,11 @@ import org.lwjgl.glfw.GLFW;
 public class ModernHotbar extends BaseModule
 {
 
-//	@ConfigSetting private int test = 1;
+	public ModernHotbar(Boolean active, Integer key)
+	{
+		super(active, key);
+	}
+
 	@EventListener
 	public void render(RenderHotbarEvent event)
 	{
@@ -34,7 +39,10 @@ public class ModernHotbar extends BaseModule
 				this.renderHotbarItem(event, r, s, playerEntity.getInventory().main.get(q), m++);
 			}
 		}
-
+		ClientFonts.COMIC.getFont().render(matrixStack, "Ryan ", 20, 20, 1);
+		ClientFonts.FREE_SANS.getFont().render(matrixStack, "test1", 20, 30, 1);
+		ClientFonts.REGULAR.getFont().render(matrixStack, "test2", 20, 40, 1);
+		ClientFonts.THIN.getFont().render(matrixStack, "test3", 20, 50, 1);
 	}
 
 

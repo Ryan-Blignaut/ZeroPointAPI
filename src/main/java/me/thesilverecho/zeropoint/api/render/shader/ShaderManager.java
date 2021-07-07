@@ -1,8 +1,8 @@
-/*
 package me.thesilverecho.zeropoint.api.render.shader;
 
 
-import github.thesivlerecho.zeropoint.ZeroPointClient;
+import me.thesilverecho.zeropoint.api.util.ManagerBase;
+import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceManager;
@@ -12,44 +12,37 @@ import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.EnumMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ShaderManager
+public class ShaderManager extends ManagerBase<Shader>
 {
+	public static final ShaderManager INSTANCE = new ShaderManager();
 
-	private static final EnumMap<github.thesivlerecho.zeropoint.render.shader.ZeroPointShader, github.thesivlerecho.zeropoint.render.shader.Shader> SHADER_MAP = new EnumMap<>(github.thesivlerecho.zeropoint.render.shader.ZeroPointShader.class);
-
-
-	public static github.thesivlerecho.zeropoint.render.shader.Shader getShader(github.thesivlerecho.zeropoint.render.shader.ZeroPointShader shader)
+	public ShaderManager()
 	{
-		return SHADER_MAP.get(shader);
+		super("Shader manager");
 	}
 
-	public static <T> T getShader(Class<T> clazz, github.thesivlerecho.zeropoint.render.shader.ZeroPointShader shader)
+	public static Shader getShader(Class<? extends Shader> shader)
 	{
-		final github.thesivlerecho.zeropoint.render.shader.Shader o = SHADER_MAP.get(shader);
-		if (clazz.isInstance(o))
-			return clazz.cast(o);
-		else
-			return null;
+		return INSTANCE.getClassCacheMap(shader);
 	}
 
-	public static void reload(ResourceManager manager)
+	public static void reload(List<Shader> shaders, ResourceManager manager)
 	{
-		SHADER_MAP.values().forEach(github.thesivlerecho.zeropoint.render.shader.Shader::destroy);
-		SHADER_MAP.clear();
-		loadShaders(manager);
+		INSTANCE.managerArray.forEach(Shader::destroy);
+		INSTANCE.managerArray.clear();
+		INSTANCE.classCacheMap.clear();
+		loadShaders(shaders, manager);
 	}
 
-	public static void initShaders()
+	public static void initShaders(List<Shader> shaders)
 	{
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener()
 		{
-
-
-			private final ResourceReloader reloadListener = (SynchronousResourceReloader) ShaderManager::reload;
+			private final ResourceReloader reloadListener = (SynchronousResourceReloader) manager -> ShaderManager.reload(shaders, manager);
 
 			@Override
 			public Identifier getFabricId()
@@ -65,13 +58,12 @@ public class ShaderManager
 		});
 	}
 
-	private static void loadShaders(ResourceManager manager)
+	private static void loadShaders(List<Shader> shaders, ResourceManager manager)
 	{
-
-		for (github.thesivlerecho.zeropoint.render.shader.ZeroPointShader value : github.thesivlerecho.zeropoint.render.shader.ZeroPointShader.values())
+		shaders.forEach(shader ->
 		{
-			SHADER_MAP.put(value, value.getSupplier().get().create(manager));
-		}
+			INSTANCE.managerArray.add(shader);
+			shader.create();
+		});
 	}
 }
-*/

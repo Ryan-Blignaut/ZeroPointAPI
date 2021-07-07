@@ -2,6 +2,7 @@ package me.thesilverecho.zeropoint.api.module;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.util.Keybind;
+import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.Objects;
@@ -21,11 +22,15 @@ public class BaseModule implements IModule
 	/**
 	 * Constructor to set instance variables from {@link ClientModule} annotation, registers a toggle keybind and calls toggleOptions so that enabled can take effect.
 	 */
-	public BaseModule()
-	{
-		this(null, null);
-	}
+//	public BaseModule()
+//	{
+//		this(null, null);
+//	}
 
+	public static  BaseModule newInstance(Boolean active, Integer key)
+	{
+		return new BaseModule(active, key);
+	}
 
 	public BaseModule(Boolean active, Integer key)
 	{

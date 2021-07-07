@@ -1,0 +1,36 @@
+#version 450 core
+
+layout(location = 0) uniform sampler2D diffuseSampler;
+layout(location = 1) uniform float radius;
+layout(location = 2) uniform vec2 dir;
+
+in vec2 texCoord;
+in vec2 oneTexel;
+
+out vec4 fragColor;
+
+void main() {
+    vec3 final = vec3(0.0);
+    for (float i = -radius; i <= radius; i += 2.0) {
+        final += texture(diffuseSampler, texCoord + oneTexel * (i + 0.5) * dir).rgb;
+    }
+    fragColor = vec4(final / (radius + 1.0), 1.0);
+
+//   vec4 blurred = vec4(0.0);
+//   float totalStrength = 0.0;
+//   float totalAlpha = 0.0;
+//   float totalSamples = 0.0;
+//   for (float r = -radius; r <= radius; r += 1.0) {
+//       vec4 sampleValue = texture(diffuseSampler, texCoord + oneTexel * r * dir);
+
+//       // Accumulate average alpha
+//       totalAlpha = totalAlpha + sampleValue.a;
+//       totalSamples = totalSamples + 1.0;
+
+//       // Accumulate smoothed blur
+//       float strength = 1.0 - abs(r / radius);
+//       totalStrength = totalStrength + strength;
+//       blurred = blurred + sampleValue;
+//   }
+//   fragColor = vec4(blurred.rgb / (radius * 2.0 + 1.0), totalAlpha);
+}

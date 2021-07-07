@@ -11,7 +11,13 @@ public class ZeroPointApiLogger
 	public static void error(Object message)
 	{
 		if (displayErrors)
-			LOGGER.error(message);
+		{
+			String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
+			String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
+			String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
+			int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
+			LOGGER.error(className + "." + methodName + "():" + lineNumber +" \t "+ message);
+		}
 	}
 
 	public static void error(String message, Object e)

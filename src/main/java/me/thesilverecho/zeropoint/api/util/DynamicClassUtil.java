@@ -26,7 +26,7 @@ public class DynamicClassUtil
 	{
 		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		final ArrayList<T> initialisedClasses = new ArrayList<>();
-		getClasses(packageName, directory, classLoader).forEach(className ->
+		getClasses(packageName, directory).forEach(className ->
 				register(classLoader, className, type).ifPresent(initialisedClasses::add));
 		return initialisedClasses;
 	}
@@ -36,13 +36,12 @@ public class DynamicClassUtil
 	 *
 	 * @param packageName the full package name excluding the directory
 	 * @param directory   the directory name where the files will be loaded from
-	 * @param classLoader used for loading of classes
 	 * @return list of class locations
 	 */
-	public static ArrayList<String> getClasses(String packageName, String directory, ClassLoader classLoader)
+	public static ArrayList<String> getClasses(String packageName, String directory)
 	{
 		final ArrayList<String> files = new ArrayList<>();
-		getDirs(packageName, directory, classLoader).forEach(file -> recursiveRetrieveFiles(files, packageName, file));
+		getDirs(packageName, directory, Thread.currentThread().getContextClassLoader()).forEach(file -> recursiveRetrieveFiles(files, packageName, file));
 		return files;
 	}
 
