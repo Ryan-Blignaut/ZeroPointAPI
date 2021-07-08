@@ -1,13 +1,14 @@
 package me.thesilverecho.zeropoint.api.render.font;
 
-import me.thesilverecho.zeropoint.api.render.ColourHolder;
 import me.thesilverecho.zeropoint.api.render.RenderUtil;
 import me.thesilverecho.zeropoint.api.render.Texture2D;
 import me.thesilverecho.zeropoint.api.render.shader.MaskTextShader;
 import me.thesilverecho.zeropoint.api.render.shader.ShaderManager;
+import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.api.util.IOUtils;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTFontinfo;
@@ -17,21 +18,39 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.stb.STBTruetype.*;
 
 public class CustomFont
 {
-	private final int height;
-	private final float scale;
-	private final float ascent;
+	private final Identifier identifier;
+	private int height;
+	private float scale;
+	private float ascent;
 	public Texture2D texture;
+	private GlyphInfo[] glyphs;
 
-	private final GlyphInfo[] glyphs;
+	public boolean initialised = false;
 
+	public CustomFont(Identifier identifier)
+	{
+		this.identifier = identifier;
+	}
 
-	public static CustomFont createCustomFont(Identifier identifier)
+	public void init(ResourceManager manager)
+	{
+		IOUtils.getResourceByID(manager, identifier).ifPresent(stream ->
+		{
+			final byte[] bytes = IOUtils.readBytes(stream);
+			ZeroPointApiLogger.error(bytes);
+			final ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length).put(bytes);
+			buffer.flip();
+			create(buffer, 18);
+			initialised = true;
+		});
+	}
+/*
+	public CustomFont createCustomFont(Identifier identifier)
 	{
 		AtomicReference<CustomFont> ret = new AtomicReference<>();
 		IOUtils.getResourceByID(identifier).ifPresent(stream ->
@@ -40,12 +59,12 @@ public class CustomFont
 			final byte[] bytes = IOUtils.readBytes(stream);
 			final ByteBuffer buffer = ByteBuffer.allocate(bytes.length).put(bytes);
 			buffer.flip();
-			ret.set(new CustomFont(buffer, 18));
+			ret.set(create(buffer, 18));
 		});
 		return ret.get();
-	}
+	}*/
 
-	public CustomFont(ByteBuffer buffer, int height)
+	public void create(ByteBuffer buffer, int height)
 	{
 		this.height = height;
 		final STBTTFontinfo fontInfo = STBTTFontinfo.create();

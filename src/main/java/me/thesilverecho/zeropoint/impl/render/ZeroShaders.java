@@ -11,9 +11,7 @@ import net.minecraft.util.Identifier;
 public enum ZeroShaders
 {
 
-
-
-	ROUND_RECT("round_rect", false), BLUR_SHADER("blur", "defaultpp", BlurShader.class), TEXT_SHADER("rect_text", "colour_text", PosTextShader.class),MASK_SHADER("mask_text", "colour_text", MaskTextShader.class);
+	ROUND_RECT("round_rect", false), BLUR_SHADER("blur", "defaultpp", BlurShader.class), TEXT_SHADER("rect_text", "colour_text", PosTextShader.class), MASK_SHADER("mask_text", "colour_text", MaskTextShader.class);
 
 	Shader shader;
 
@@ -36,7 +34,6 @@ public enum ZeroShaders
 	ZeroShaders(String fragLoc, boolean isTextured)
 	{
 		this(new Identifier(BASE_ID, BASE_SHADER_PATH + fragLoc + ".frag"), new Identifier(BASE_ID, BASE_SHADER_PATH + (isTextured ? TEXTURE_VERT : COLOUR_VERT) + ".vert"));
-
 	}
 
 	<T extends Shader> ZeroShaders(String fragLoc, String vertLoc, Class<T> blurShaderClass)

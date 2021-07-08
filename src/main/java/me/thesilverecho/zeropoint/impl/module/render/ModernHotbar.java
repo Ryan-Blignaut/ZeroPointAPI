@@ -5,13 +5,17 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.font.ClientFonts;
+import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.impl.event.RenderHotbarEvent;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @ClientModule(name = "Modern Hotbar", active = true, keyBinding = GLFW.GLFW_KEY_F)
 public class ModernHotbar extends BaseModule
@@ -39,12 +43,19 @@ public class ModernHotbar extends BaseModule
 				this.renderHotbarItem(event, r, s, playerEntity.getInventory().main.get(q), m++);
 			}
 		}
-		ClientFonts.COMIC.getFont().render(matrixStack, "Ryan ", 20, 20, 1);
-		ClientFonts.FREE_SANS.getFont().render(matrixStack, "test1", 20, 30, 1);
-		ClientFonts.REGULAR.getFont().render(matrixStack, "test2", 20, 40, 1);
-		ClientFonts.THIN.getFont().render(matrixStack, "test3", 20, 50, 1);
+		final DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
+		final DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		LocalDateTime now = LocalDateTime.now();
+		APIFonts.REGULAR.getFont().render(matrixStack, time.format(now), event.scaledWidth() - 25, event.scaledHeight() - 14, 0.4f);
+		APIFonts.REGULAR.getFont().render(matrixStack, date.format(now), event.scaledWidth() - 35, event.scaledHeight() - 7, 0.4f);
+		final float size = APIFonts.REGULAR.getFont().render(matrixStack, "FPS: ", 10, event.scaledHeight() - 14, 0.4f);
+		if (playerEntity != null)
+		{
+			final Vec3d pos = playerEntity.getPos();
+			APIFonts.REGULAR.getFont().render(matrixStack, "Ping: 20", size + 2, event.scaledHeight() - 14, 0.4f);
+			APIFonts.REGULAR.getFont().render(matrixStack, "X: " + (int) pos.getX() + " Y: " + (int) pos.getY() + " Z: " + (int) pos.getZ(), 10, event.scaledHeight() - 7, 0.4f);
+		}
 	}
-
 
 	private void renderHotbarItem(RenderHotbarEvent event, int x, int y, ItemStack stack, int seed)
 	{

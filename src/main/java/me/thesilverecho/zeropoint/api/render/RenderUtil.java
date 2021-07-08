@@ -3,6 +3,7 @@ package me.thesilverecho.zeropoint.api.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
+import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
@@ -15,6 +16,7 @@ public class RenderUtil
 {
 	public static float zIndex;
 	public static Shader shader;
+	private static int id = -1;
 
 	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder color)
 	{
@@ -39,6 +41,13 @@ public class RenderUtil
 		builder.vertex(matrix4f, width, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).texture(u1, v0).next();
 		builder.end();
 		shader.bind();
+		if (id != -1)
+		{
+			GlStateManager._bindTexture(id);
+			GL20.glUniform1i(2, 0);
+			RenderSystem.activeTexture(GL43.GL_TEXTURE0);
+			id = -1;
+		}
 		BufferRenderer.postDraw(builder);
 		shader.unBind();
 		disableGL2D();
@@ -69,9 +78,7 @@ public class RenderUtil
 
 	public static void setShaderTexture(int id)
 	{
-		GlStateManager._bindTexture(id);
-		GL20.glUniform1i(0, 0);
-		RenderSystem.activeTexture(GL43.GL_TEXTURE0);
+		RenderUtil.id = id;
 	}
 
 	public static void setShader(Shader shader)

@@ -29,9 +29,6 @@ public class Shader
 
 	public Shader(Identifier fragLocation, Identifier vertLocation)
 	{
-		ZeroPointApiLogger.error(fragLocation);
-		ZeroPointApiLogger.error(vertLocation);
-
 		this.fragLocation = fragLocation;
 		this.vertLocation = vertLocation;
 	}
