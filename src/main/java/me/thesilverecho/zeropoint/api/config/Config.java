@@ -160,7 +160,7 @@ public class Config
 	{
 		Class<?> clazz = instance.getClass();
 		if (config.get(clazz.getSimpleName()).getAsJsonObject().has(field.getName()))
-			ReflectionUtil.setObjValueSafe(field, instance, gson.fromJson(config.getAsJsonObject(clazz.getSimpleName()).get(field.getName()), field.getType()));
+			ReflectionUtil.setObjValueSafe(field, instance, gson.fromJson(config.getAsJsonObject(clazz.getSimpleName()).get(field.getName()), field.getGenericType()));
 	}
 
 	/**

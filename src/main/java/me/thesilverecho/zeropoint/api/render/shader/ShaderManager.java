@@ -12,9 +12,12 @@ import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 public class ShaderManager extends ManagerBase<Shader>
 {
@@ -25,11 +28,6 @@ public class ShaderManager extends ManagerBase<Shader>
 		super("Shader manager");
 	}
 
-	public static Shader getShader(Class<? extends Shader> shader)
-	{
-		return INSTANCE.getClassCacheMap(shader);
-	}
-
 	public static void reload(List<Shader> shaders, ResourceManager manager)
 	{
 		INSTANCE.managerArray.forEach(Shader::destroy);
@@ -38,11 +36,16 @@ public class ShaderManager extends ManagerBase<Shader>
 		loadShaders(shaders, manager);
 	}
 
-	public static void initShaders(List<Shader> shaders)
+	public static void initShaders(Shader... userShaders)
 	{
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener()
 		{
-			private final ResourceReloader reloadListener = (SynchronousResourceReloader) manager -> ShaderManager.reload(shaders, manager);
+			private final ResourceReloader reloadListener = (SynchronousResourceReloader) manager ->
+			{
+				ArrayList<Shader> shaders = Arrays.stream(APIShaders.values()).map(APIShaders::getShader).collect(Collectors.toCollection(ArrayList::new));
+				shaders.addAll(Arrays.asList(userShaders));
+				ShaderManager.reload(shaders, manager);
+			};
 
 			@Override
 			public Identifier getFabricId()
@@ -60,10 +63,6 @@ public class ShaderManager extends ManagerBase<Shader>
 
 	private static void loadShaders(List<Shader> shaders, ResourceManager manager)
 	{
-		shaders.forEach(shader ->
-		{
-			INSTANCE.managerArray.add(shader);
-			shader.create();
-		});
+		shaders.forEach(shader -> shader.create(manager));
 	}
 }

@@ -24,6 +24,12 @@ public class Texture2D
 			GlStateManager._bindTexture(this.getID());
 	}
 
+	public Texture2D(int width, int height, Format format)
+	{
+		bindTexture();
+		glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), GL_UNSIGNED_BYTE, 0);
+	}
+
 	public Texture2D(int width, int height, ByteBuffer buffer, Format format)
 	{
 		bindTexture();

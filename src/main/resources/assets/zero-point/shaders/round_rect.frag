@@ -4,7 +4,6 @@ precision highp float;
 
 layout(location = 0) uniform vec2 u_Radius;
 layout(location = 1) uniform vec4 u_InnerRect;
-layout(location = 2) uniform vec4 colour;
 
 smooth in vec2 position;
 smooth in vec4 vertexColor;
@@ -26,5 +25,5 @@ void main() {
 
     float a = 1.0 - smoothstep(-u_Radius.y, 0.0, v);
 
-    fragColor = colour * vec4(1.0, 1.0, 1.0, a);
+    fragColor = vertexColor * vec4(1.0, 1.0, 1.0, a);
 }

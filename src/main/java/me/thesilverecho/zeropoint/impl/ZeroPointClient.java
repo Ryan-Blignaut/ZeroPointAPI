@@ -6,13 +6,11 @@ import me.thesilverecho.zeropoint.api.render.font.FontManager;
 import me.thesilverecho.zeropoint.api.render.shader.ShaderManager;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import me.thesilverecho.zeropoint.impl.module.ModuleManager;
-import me.thesilverecho.zeropoint.impl.render.ZeroShaders;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 
 @Environment(EnvType.CLIENT)
 public class ZeroPointClient implements ClientModInitializer
@@ -25,12 +23,11 @@ public class ZeroPointClient implements ClientModInitializer
 	@Override
 	public void onInitializeClient()
 	{
-
 		DEFAULT_CONFIG.register(this);
 		ZeroPointApiLogger.setUp(true, true, true);
 		ModuleManager.registerAllModules();
 		DEFAULT_CONFIG.save();
-		ShaderManager.initShaders(Arrays.stream(ZeroShaders.values()).map(ZeroShaders::getShader).collect(Collectors.toList()));
+		ShaderManager.initShaders();
 		FontManager.initFonts();
 	}
 }

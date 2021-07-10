@@ -1,26 +1,21 @@
 package me.thesilverecho.zeropoint.impl.module;
 
-import com.google.gson.GsonBuilder;
 import me.thesilverecho.zeropoint.api.config.Config;
 import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.module.CollectionModuleSerialisation;
+import me.thesilverecho.zeropoint.api.module.SimpleModuleHolder;
 import me.thesilverecho.zeropoint.api.util.DynamicClassUtil;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class ModuleManager
 {
-	public static final ArrayList<BaseModule> ALL_MODULES = new ArrayList<>();
-	public final Config MODULE_CONFIG = new Config(new GsonBuilder()
-			.setPrettyPrinting()
-			.registerTypeAdapter(ArrayList.class, new CollectionModuleSerialisation())
-			.create(), "Zero-point/test");
+	public final Config MODULE_CONFIG = new Config("Zero-point/test");
 	@ConfigSetting
-	public ArrayList<BaseModule> ENABLED_MODULES = new ArrayList<>();
-	;
+	public ArrayList<SimpleModuleHolder> baseModules = new ArrayList<>();
 
 	public static void registerAllModules()
 	{
@@ -32,9 +27,12 @@ public class ModuleManager
 					if (clazz.getSuperclass() == BaseModule.class)
 					{
 						final String name = clazz.getAnnotation(ClientModule.class).name();
-						final boolean b = instance.ENABLED_MODULES.stream().anyMatch(module -> module.getName().equals(name));
-						if (!b)
-							ReflectionUtil.callConstructor(clazz, BaseModule.class, null, null).ifPresent(instance.ENABLED_MODULES::add);
+						final Optional<SimpleModuleHolder> first = instance.baseModules.stream().filter(module -> module.getName().equals(name)).findFirst();
+						if (first.isPresent())
+							ReflectionUtil.callConstructor(clazz, BaseModule.class, first.get().isEnabled(), first.get().getKey());
+						else
+							ReflectionUtil.callConstructor(clazz, BaseModule.class, null, null).ifPresent(baseModule ->
+									instance.baseModules.add(new SimpleModuleHolder(baseModule)));
 					}
 				}));
 		instance.MODULE_CONFIG.save();

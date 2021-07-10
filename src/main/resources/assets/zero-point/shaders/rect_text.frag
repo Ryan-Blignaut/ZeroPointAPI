@@ -21,5 +21,5 @@ void main() {
 
     float a = 1.0 - smoothstep(-u_Radius.y, 0.0, v);
 
-    fragColor = texture(u_Sampler, text) * vec4(1.0, 1.0, 1.0, a);
+    fragColor = texture(u_Sampler, text) * vec4(1.0, 1.0, 1.0, a) * vertexColor;
 }

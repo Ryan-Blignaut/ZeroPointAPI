@@ -2,9 +2,10 @@ package me.thesilverecho.zeropoint.api.module;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.util.Keybind;
-import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.client.MinecraftClient;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class BaseModule implements IModule
@@ -17,22 +18,15 @@ public class BaseModule implements IModule
 	private final Keybind keybind;
 	private final boolean shouldDraw;
 	private boolean enabled;
-
+	public static final HashMap<String, BaseModule> ENABLE_MODULES = new HashMap<>();
 
 	/**
 	 * Constructor to set instance variables from {@link ClientModule} annotation, registers a toggle keybind and calls toggleOptions so that enabled can take effect.
+	 *
+	 * @param active if the current module is active, use null to get from annotation.
+	 * @param key    current keybind for the, use null to get from annotation.
 	 */
-//	public BaseModule()
-//	{
-//		this(null, null);
-//	}
-
-	public static  BaseModule newInstance(Boolean active, Integer key)
-	{
-		return new BaseModule(active, key);
-	}
-
-	public BaseModule(Boolean active, Integer key)
+	public BaseModule(@Nullable Boolean active, @Nullable Integer key)
 	{
 		ClientModule annotation = this.getClass().getAnnotation(ClientModule.class);
 		this.enabled = Objects.requireNonNullElseGet(active, annotation::active);
@@ -50,7 +44,7 @@ public class BaseModule implements IModule
 	/**
 	 * Toggles the module on/off.
 	 */
-	private void toggle()
+	protected void toggle()
 	{
 		this.enabled = !enabled;
 		runToggleActions();
@@ -59,14 +53,16 @@ public class BaseModule implements IModule
 	/**
 	 * Actions to be run if module is enabled or disabled.
 	 */
-	private void runToggleActions()
+	protected void runToggleActions()
 	{
-		if (enabled)
+		if (!enabled)
 		{
 			onEnable();
 			EventManager.register(this);
+			ENABLE_MODULES.put(this.getName(), this);
 		} else
 		{
+			ENABLE_MODULES.remove(this.getName());
 			EventManager.deregister(this);
 			onDisable();
 		}

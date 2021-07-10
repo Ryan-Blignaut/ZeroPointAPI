@@ -8,6 +8,11 @@ public class ZeroPointApiLogger
 	private static final Logger LOGGER = LogManager.getLogger("Zero Point API");
 	private static boolean displayErrors, displayInfo, displayDebug;
 
+	/**
+	 * Logs an error, but also includes the class method and line where the error occurred.
+	 *
+	 * @param message the message to be displayed.
+	 */
 	public static void error(Object message)
 	{
 		if (displayErrors)

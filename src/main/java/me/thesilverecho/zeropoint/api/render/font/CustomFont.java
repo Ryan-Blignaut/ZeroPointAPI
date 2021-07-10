@@ -2,14 +2,13 @@ package me.thesilverecho.zeropoint.api.render.font;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtil;
 import me.thesilverecho.zeropoint.api.render.Texture2D;
-import me.thesilverecho.zeropoint.api.render.shader.MaskTextShader;
-import me.thesilverecho.zeropoint.api.render.shader.ShaderManager;
+import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
+import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
-import me.thesilverecho.zeropoint.api.util.IOUtils;
-import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackContext;
@@ -26,11 +25,10 @@ public class CustomFont
 	private final Identifier identifier;
 	private int height;
 	private float scale;
+	private float fontScale = 1;
 	private float ascent;
 	public Texture2D texture;
 	private GlyphInfo[] glyphs;
-
-	public boolean initialised = false;
 
 	public CustomFont(Identifier identifier)
 	{
@@ -39,30 +37,14 @@ public class CustomFont
 
 	public void init(ResourceManager manager)
 	{
-		IOUtils.getResourceByID(manager, identifier).ifPresent(stream ->
+		ApiIOUtils.getResourceByID(manager, identifier).ifPresent(stream ->
 		{
-			final byte[] bytes = IOUtils.readBytes(stream);
-			ZeroPointApiLogger.error(bytes);
+			final byte[] bytes = ApiIOUtils.readBytes(stream);
 			final ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length).put(bytes);
 			buffer.flip();
 			create(buffer, 18);
-			initialised = true;
 		});
 	}
-/*
-	public CustomFont createCustomFont(Identifier identifier)
-	{
-		AtomicReference<CustomFont> ret = new AtomicReference<>();
-		IOUtils.getResourceByID(identifier).ifPresent(stream ->
-		{
-			ZeroPointApiLogger.error("we have opened the stream");
-			final byte[] bytes = IOUtils.readBytes(stream);
-			final ByteBuffer buffer = ByteBuffer.allocate(bytes.length).put(bytes);
-			buffer.flip();
-			ret.set(create(buffer, 18));
-		});
-		return ret.get();
-	}*/
 
 	public void create(ByteBuffer buffer, int height)
 	{
@@ -109,21 +91,90 @@ public class CustomFont
 		}
 	}
 
+	public float render(MatrixStack matrixStack, String string, float x, float y)
+	{
+		return render(matrixStack, string, new ColourHolder(255, 255, 255, 255), x, y, fontScale, false);
+	}
+
 	public float render(MatrixStack matrixStack, String string, float x, float y, float scale)
 	{
+		return render(matrixStack, string, new ColourHolder(255, 255, 255, 255), x, y, scale, false);
+	}
+
+	public float render(MatrixStack matrixStack, String string, float x, float y, float scale, boolean outline)
+	{
+		return render(matrixStack, string, new ColourHolder(255, 255, 255, 255), x, y, scale, outline);
+	}
+
+	public float getHeight()
+	{
+		return height * fontScale;
+	}
+
+	public CustomFont setFontScale(float fontScale)
+	{
+		this.fontScale = fontScale;
+		return this;
+	}
+
+	public float getWidth(String string)
+	{
+		float x = 0;
+		for (int i = 0; i < string.length(); i++)
+		{
+			int character = string.charAt(i);
+
+			if (character < 32 || character > 256) character = 32;
+			if (character == 36 && i + 1 < string.length() && string.charAt(i + 1) == 123)
+			{
+				final int i1 = string.indexOf("${", i);
+				final int i2 = string.indexOf("}", i);
+				if (i1 != -1 && i2 != -1)
+					i += i2 - i1;
+			} else
+			{
+				final GlyphInfo glyph = glyphs[character - 32];
+				x += glyph.xAdvance() * fontScale;
+			}
+
+		}
+
+		return x;
+	}
+
+	public float render(MatrixStack matrixStack, String string, ColourHolder colourHolder, float x, float y, float scale, boolean outline)
+	{
+
 		y += ascent * this.scale * scale;
 
 		for (int i = 0; i < string.length(); i++)
 		{
-			int cp = string.charAt(i);
-			if (cp < 32 || cp > 256) cp = 32;
-			final GlyphInfo glyph = glyphs[cp - 32];
-			RenderUtil.setShader(ShaderManager.getShader(MaskTextShader.class));
-			RenderUtil.setShaderTexture(texture.getID());
-			RenderUtil.quadTexture(matrixStack, x + glyph.x() * scale, y + glyph.y() * scale, x + glyph.w() * scale, y + glyph.h() * scale, glyph.u0(), glyph.v0(), glyph.u1(), glyph.v1(), new ColourHolder(255, 255, 255, 255));
-			x += glyph.xAdvance() * scale;
+			int character = string.charAt(i);
+
+			if (character < 32 || character > 256) character = 32;
+			if (character == 36 && i + 1 < string.length() && string.charAt(i + 1) == 123)
+			{
+				final int i1 = string.indexOf("${", i);
+				final int i2 = string.indexOf("}", i);
+				if (i1 != -1 && i2 != -1)
+				{
+					final String substring = string.substring(i1 + 2, i2);
+					colourHolder = ColourHolder.decode(substring);
+					i += i2 - i1;
+				}
+			} else
+			{
+				final GlyphInfo glyph = glyphs[character - 32];
+				RenderUtil.setShader(outline ? APIShaders.SHADE_MASK_SHADER.getShader() : APIShaders.MASK_SHADER.getShader());
+				RenderUtil.setShaderTexture(texture.getID());
+				RenderUtil.setPostShaderBind(shader -> shader.setArgument("InSize", new Vec2f(glyph.u1(), glyph.v1())));
+				RenderUtil.quadTexture(matrixStack, x + glyph.x() * scale, y + glyph.y() * scale, x + glyph.w() * scale, y + glyph.h() * scale, glyph.u0(), glyph.v0(), glyph.u1(), glyph.v1(), colourHolder);
+				x += glyph.xAdvance() * scale;
+			}
+
 		}
 		return x;
 	}
+
 
 }

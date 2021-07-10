@@ -3,7 +3,6 @@ package me.thesilverecho.zeropoint.api.module;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import me.thesilverecho.zeropoint.impl.module.render.ModernHotbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class CollectionModuleSerialisation extends TypeAdapter<ArrayList<BaseMod
 			in.nextName();
 			final int i = in.nextInt();
 
-			t.add(new ModernHotbar(b, i));
+			t.add(new BaseModule(b, i));
 			in.endObject();
 		}
 		in.endObject();

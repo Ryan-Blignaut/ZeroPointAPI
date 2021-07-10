@@ -1,4 +1,4 @@
-package me.thesilverecho.zeropoint.impl.mixin;
+package me.thesilverecho.zeropoint.api.mixin;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.impl.event.Render2dEvent;
@@ -40,12 +40,12 @@ public abstract class InGameHudMixin
 		EventManager.call(new RenderScoreboardEvent(matrixStack, scoreboardObjective, ci));
 	}
 
-	@Inject(method = "render", at = @At(value = "TAIL"), cancellable = true)
+	@Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
 	private void onDraw1(MatrixStack matrixStack, float tickDelta, CallbackInfo ci)
 	{
 		if (MinecraftClient.getInstance().options.debugEnabled)
 			return;
-		EventManager.call(new Render2dEvent(matrixStack, tickDelta, ci));
+		EventManager.call(new Render2dEvent(matrixStack, tickDelta, scaledWidth, scaledHeight, ci));
 	}
 
 	@Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)

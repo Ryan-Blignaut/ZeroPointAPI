@@ -2,7 +2,7 @@ package me.thesilverecho.zeropoint.api.render.shader;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
@@ -33,11 +33,9 @@ public class Shader
 		this.vertLocation = vertLocation;
 	}
 
-	public Optional<String> getShaderString(Identifier location)
+	public Optional<String> getShaderString(Identifier location, ResourceManager manager)
 	{
-//		final InputStream inputStream = MinecraftClient.getInstance().getResourceManager().getResource(location).getInputStream();
-//		final InputStream open = MinecraftClient.getInstance().getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, location);
-		try (InputStream is = MinecraftClient.getInstance().getResourceManager().getResource(location).getInputStream())
+		try (InputStream is = manager.getResource(location).getInputStream())
 		{
 			return Optional.of(IOUtils.toString(is, StandardCharsets.UTF_8));
 		} catch (IOException ignored)
@@ -47,10 +45,10 @@ public class Shader
 		}
 	}
 
-	private int genShader(int glFragmentShader, Identifier loc)
+	private int genShader(int glFragmentShader, Identifier loc, ResourceManager manager)
 	{
 		final int[] programId = {-1};
-		getShaderString(loc).ifPresent(shaderSource ->
+		getShaderString(loc, manager).ifPresent(shaderSource ->
 		{
 			programId[0] = glCreateShader(glFragmentShader);
 			glShaderSource(programId[0], shaderSource);
@@ -63,10 +61,10 @@ public class Shader
 	}
 
 
-	public void create()
+	public void create(ResourceManager manager)
 	{
-		int vertId = genShader(GL_VERTEX_SHADER, vertLocation);
-		int fragId = genShader(GL_FRAGMENT_SHADER, fragLocation);
+		int vertId = genShader(GL_VERTEX_SHADER, vertLocation, manager);
+		int fragId = genShader(GL_FRAGMENT_SHADER, fragLocation, manager);
 
 		programId = glCreateProgram();
 		apply(vertId, id -> glAttachShader(programId, id));
