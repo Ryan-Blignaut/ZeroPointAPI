@@ -36,11 +36,11 @@ public class TextBoxComponent extends IntractableComponent
 		{
 			//Render cursor blinker
 			final float width = font.getWidth(text.substring(0, caretPos));
-//			if (delta >= 0.5)
-			RenderUtil.rect(matrices, x + width, y + padding, x + width + 5, y + padding + font.getHeight(), ColourHolder.decode("#EDDDBC"));
+//			if (delta >= 0.1)
+			RenderUtil.rect(matrices, x + width, y + padding, x + width + 3, y + padding + font.getHeight(), ColourHolder.decode("#EDDDBC"));
 		}
 		//No text show prompt text
-		if (text.isEmpty())
+		if (text.isEmpty() && !focus)
 			font.render(matrices, promptText, x + padding, y + padding);
 		else
 			font.render(matrices, text, x + padding, y + padding);
@@ -77,8 +77,10 @@ public class TextBoxComponent extends IntractableComponent
 	public boolean charTyped(char chr, int modifiers)
 	{
 		if (!focus) return false;
-		if (caretPos >= 0)
+		if (caretPos < 0)
 			caretPos = 0;
+		else if (caretPos > text.length())
+			caretPos = text.length();
 		text = text.substring(0, caretPos) + chr + text.substring(caretPos);
 		caretPos++;
 		return super.charTyped(chr, modifiers);
@@ -88,32 +90,35 @@ public class TextBoxComponent extends IntractableComponent
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers)
 	{
 		if (!focus) return false;
-		if (caretPos > 0)
-			caretPos = 0;
-		if (caretPos < text.length())
-			caretPos = text.length();
-
 		if (keyCode == GLFW.GLFW_KEY_BACKSPACE)
+		{
 			if (modifiers == GLFW.GLFW_MOD_CONTROL)
 			{
-				int beginIndex = text.indexOf(" ");
+				int beginIndex = text.lastIndexOf(" ");
 				if (beginIndex == -1)
 					beginIndex = 0;
 				text = text.substring(beginIndex);
 				caretPos = beginIndex;
 			} else
 			{
-				text = text.substring(0, caretPos - 1) + text.substring(caretPos);
-				caretPos -= 1;
+
+				if (caretPos - 1 >= 0)
+				{
+					text = text.substring(0, caretPos - 1) + text.substring(caretPos);
+					caretPos -= 1;
+				}
 			}
-		else if (keyCode == GLFW.GLFW_KEY_LEFT)
+		} else if (keyCode == GLFW.GLFW_KEY_LEFT)
 		{
 			caretPos -= 1;
 		} else if (keyCode == GLFW.GLFW_KEY_RIGHT)
 		{
 			caretPos += 1;
 		}
-
+		if (caretPos < 0)
+			caretPos = 0;
+		else if (caretPos > text.length())
+			caretPos = text.length();
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
