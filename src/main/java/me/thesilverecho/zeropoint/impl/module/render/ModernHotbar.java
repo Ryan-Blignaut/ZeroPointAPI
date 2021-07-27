@@ -9,7 +9,7 @@ import me.thesilverecho.zeropoint.api.render.RenderUtil;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
-import me.thesilverecho.zeropoint.impl.event.RenderHotbarEvent;
+import me.thesilverecho.zeropoint.api.event.events.RenderHotbarEvent;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;

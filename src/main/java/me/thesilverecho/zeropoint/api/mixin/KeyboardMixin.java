@@ -1,8 +1,10 @@
 package me.thesilverecho.zeropoint.api.mixin;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
+import me.thesilverecho.zeropoint.api.event.events.KeyEvent;
+import me.thesilverecho.zeropoint.api.event.events.ScreenCharEvent;
+import me.thesilverecho.zeropoint.api.event.events.ScreenKeyboardEvent;
 import me.thesilverecho.zeropoint.api.util.Keybind;
-import me.thesilverecho.zeropoint.impl.event.KeyEvent;
 import net.minecraft.client.Keyboard;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,4 +28,18 @@ public abstract class KeyboardMixin
 			case GLFW.GLFW_RELEASE -> keybinds.forEach(Keybind::onRelease);
 		}
 	}
+
+
+	@Inject(method = "onKey", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;", shift = At.Shift.BEFORE))
+	public void onScreenKeyEvent(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci)
+	{
+		EventManager.call(new ScreenKeyboardEvent(key, scancode, modifiers));
+	}
+
+	@Inject(method = "onChar", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;"))
+	public void onScreenKeyEvent(long window, int codePoint, int modifiers, CallbackInfo ci)
+	{
+		EventManager.call(new ScreenCharEvent((char) codePoint, modifiers));
+	}
+
 }

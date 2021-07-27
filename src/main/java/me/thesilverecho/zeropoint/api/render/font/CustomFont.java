@@ -29,6 +29,7 @@ public class CustomFont
 	private float ascent;
 	public Texture2D texture;
 	private GlyphInfo[] glyphs;
+	final ColourHolder[] cols = new ColourHolder[4];
 
 	public CustomFont(Identifier identifier)
 	{
@@ -37,13 +38,7 @@ public class CustomFont
 
 	public void init(ResourceManager manager)
 	{
-		ApiIOUtils.getResourceByID(manager, identifier).ifPresent(stream ->
-		{
-			final byte[] bytes = ApiIOUtils.readBytes(stream);
-			final ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length).put(bytes);
-			buffer.flip();
-			create(buffer, 18);
-		});
+		ApiIOUtils.getResourceByID(manager, identifier).ifPresent(stream -> create(ApiIOUtils.readBytesToBuffer(stream), 18));
 	}
 
 	public void create(ByteBuffer buffer, int height)
@@ -146,11 +141,9 @@ public class CustomFont
 	{
 
 		y += ascent * this.scale * scale;
-
 		for (int i = 0; i < string.length(); i++)
 		{
 			int character = string.charAt(i);
-
 			if (character < 32 || character > 256) character = 32;
 			if (character == 36 && i + 1 < string.length() && string.charAt(i + 1) == 123)
 			{
@@ -159,7 +152,17 @@ public class CustomFont
 				if (i1 != -1 && i2 != -1)
 				{
 					final String substring = string.substring(i1 + 2, i2);
-					colourHolder = ColourHolder.decode(substring);
+
+					final String[] split = substring.split(",");
+					if (split.length > 1)
+					{
+						for (int j = 0; j < cols.length; j++)
+							if (j < split.length)
+								cols[j] = ColourHolder.decode(split[j]);
+							else
+								cols[j] = colourHolder;
+					} else
+						colourHolder = ColourHolder.decode(substring);
 					i += i2 - i1;
 				}
 			} else
@@ -168,7 +171,20 @@ public class CustomFont
 				RenderUtil.setShader(outline ? APIShaders.SHADE_MASK_SHADER.getShader() : APIShaders.MASK_SHADER.getShader());
 				RenderUtil.setShaderTexture(texture.getID());
 				RenderUtil.setPostShaderBind(shader -> shader.setArgument("InSize", new Vec2f(glyph.u1(), glyph.v1())));
-				RenderUtil.quadTexture(matrixStack, x + glyph.x() * scale, y + glyph.y() * scale, x + glyph.w() * scale, y + glyph.h() * scale, glyph.u0(), glyph.v0(), glyph.u1(), glyph.v1(), colourHolder);
+				RenderUtil.quadTexture(matrixStack,
+						x + glyph.x() * scale,
+						y + glyph.y() * scale,
+						x + glyph.w() * scale,
+						y + glyph.h() * scale,
+						glyph.u0(),
+						glyph.v0(),
+						glyph.u1(),
+						glyph.v1(),
+						cols[0] == null ? colourHolder : cols[0],
+						cols[1] == null ? colourHolder : cols[1],
+						cols[2] == null ? colourHolder : cols[2],
+						cols[3] == null ? colourHolder : cols[3]);
+//				RenderUtil.quadTexture(matrixStack, x + glyph.x() * scale, y + glyph.y() * scale, x + glyph.w() * scale, y + glyph.h() * scale, glyph.u0(), glyph.v0(), glyph.u1(), glyph.v1(), colourHolder);
 				x += glyph.xAdvance() * scale;
 			}
 

@@ -5,7 +5,10 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "InGameHudMixin",
-    "KeyboardMixin"
+    "KeyboardMixin",
+    "LivingEntityRendererMixin",
+    "MouseMixin",
+    "WorldRendererMixin"
   ],
   "client": [
   ],

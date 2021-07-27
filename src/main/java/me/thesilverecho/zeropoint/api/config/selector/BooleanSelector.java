@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a field will have custom rendering.
+ * Indicates that renderer field will have custom rendering.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

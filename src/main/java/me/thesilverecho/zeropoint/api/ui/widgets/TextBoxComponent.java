@@ -1,5 +1,10 @@
 package me.thesilverecho.zeropoint.api.ui.widgets;
 
+import me.thesilverecho.zeropoint.api.event.EventListener;
+import me.thesilverecho.zeropoint.api.event.EventManager;
+import me.thesilverecho.zeropoint.api.event.events.MouseEvent;
+import me.thesilverecho.zeropoint.api.event.events.ScreenCharEvent;
+import me.thesilverecho.zeropoint.api.event.events.ScreenKeyboardEvent;
 import me.thesilverecho.zeropoint.api.render.RenderUtil;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
@@ -20,6 +25,7 @@ public class TextBoxComponent extends IntractableComponent
 	{
 		super(x, y, w, h, parent);
 		this.padding = padding;
+		EventManager.register(this);
 	}
 
 	public TextBoxComponent setDefaultText(String defaultText)
@@ -31,7 +37,7 @@ public class TextBoxComponent extends IntractableComponent
 	@Override
 	public void renderComp(MatrixStack matrices, float mouseX, float mouseY, double delta)
 	{
-		//If focused render a cursor
+		//If focused render renderer cursor
 		if (focus)
 		{
 			//Render cursor blinker
@@ -52,47 +58,49 @@ public class TextBoxComponent extends IntractableComponent
 		}
 	}
 
-	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button)
+	@EventListener
+	public boolean mouseClicked(MouseEvent event)
 	{
-		if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT)
+		if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT)
 		{
-			//Clear text on a right click
+			//Clear text on renderer right click
 			if (!text.isEmpty())
 			{
 				text = "";
 				caretPos = 0;
 			}
-		} else if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT)
+		} else if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT)
 		{
 			caretPos = text.length();
 		}
 
-		if (inMouseOver((float) mouseX, (float) mouseY))
+		if (inMouseOver((float) event.x(), (float) event.y()))
 			focus = true;
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event.x(), event.y(), event.button());
 	}
 
-	@Override
-	public boolean charTyped(char chr, int modifiers)
+
+	@EventListener
+	public boolean charTyped(ScreenCharEvent event)
 	{
 		if (!focus) return false;
 		if (caretPos < 0)
 			caretPos = 0;
 		else if (caretPos > text.length())
 			caretPos = text.length();
-		text = text.substring(0, caretPos) + chr + text.substring(caretPos);
+		text = text.substring(0, caretPos) + event.chr() + text.substring(caretPos);
 		caretPos++;
-		return super.charTyped(chr, modifiers);
+		return super.charTyped(event.chr(), event.modifiers());
 	}
 
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+	@EventListener
+	public boolean keyPressed(ScreenKeyboardEvent event)
 	{
+		System.out.println(event);
 		if (!focus) return false;
-		if (keyCode == GLFW.GLFW_KEY_BACKSPACE)
+		if (event.keyCode() == GLFW.GLFW_KEY_BACKSPACE)
 		{
-			if (modifiers == GLFW.GLFW_MOD_CONTROL)
+			if (event.modifiers() == GLFW.GLFW_MOD_CONTROL)
 			{
 				int beginIndex = text.lastIndexOf(" ");
 				if (beginIndex == -1)
@@ -108,10 +116,10 @@ public class TextBoxComponent extends IntractableComponent
 					caretPos -= 1;
 				}
 			}
-		} else if (keyCode == GLFW.GLFW_KEY_LEFT)
+		} else if (event.keyCode() == GLFW.GLFW_KEY_LEFT)
 		{
 			caretPos -= 1;
-		} else if (keyCode == GLFW.GLFW_KEY_RIGHT)
+		} else if (event.keyCode() == GLFW.GLFW_KEY_RIGHT)
 		{
 			caretPos += 1;
 		}
@@ -119,7 +127,7 @@ public class TextBoxComponent extends IntractableComponent
 			caretPos = 0;
 		else if (caretPos > text.length())
 			caretPos = text.length();
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(event.keyCode(), event.scanCode(), event.modifiers());
 	}
 
 	public synchronized String getSelectedText()

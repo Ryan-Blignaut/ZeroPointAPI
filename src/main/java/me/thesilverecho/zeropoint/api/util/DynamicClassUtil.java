@@ -4,12 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
  * Various utils for dynamic class loading.
- * Most of this code was derived from : <a href="https://stackabuse.com/example-loading-a-java-class-at-runtime">loading a java class at runtime</a>
+ * Most of this code was derived from : <renderer href="https://stackabuse.com/example-loading-a-java-class-at-runtime">loading renderer java class at runtime</renderer>
  */
 public class DynamicClassUtil
 {
@@ -29,6 +34,31 @@ public class DynamicClassUtil
 		getClasses(packageName, directory).forEach(className ->
 				register(classLoader, className, type).ifPresent(initialisedClasses::add));
 		return initialisedClasses;
+	}
+
+
+	public static ArrayList<String> getClasses(String packageName)
+	{
+		final ArrayList<String> files = new ArrayList<>();
+		try
+		{
+			final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+			final URI uri = contextClassLoader.getResource(packageName).toURI();
+			final Path locationPath = uri.getScheme().equals("jar") ? /*FileSystems.newFileSystem(uri, Collections.emptyMap())*/FileSystems.getFileSystem(uri).getPath(packageName) : Paths.get(uri);
+			Files.walk(locationPath).parallel().filter(path -> path.toString().endsWith(".class")).forEach(path ->
+			{
+				final String a = packageName.replace('/', '.');
+				final String pathName = path.toString().replace('/', '.').replace('\\','.');
+				final String clazz = pathName.substring(pathName.indexOf(a), pathName.length() - 6);
+				files.add(clazz);
+			});
+		} catch (Exception e)
+		{
+			ZeroPointApiLogger.error("Error loading :", e);
+			e.printStackTrace();
+		}
+
+		return files;
 	}
 
 	/**

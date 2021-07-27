@@ -6,7 +6,7 @@ package me.thesilverecho.zeropoint.api.util;
 public record ColourHolder(int red, int green, int blue, int alpha)
 {
 	/**
-	 * Creates an instance of a {@link ColourHolder} using the string provided.
+	 * Creates an instance of renderer {@link ColourHolder} using the string provided.
 	 *
 	 * @param text the {@link String} to decode.
 	 * @return an {@link ColourHolder} object holding value of the decoded string.

@@ -1,4 +1,4 @@
-package me.thesilverecho.zeropoint.impl.event;
+package me.thesilverecho.zeropoint.api.event.events;
 
 import me.thesilverecho.zeropoint.api.event.BaseEvent;
 import net.minecraft.client.render.item.ItemRenderer;

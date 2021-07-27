@@ -17,7 +17,7 @@ public class MainGuiHud extends BaseModule
 	@Override
 	protected void toggle()
 	{
-		MC.openScreen(new ConfigScreen());
+		MC.setScreen(new ConfigScreen());
 	}
 
 	@Override

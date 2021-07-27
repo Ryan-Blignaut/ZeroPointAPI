@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain renderer copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a method declaration is intended to be used as a dynamic module.
+ * Indicates that renderer method declaration is intended to be used as renderer dynamic module.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

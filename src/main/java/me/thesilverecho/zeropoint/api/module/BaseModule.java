@@ -21,7 +21,7 @@ public class BaseModule implements IModule
 	public static final HashMap<String, BaseModule> ENABLE_MODULES = new HashMap<>();
 
 	/**
-	 * Constructor to set instance variables from {@link ClientModule} annotation, registers a toggle keybind and calls toggleOptions so that enabled can take effect.
+	 * Constructor to set instance variables from {@link ClientModule} annotation, registers renderer toggle keybind and calls toggleOptions so that enabled can take effect.
 	 *
 	 * @param active if the current module is active, use null to get from annotation.
 	 * @param key    current keybind for the, use null to get from annotation.

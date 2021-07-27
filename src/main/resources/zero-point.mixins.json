@@ -4,8 +4,10 @@
   "package": "me.thesilverecho.zeropoint.impl.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "BlockEntityRenderDispatcherMixin",
     "ItemRendererMixin",
-    "TitleScreenMixin"
+    "TitleScreenMixin",
+    "WorldRendererMixin"
   ],
   "client": [
   ],

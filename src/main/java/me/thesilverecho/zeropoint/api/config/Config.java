@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 
 /**
- * The {@code Config} class provides a mechanism that allows for serialization and deserialization of {@link ConfigSetting} annotated fields.
+ * The {@code Config} class provides renderer mechanism that allows for serialization and deserialization of {@link ConfigSetting} annotated fields.
  */
 public class Config
 {
@@ -90,7 +90,7 @@ public class Config
 	}
 
 	/**
-	 * Registers a class.
+	 * Registers renderer class.
 	 *
 	 * @param instance class to register
 	 */
@@ -110,6 +110,7 @@ public class Config
 
 		try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(configFile)))
 		{
+			ZeroPointApiLogger.debug("Has created new directories: " + configFile.getParentFile().mkdirs());
 			ZeroPointApiLogger.debug("Has created new file: " + configFile.createNewFile());
 			bufferedWriter.write(gson.toJson(config));
 		} catch (IOException e)
@@ -120,9 +121,9 @@ public class Config
 	}
 
 	/**
-	 * Reads a file to a json object.
+	 * Reads renderer file to renderer json object.
 	 *
-	 * @return returns a json object of the files contents or an empty json object
+	 * @return returns renderer json object of the files contents or an empty json object
 	 */
 	private JsonObject readFileToJson()
 	{
@@ -152,7 +153,7 @@ public class Config
 	}
 
 	/**
-	 * Loads a fields from json to instance.
+	 * Loads renderer fields from json to instance.
 	 *
 	 * @param instance the instance of the class
 	 */
@@ -174,7 +175,7 @@ public class Config
 	}
 
 	/**
-	 * Loads a fields from instance to json.
+	 * Loads renderer fields from instance to json.
 	 *
 	 * @param field    the filed to be saved
 	 * @param instance the instance of the class

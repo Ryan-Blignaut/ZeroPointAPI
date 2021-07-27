@@ -12,7 +12,7 @@ import java.util.Optional;
 public class ReflectionUtil
 {
 	/**
-	 * Safely invokes a method using reflection.
+	 * Safely invokes renderer method using reflection.
 	 *
 	 * @param source the class(source) instance of the method to be called
 	 * @param target the method(target) of the method to be called
@@ -33,7 +33,7 @@ public class ReflectionUtil
 	}
 
 	/**
-	 * Safely gets the value of a field or null if unable.
+	 * Safely gets the value of renderer field or null if unable.
 	 *
 	 * @param field  the field that's value will be retrieved
 	 * @param source the instance of the class of the field
@@ -56,7 +56,7 @@ public class ReflectionUtil
 	}
 
 	/**
-	 * Safely sets the value of a field.
+	 * Safely sets the value of renderer field.
 	 *
 	 * @param field  the field that's value will be modified
 	 * @param source the instance of the class of the field

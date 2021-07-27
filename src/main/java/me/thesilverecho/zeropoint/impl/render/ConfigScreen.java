@@ -18,6 +18,8 @@ public class ConfigScreen extends APIScreen
 		super(new LiteralText("config screen"));
 	}
 
+	private TextBoxComponent textBoxComponent;
+
 	private void initComps()
 	{
 		test = true;
@@ -30,7 +32,7 @@ public class ConfigScreen extends APIScreen
 		final float leftOfFrame = halfScaledWidth - winWidth / 2f;
 		final float topOfFrame = halfScaledHeight - winHeight / 2f;
 		final float sizeOfColumn = 80;
-		addComp(new TextBoxComponent(leftOfFrame + sizeOfColumn + 5 + 2, topOfFrame + 8, 120, 120, null, 2));
+		textBoxComponent = new TextBoxComponent(leftOfFrame + sizeOfColumn + 5 + 2, topOfFrame + 8, 120, 120, null, 2);
 	}
 
 	@Override
@@ -50,6 +52,7 @@ public class ConfigScreen extends APIScreen
 
 		RenderUtil.roundRect(matrixStack, leftOfFrame, topOfFrame, halfScaledWidth + winWidth / 2f, halfScaledHeight + winHeight / 2f, 10, ColourHolder.decode("#272537"));
 		APIFonts.FREE_SANS.getFont().setFontScale((float) ((1 / scaleFactor) / 18 * 22)).render(matrixStack, "${#f8f8ff}ZERO-POINT", leftOfFrame + 10, topOfFrame + 8);
+		textBoxComponent.render(matrixStack, mouseX, mouseY, delta);
 		super.render(matrixStack, mouseX, mouseY, delta);
 //		//search button
 //		final float scale = (float) ((1 / scaleFactor) / 18 * 20);

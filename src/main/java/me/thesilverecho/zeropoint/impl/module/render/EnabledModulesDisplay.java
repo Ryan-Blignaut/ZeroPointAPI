@@ -9,7 +9,7 @@ import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
-import me.thesilverecho.zeropoint.impl.event.Render2dEvent;
+import me.thesilverecho.zeropoint.api.event.events.Render2dEvent;
 import net.minecraft.client.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;

@@ -1,10 +1,14 @@
 package me.thesilverecho.zeropoint.api.ui.widgets;
 
+import me.thesilverecho.zeropoint.api.event.EventListener;
+import me.thesilverecho.zeropoint.api.event.EventManager;
+import me.thesilverecho.zeropoint.api.event.events.MouseEvent;
 import me.thesilverecho.zeropoint.api.render.RenderUtil;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
+import org.lwjgl.glfw.GLFW;
 
 public class ButtonComponent extends IntractableComponent
 {
@@ -13,6 +17,7 @@ public class ButtonComponent extends IntractableComponent
 	private boolean resizeFromText;
 	private final float padding;
 	private CustomFont font = APIFonts.REGULAR.getFont();
+	private Runnable clickTask;
 
 	public ButtonComponent(int x, int y, int w, int h, ColourHolder colourHolder, String text, Component2D parent)
 	{
@@ -20,6 +25,8 @@ public class ButtonComponent extends IntractableComponent
 		padding = 3;
 		this.colourHolder = colourHolder;
 		this.text = text;
+		calculateSize();
+		EventManager.register(this);
 	}
 
 	@Override
@@ -55,5 +62,21 @@ public class ButtonComponent extends IntractableComponent
 		return this;
 	}
 
+	public ButtonComponent setClickTask(Runnable clickTask)
+	{
+		this.clickTask = clickTask;
+		return this;
+	}
+
+	@EventListener
+	public boolean mouseClicked(MouseEvent event)
+	{
+		if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT)
+		{
+			if (clickTask != null)
+				clickTask.run();
+		}
+		return super.mouseClicked(event.x(), event.y(), event.button());
+	}
 
 }

@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 
 public enum APIFonts
 {
-	COMIC("comic.ttf"), THIN("thin.ttf"), FREE_SANS("free_sans.ttf"), REGULAR("regular.ttf");
+	COMIC("comic.ttf"), ICON("zp-icons.ttf"), THIN("thin.ttf"), FREE_SANS("free_sans.ttf"), REGULAR("regular.ttf");
 	private final CustomFont font;
 	private static final String BASE_FONT_PATH = "fonts/";
 

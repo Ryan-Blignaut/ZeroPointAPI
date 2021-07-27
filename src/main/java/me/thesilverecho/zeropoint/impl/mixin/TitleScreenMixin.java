@@ -1,19 +1,16 @@
 package me.thesilverecho.zeropoint.impl.mixin;
 
-import me.thesilverecho.zeropoint.api.ui.widgets.Component2D;
+import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.impl.module.ScreenRender;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.ArrayList;
 
 @Mixin(TitleScreen.class)
 public abstract class TitleScreenMixin extends Screen
@@ -31,6 +28,21 @@ public abstract class TitleScreenMixin extends Screen
 	{
 		if (this.client == null)
 			return;
+
+//		try
+//		{
+//			final GLFWImage malloc = GLFWImage.malloc();
+//			final ByteBuffer pixels = Texture2D.readTextBuf(ApiIOUtils.readBytesToBuffer(client.getResourceManager().getResource(new Identifier(ZeroPointClient.MOD_ID, "textures/test.png")).getInputStream()));
+//			final ByteBuffer flip = pixels.flip();
+//			malloc.set(128, 128, flip);
+//			final long l = GLFW.glfwCreateCursor(malloc, 0, 0);
+//			GLFW.glfwSetCursor(client.getWindow().getHandle(), l);
+//
+//		} catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+
 //		ci.cancel();
 	}
 

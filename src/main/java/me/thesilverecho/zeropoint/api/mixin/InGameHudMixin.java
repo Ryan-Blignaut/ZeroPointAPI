@@ -1,10 +1,10 @@
 package me.thesilverecho.zeropoint.api.mixin;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
-import me.thesilverecho.zeropoint.impl.event.Render2dEvent;
-import me.thesilverecho.zeropoint.impl.event.RenderCrosshairEvent;
-import me.thesilverecho.zeropoint.impl.event.RenderHotbarEvent;
-import me.thesilverecho.zeropoint.impl.event.RenderScoreboardEvent;
+import me.thesilverecho.zeropoint.api.event.events.Render2dEvent;
+import me.thesilverecho.zeropoint.api.event.events.RenderCrosshairEvent;
+import me.thesilverecho.zeropoint.api.event.events.RenderHotbarEvent;
+import me.thesilverecho.zeropoint.api.event.events.RenderScoreboardEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.item.ItemRenderer;

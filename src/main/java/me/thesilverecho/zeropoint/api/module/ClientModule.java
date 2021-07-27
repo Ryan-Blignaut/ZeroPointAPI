@@ -28,7 +28,7 @@ public @interface ClientModule
 	boolean shouldDraw() default true;
 
 	/**
-	 * @return if a notification must be sent when the module is toggled
+	 * @return if renderer notification must be sent when the module is toggled
 	 */
 	boolean showToggleMsg() default false;
 

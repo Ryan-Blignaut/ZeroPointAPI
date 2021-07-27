@@ -3,8 +3,11 @@ package me.thesilverecho.zeropoint.api.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL12C.GL_UNPACK_IMAGE_HEIGHT;
@@ -50,6 +53,31 @@ public class Texture2D
 		glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), GL_UNSIGNED_BYTE, buffer);
 	}
 
+	public static Texture2D read(ByteBuffer byteBuffer)
+	{
+		return read(byteBuffer, Format.RGBA);
+	}
+
+	public static Texture2D read(ByteBuffer byteBuffer, Format format)
+	{
+		final MemoryStack stack = MemoryStack.stackPush();
+		final IntBuffer w = stack.mallocInt(1);
+		final IntBuffer h = stack.mallocInt(1);
+		final IntBuffer channels = stack.mallocInt(1);
+		final ByteBuffer imageFromMemory = STBImage.stbi_load_from_memory(byteBuffer, w, h, channels, format.channels);
+		if (imageFromMemory == null)
+			throw new RuntimeException("Failed to load image: ");
+		return new Texture2D(w.get(), h.get(), imageFromMemory, format);
+	}
+
+	public static ByteBuffer readTextBuf(ByteBuffer byteBuffer)
+	{
+		final MemoryStack stack = MemoryStack.stackPush();
+		final IntBuffer w = stack.mallocInt(1);
+		final IntBuffer h = stack.mallocInt(1);
+		final IntBuffer channels = stack.mallocInt(1);
+		return STBImage.stbi_load_from_memory(byteBuffer, w, h, channels, 4);
+	}
 
 	public void setWrap(int wrapS, int wrapT)
 	{
@@ -75,9 +103,12 @@ public class Texture2D
 
 	public enum Format
 	{
-		A,
-		RGB,
-		RGBA;
+		A(1),
+		RGB(3),
+		RGBA(4);
+		private final int channels;
+
+		Format(int channels) {this.channels = channels;}
 
 		public int toOpenGL()
 		{

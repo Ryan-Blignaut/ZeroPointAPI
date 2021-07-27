@@ -7,6 +7,7 @@ import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.module.SimpleModuleHolder;
 import me.thesilverecho.zeropoint.api.util.DynamicClassUtil;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
+import net.minecraft.client.render.RenderLayer;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public class ModuleManager
 	{
 		final ModuleManager instance = new ModuleManager();
 		instance.MODULE_CONFIG.register(instance);
-		DynamicClassUtil.getClasses("me.thesilverecho.zeropoint.impl", "module").forEach(clazzName ->
+		DynamicClassUtil.getClasses("me/thesilverecho/zeropoint/impl/module").forEach(clazzName ->
 				ReflectionUtil.getClassFromPath(clazzName, true).ifPresent(clazz ->
 				{
 					if (clazz.getSuperclass() == BaseModule.class)
