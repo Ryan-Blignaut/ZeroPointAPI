@@ -6,6 +6,7 @@
   "mixins": [
     "BlockEntityRenderDispatcherMixin",
     "ItemRendererMixin",
+    "SplashOverlayMixin",
     "TitleScreenMixin",
     "WorldRendererMixin"
   ],

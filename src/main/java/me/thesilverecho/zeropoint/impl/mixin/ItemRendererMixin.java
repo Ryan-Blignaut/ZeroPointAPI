@@ -1,5 +1,7 @@
 package me.thesilverecho.zeropoint.impl.mixin;
 
+import me.thesilverecho.zeropoint.api.event.EventManager;
+import me.thesilverecho.zeropoint.api.event.events.RenderItemEvent;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -15,21 +17,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemRenderer.class)
-public class ItemRendererMixin
+public abstract class ItemRendererMixin
 {
-	private static ItemStack stack;
+	private static final RenderItemEvent RENDER_ITEM_EVENT = new RenderItemEvent();
 
 	@Inject(method = "getDirectItemGlintConsumer", at = @At(value = "HEAD"), cancellable = true)
-	private static void render(VertexConsumerProvider vertexConsumerProvider, RenderLayer layer, boolean bl, boolean glint, CallbackInfoReturnable<VertexConsumer> cir)
+	private static void render(VertexConsumerProvider vertexConsumerProvider, RenderLayer layer, boolean solid, boolean glint, CallbackInfoReturnable<VertexConsumer> cir)
 	{
-//		if (stack.getItem() instanceof PotionItem)
-//			cir.setReturnValue(VertexConsumers.union(vertexConsumerProvider.getBuffer(ModRenderLayer.POT_OVERLAY), vertexConsumerProvider.getBuffer(layer)));
+		EventManager.call(RENDER_ITEM_EVENT.setup(vertexConsumerProvider, layer, solid, glint, cir));
 	}
 
 
 	@Inject(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V", at = @At(value = "HEAD"), cancellable = true)
 	private void render(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model, CallbackInfo ci)
 	{
-		ItemRendererMixin.stack = stack;
+		RENDER_ITEM_EVENT.setTransformation(renderMode).setStack(stack);
 	}
 }

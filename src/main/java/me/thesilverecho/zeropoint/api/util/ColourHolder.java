@@ -25,4 +25,16 @@ public record ColourHolder(int red, int green, int blue, int alpha)
 		int alpha = (col >> 24) & 0xFF;
 		return new ColourHolder((col >> 16) & 0xFF, (col >> 8) & 0xFF, col & 0xFF, alpha == 0 ? 255 : alpha);
 	}
+
+
+	public static ColourHolder gradientColour(ColourHolder colourOne, ColourHolder colourTwo, GradientDirection direction)
+	{
+		return null;
+	}
+
+
+	public enum GradientDirection
+	{
+		LEFT_TO_RIGHT, RIGHT_TO_LEFT, TOP_TO_BOTTOM, BOTTOM_TO_TOP
+	}
 }

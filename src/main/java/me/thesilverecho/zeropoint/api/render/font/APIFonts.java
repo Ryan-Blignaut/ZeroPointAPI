@@ -5,17 +5,22 @@ import net.minecraft.util.Identifier;
 
 public enum APIFonts
 {
-	COMIC("comic.ttf"), ICON("zp-icons.ttf"), THIN("thin.ttf"), FREE_SANS("free_sans.ttf"), REGULAR("regular.ttf");
+	COMIC("comic.ttf"),
+	FREE_SANS("free_sans.ttf"),
+	ICON("zp-icons.ttf"),
+	REGULAR("regular.ttf"),
+	THIN("thin.ttf");
+
 	private final CustomFont font;
 	private static final String BASE_FONT_PATH = "fonts/";
 
 	APIFonts(String loc)
 	{
-		font = new CustomFont(new Identifier(ZeroPointClient.MOD_ID, BASE_FONT_PATH + loc));
+		this.font = new CustomFont(new Identifier(ZeroPointClient.MOD_ID, BASE_FONT_PATH + loc));
 	}
 
 	public CustomFont getFont()
 	{
-		return font;
+		return this.font;
 	}
 }

@@ -52,7 +52,6 @@ public abstract class TitleScreenMixin extends Screen
 	{
 		ci.cancel();
 		ScreenRender.render(matrixStack, this.width, this.height, mouseX, mouseY, delta);
-
 	}
 
 	@Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)

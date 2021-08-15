@@ -49,9 +49,9 @@ public class EnabledModulesDisplay extends BaseModule
 			font.render(matrixStack, "${#7EFC20}" + text, x, y);
 		});
 		framebuffer.unbind();
-		RenderUtil.setShader(APIShaders.MASK_SHADER.getShader());
-		RenderUtil.setShaderTexture(framebuffer.texture);
-		RenderUtil.postProcessText(framebuffer.texture);
+//		RenderUtil.setShader(APIShaders.MASK_SHADER.getShader());
+//		RenderUtil.setShaderTexture(framebuffer.texture);
+//		RenderUtil.postProcessText(framebuffer.texture);
 
 	}
 

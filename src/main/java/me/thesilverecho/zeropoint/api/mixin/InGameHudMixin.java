@@ -1,10 +1,7 @@
 package me.thesilverecho.zeropoint.api.mixin;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
-import me.thesilverecho.zeropoint.api.event.events.Render2dEvent;
-import me.thesilverecho.zeropoint.api.event.events.RenderCrosshairEvent;
-import me.thesilverecho.zeropoint.api.event.events.RenderHotbarEvent;
-import me.thesilverecho.zeropoint.api.event.events.RenderScoreboardEvent;
+import me.thesilverecho.zeropoint.api.event.events.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -37,6 +34,8 @@ public abstract class InGameHudMixin
 	@Inject(method = "renderScoreboardSidebar", at = @At(value = "HEAD"), cancellable = true)
 	private void renderScoreboardSidebar(MatrixStack matrixStack, ScoreboardObjective scoreboardObjective, CallbackInfo ci)
 	{
+		EventManager.call(new RenderUIEvent.ScoreBoard(matrixStack, scoreboardObjective, ci));
+
 		EventManager.call(new RenderScoreboardEvent(matrixStack, scoreboardObjective, ci));
 	}
 

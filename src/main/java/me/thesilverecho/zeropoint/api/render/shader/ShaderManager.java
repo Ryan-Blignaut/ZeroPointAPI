@@ -63,6 +63,6 @@ public class ShaderManager extends ManagerBase<Shader>
 
 	private static void loadShaders(List<Shader> shaders, ResourceManager manager)
 	{
-		shaders.forEach(shader -> shader.create(manager));
+//		shaders.forEach(shader -> shader.create(manager));
 	}
 }

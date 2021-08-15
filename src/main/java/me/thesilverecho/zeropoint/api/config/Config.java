@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -67,8 +68,21 @@ public class Config
 	 */
 	public Config(Gson gson, String fileName)
 	{
+
+
 		this.gson = gson;
 		this.configFile = new File(MinecraftClient.getInstance().runDirectory, "Config" + File.separator + fileName + ".json");
+
+		/*try
+		{
+			final Path of = Path.of(configFile.getPath());
+			WatchService watchService = FileSystems.getDefault().newWatchService();
+			of.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}*/
 
 		if (!this.configFile.exists())
 		{

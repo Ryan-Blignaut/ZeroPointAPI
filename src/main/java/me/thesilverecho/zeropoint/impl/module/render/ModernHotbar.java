@@ -25,7 +25,7 @@ import org.lwjgl.glfw.GLFW;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@ClientModule(name = "Modern Hotbar", active = true, keyBinding = GLFW.GLFW_KEY_F)
+@ClientModule(name = "Modern Hotbar", active = true, keyBinding = GLFW.GLFW_KEY_H)
 public class ModernHotbar extends BaseModule
 {
 	public ModernHotbar(@Nullable Boolean active, @Nullable Integer key)
@@ -39,7 +39,7 @@ public class ModernHotbar extends BaseModule
 		event.ci().cancel();
 		final MatrixStack matrixStack = event.matrixStack();
 
-		RenderUtil.setShader(APIShaders.RECT.getShader());
+		RenderUtil.setShader(APIShaders.RECTANGLE_TEXTURE_SHADER.getShader());
 		final int height = event.scaledHeight();
 		final int width = event.scaledWidth();
 		RenderUtil.setPostShaderBind(shader ->

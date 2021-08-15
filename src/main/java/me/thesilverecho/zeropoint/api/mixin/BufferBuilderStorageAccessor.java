@@ -1,7 +1,6 @@
-/*
-package me.thesilverecho.zeropoint.impl.mixin;
+package me.thesilverecho.zeropoint.api.mixin;
 
-import me.thesilverecho.zeropoint.impl.render.ModRenderLayer;
+import me.thesilverecho.zeropoint.api.render.layer.ModRenderLayer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.RenderLayer;
@@ -15,8 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.SortedMap;
 
 @Mixin(BufferBuilderStorage.class)
-public class BufferBuilderStorageMixin
+public abstract class BufferBuilderStorageAccessor
 {
+//	@Accessor
+//	SortedMap<RenderLayer, BufferBuilder> getEntityBuilders();
+
+
 	@Shadow
 	@Final
 	private SortedMap<RenderLayer, BufferBuilder> entityBuilders;
@@ -24,9 +27,7 @@ public class BufferBuilderStorageMixin
 	@Inject(method = "<init>", at = @At("TAIL"))
 	protected void add(CallbackInfo ci)
 	{
-//		entityBuilders.put(ModRenderLayer.POT_OVERLAY, new BufferBuilder(ModRenderLayer.POT_OVERLAY.getExpectedBufferSize()));
-//		entityBuilders.put(ModRenderLayer.EXTREME_OVER, new BufferBuilder(ModRenderLayer.EXTREME_OVER.getExpectedBufferSize()));
+		ModRenderLayer.ALL_LAYERS.forEach(modRenderLayer -> entityBuilders.put(modRenderLayer, new BufferBuilder(modRenderLayer.getExpectedBufferSize())));
 	}
 
 }
-*/

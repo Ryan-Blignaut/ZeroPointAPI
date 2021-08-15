@@ -1,6 +1,9 @@
 package me.thesilverecho.zeropoint.api.util;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.lwjgl.BufferUtils;
@@ -12,6 +15,20 @@ import java.util.Optional;
 
 public class ApiIOUtils
 {
+	private static final DefaultResourcePack PACK = MinecraftClient.getInstance().getResourcePackProvider().getPack();
+
+	public static Optional<InputStream> getResourceFromClientPack(Identifier location)
+	{
+		try
+		{
+			return Optional.of(PACK.open(ResourceType.CLIENT_RESOURCES, location));
+		} catch (IOException e)
+		{
+			ZeroPointApiLogger.error("Error finding resource: " + location, e);
+		}
+		return Optional.empty();
+	}
+
 	/**
 	 * @param manager
 	 * @param identifier

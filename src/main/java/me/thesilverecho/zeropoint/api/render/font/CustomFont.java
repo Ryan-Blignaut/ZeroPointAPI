@@ -6,7 +6,6 @@ import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
 import org.lwjgl.BufferUtils;
@@ -15,31 +14,66 @@ import org.lwjgl.stb.STBTTPackContext;
 import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
 
 import static org.lwjgl.stb.STBTruetype.*;
 
 public class CustomFont
 {
-	private final Identifier identifier;
+	//	Map containing all loaded fonts.
+	private static final HashMap<Identifier, CustomFont> LOADED_FONTS = new HashMap<>();
+
+	private final Identifier customFont;
 	private int height;
-	private float scale;
-	private float fontScale = 1;
-	private float ascent;
+	private float scale, fontScale = 1, ascent;
 	public Texture2D texture;
 	private GlyphInfo[] glyphs;
 	final ColourHolder[] cols = new ColourHolder[4];
 
+
+	/**
+	 * Constructor taking in an identifier of where the font file is located.
+	 *
+	 * @param identifier where the font is located.
+	 */
 	public CustomFont(Identifier identifier)
 	{
-		this.identifier = identifier;
+		this.customFont = identifier;
 	}
 
-	public void init(ResourceManager manager)
+	/*public void init(ResourceManager manager)
 	{
-		ApiIOUtils.getResourceByID(manager, identifier).ifPresent(stream -> create(ApiIOUtils.readBytesToBuffer(stream), 18));
+		ApiIOUtils.getResourceByID(manager, customFont).ifPresent(stream -> create(ApiIOUtils.readBytesToBuffer(stream), 18));
+	}*/
+
+
+	/**
+	 * Gets the font or creates if not already created.
+	 *
+	 * @return Font or newly created font.
+	 */
+	public CustomFont getFontLazy()
+	{
+		return LOADED_FONTS.computeIfAbsent(customFont, identifier ->
+		{
+			ApiIOUtils.getResourceFromClientPack(identifier).ifPresent(this::loadFont);
+			return this;
+		});
 	}
+
+	/**
+	 * Loads font from input stream.
+	 *
+	 * @param inputStream where to load font from.
+	 */
+	public void loadFont(InputStream inputStream)
+	{
+		this.create(ApiIOUtils.readBytesToBuffer(inputStream), 18);
+	}
+
 
 	public void create(ByteBuffer buffer, int height)
 	{
@@ -56,7 +90,7 @@ public class CustomFont
 		stbtt_PackFontRange(stbttPackContext, buffer, 0, height, 32, packedChars);
 		stbtt_PackEnd(stbttPackContext);
 
-		texture = new Texture2D(2048, 2048, byteBuffer, Texture2D.Format.A);
+		this.texture = new Texture2D(2048, 2048, byteBuffer, Texture2D.Format.A);
 
 		this.scale = stbtt_ScaleForPixelHeight(fontInfo, height);
 
@@ -168,7 +202,7 @@ public class CustomFont
 			} else
 			{
 				final GlyphInfo glyph = glyphs[character - 32];
-				RenderUtil.setShader(outline ? APIShaders.SHADE_MASK_SHADER.getShader() : APIShaders.MASK_SHADER.getShader());
+				RenderUtil.setShader(APIShaders.TEXT_MASK_TEXTURE.getShader());
 				RenderUtil.setShaderTexture(texture.getID());
 				RenderUtil.setPostShaderBind(shader -> shader.setArgument("InSize", new Vec2f(glyph.u1(), glyph.v1())));
 				RenderUtil.quadTexture(matrixStack,

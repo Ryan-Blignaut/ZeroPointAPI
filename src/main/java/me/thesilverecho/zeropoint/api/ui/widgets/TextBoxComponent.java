@@ -96,7 +96,7 @@ public class TextBoxComponent extends IntractableComponent
 	@EventListener
 	public boolean keyPressed(ScreenKeyboardEvent event)
 	{
-		System.out.println(event);
+//		System.out.println(event);
 		if (!focus) return false;
 		if (event.keyCode() == GLFW.GLFW_KEY_BACKSPACE)
 		{

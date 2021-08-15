@@ -4,6 +4,7 @@
   "package": "me.thesilverecho.zeropoint.api.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "BufferBuilderStorageAccessor",
     "InGameHudMixin",
     "KeyboardMixin",
     "LivingEntityRendererMixin",

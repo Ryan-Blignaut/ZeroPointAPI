@@ -3,19 +3,28 @@ package me.thesilverecho.zeropoint.api.render.shader;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import net.minecraft.util.Identifier;
 
-import java.util.function.BiFunction;
-
 /**
  * Shaders for internal use
  */
 public enum APIShaders
 {
-	MASK_SHADER("mask_text.frag", true), RECT("rect.frag", false), ROUND_RECT("round_rect.frag", false), SHADE_MASK_SHADER("shade_mask_text.frag", "shade_text.vert"), TEXT_SHADER("rect_text.frag", true);
+	RECTANGLE_SHADER("rectangle.frag", false),
+	RECTANGLE_TEXTURE_SHADER("rectangle_texture.frag", true),
+
+	ROUND_RECTANGLE_SHADER("round_rectangle.frag", false),
+	ROUND_RECTANGLE_TEXTURE_SHADER("round_rectangle_texture.frag", true),
+
+	TEST_TEXTURE_SHADER("test.frag", true),
+
+	CIRCLE_SHADER("circle.frag", false),
+	CIRCLE_TEXTURE_SHADER("circle_texture.frag", true),
+
+	TEXT_MASK_TEXTURE("text_mask_texture.frag", true),
+	TEXT_MASK_TEXTURE_V2("text_mask_texturev2.frag", true);
 	private final Shader shader;
 	private static final String BASE_SHADER_PATH = "shaders/";
 	private static final String DEFAULT_COL_VERT_PATH = "colour.vert";
 	private static final String DEFAULT_TEXT_VERT_PATH = "colour_text.vert";
-//	BiFunction<Identifier, Identifier, Shader> customCreate;
 
 	APIShaders(String frag, boolean textured)
 	{
@@ -29,6 +38,6 @@ public enum APIShaders
 
 	public Shader getShader()
 	{
-		return shader;
+		return shader.getShader();
 	}
 }
