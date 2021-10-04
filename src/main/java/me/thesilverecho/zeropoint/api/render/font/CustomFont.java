@@ -1,13 +1,13 @@
 package me.thesilverecho.zeropoint.api.render.font;
 
-import me.thesilverecho.zeropoint.api.render.RenderUtil;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.Texture2D;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackContext;
@@ -17,6 +17,7 @@ import org.lwjgl.system.MemoryStack;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.lwjgl.stb.STBTruetype.*;
@@ -31,7 +32,7 @@ public class CustomFont
 	private float scale, fontScale = 1, ascent;
 	public Texture2D texture;
 	private GlyphInfo[] glyphs;
-	final ColourHolder[] cols = new ColourHolder[4];
+	final ColourHolder[] vertexColours = new ColourHolder[4];
 
 
 	/**
@@ -73,7 +74,6 @@ public class CustomFont
 	{
 		this.create(ApiIOUtils.readBytesToBuffer(inputStream), 18);
 	}
-
 
 	public void create(ByteBuffer buffer, int height)
 	{
@@ -122,17 +122,17 @@ public class CustomFont
 
 	public float render(MatrixStack matrixStack, String string, float x, float y)
 	{
-		return render(matrixStack, string, new ColourHolder(255, 255, 255, 255), x, y, fontScale, false);
+		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, fontScale, false);
 	}
 
 	public float render(MatrixStack matrixStack, String string, float x, float y, float scale)
 	{
-		return render(matrixStack, string, new ColourHolder(255, 255, 255, 255), x, y, scale, false);
+		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, false);
 	}
 
 	public float render(MatrixStack matrixStack, String string, float x, float y, float scale, boolean outline)
 	{
-		return render(matrixStack, string, new ColourHolder(255, 255, 255, 255), x, y, scale, outline);
+		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, outline);
 	}
 
 	public float getHeight()
@@ -171,41 +171,58 @@ public class CustomFont
 		return x;
 	}
 
-	public float render(MatrixStack matrixStack, String string, ColourHolder colourHolder, float x, float y, float scale, boolean outline)
+	public float render(Matrix4f matrixStack, String string, ColourHolder defaultColour, float x, float y, float scale, boolean outline)
 	{
-
+//		Fills the vertex colours with the default colour every time a new string is rendered.
+		Arrays.fill(vertexColours, defaultColour);
 		y += ascent * this.scale * scale;
 		for (int i = 0; i < string.length(); i++)
 		{
+//			Get the character from the string.
 			int character = string.charAt(i);
+//			If the character is out of bounds replace it with default.
 			if (character < 32 || character > 256) character = 32;
-			if (character == 36 && i + 1 < string.length() && string.charAt(i + 1) == 123)
+//			Look for custom formatting from the string ${format type}.
+			if (character == '$' && i + 1 < string.length() && string.charAt(i + 1) == '{')
 			{
-				final int i1 = string.indexOf("${", i);
-				final int i2 = string.indexOf("}", i);
-				if (i1 != -1 && i2 != -1)
+				final int startOfFormatString = string.indexOf("${", i);
+				final int endOfFormatString = string.indexOf("}", i);
+//				Checks if the custom format string has a start and end.
+				if (startOfFormatString != -1 && endOfFormatString != -1)
 				{
-					final String substring = string.substring(i1 + 2, i2);
-
+//					Pulls out the string where containing the format options.
+					final String substring = string.substring(startOfFormatString + 2, endOfFormatString);
+//					Split custom options if possible.
 					final String[] split = substring.split(",");
+//					Apply colour to all
 					if (split.length > 1)
 					{
-						for (int j = 0; j < cols.length; j++)
-							if (j < split.length)
-								cols[j] = ColourHolder.decode(split[j]);
+//						When populating the vertex colour array it is essential to make sure that the size of the array is not exceeded.
+						for (int currentColourIndex = 0; currentColourIndex < vertexColours.length; currentColourIndex++)
+//							This ensures that if less than 4 colours are passed in. The default colour is used for the other vertices.
+							if (currentColourIndex < split.length)
+								vertexColours[currentColourIndex] = ColourHolder.decode(split[currentColourIndex]);
 							else
-								cols[j] = colourHolder;
+								vertexColours[currentColourIndex] = defaultColour;
 					} else
-						colourHolder = ColourHolder.decode(substring);
-					i += i2 - i1;
+					{
+						Arrays.fill(vertexColours, ColourHolder.decode(substring));
+//						defaultColour = ColourHolder.decode(substring);
+					}
+					i += endOfFormatString - startOfFormatString;
 				}
 			} else
 			{
+//				Resets any formatting after a space.
+				if (character == ' ')
+					Arrays.fill(vertexColours, defaultColour);
+
+
 				final GlyphInfo glyph = glyphs[character - 32];
-				RenderUtil.setShader(APIShaders.TEXT_MASK_TEXTURE.getShader());
-				RenderUtil.setShaderTexture(texture.getID());
-				RenderUtil.setPostShaderBind(shader -> shader.setArgument("InSize", new Vec2f(glyph.u1(), glyph.v1())));
-				RenderUtil.quadTexture(matrixStack,
+				RenderUtilV2.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
+				RenderUtilV2.setTextureId(texture.getID());
+
+				RenderUtilV2.quadTexture(matrixStack,
 						x + glyph.x() * scale,
 						y + glyph.y() * scale,
 						x + glyph.w() * scale,
@@ -214,10 +231,10 @@ public class CustomFont
 						glyph.v0(),
 						glyph.u1(),
 						glyph.v1(),
-						cols[0] == null ? colourHolder : cols[0],
-						cols[1] == null ? colourHolder : cols[1],
-						cols[2] == null ? colourHolder : cols[2],
-						cols[3] == null ? colourHolder : cols[3]);
+						vertexColours[0] == null ? defaultColour : vertexColours[0],
+						vertexColours[1] == null ? defaultColour : vertexColours[1],
+						vertexColours[2] == null ? defaultColour : vertexColours[2],
+						vertexColours[3] == null ? defaultColour : vertexColours[3]);
 //				RenderUtil.quadTexture(matrixStack, x + glyph.x() * scale, y + glyph.y() * scale, x + glyph.w() * scale, y + glyph.h() * scale, glyph.u0(), glyph.v0(), glyph.u1(), glyph.v1(), colourHolder);
 				x += glyph.xAdvance() * scale;
 			}

@@ -8,6 +8,7 @@ uniform mat4 ProjMat;
 
 out vec2 texCoord;
 out vec2 oneTexel;
+
 void main() {
 
     vec4 outPos = ProjMat * vec4(Position.xy, 0.0, 1.0);

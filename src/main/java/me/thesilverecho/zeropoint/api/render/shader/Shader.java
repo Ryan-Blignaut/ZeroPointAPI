@@ -1,10 +1,8 @@
 package me.thesilverecho.zeropoint.api.render.shader;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.DefaultResourcePack;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
@@ -14,11 +12,11 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -38,15 +36,19 @@ public class Shader
 
 	public Optional<String> getShaderString(Identifier location)
 	{
-		DefaultResourcePack defaultResourcePack = MinecraftClient.getInstance().getResourcePackProvider().getPack();
-		try (InputStream is = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, location))
+		AtomicReference<Optional<String>> optional = new AtomicReference<>(Optional.empty());
+		ApiIOUtils.getResourceFromClientPack(location).ifPresent(inputStream ->
 		{
-			return Optional.of(IOUtils.toString(is, StandardCharsets.UTF_8));
-		} catch (IOException ignored)
-		{
-			System.err.println("is not found");
-			return Optional.empty();
-		}
+			try
+			{
+				optional.set(Optional.of(IOUtils.toString(inputStream, StandardCharsets.UTF_8)));
+			} catch (IOException e)
+			{
+				ZeroPointApiLogger.error("Shader is not found at location: " + location, e);
+				optional.set(Optional.empty());
+			}
+		});
+		return optional.get();
 	}
 
 	private int genShader(int glFragmentShader, Identifier loc)
@@ -97,6 +99,7 @@ public class Shader
 
 	public Shader bind()
 	{
+		getShader();
 		glUseProgram(programId);
 		setArgument("ModelViewMat", RenderSystem.getModelViewMatrix());
 		setArgument("ProjMat", RenderSystem.getProjectionMatrix());
@@ -145,5 +148,4 @@ public class Shader
 			throw new UnsupportedOperationException("Failed to load data into shader: Unsupported data type.");
 
 	}
-
 }

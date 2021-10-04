@@ -1,3 +1,4 @@
+/*
 package me.thesilverecho.zeropoint.api.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -28,7 +29,9 @@ public class RenderUtil
 	private static int id = -1;
 	private static Consumer<Shader> postShaderBind;
 
-	/*-----------------------2D QUAD DRAW---------------------*/
+	*/
+/*-----------------------2D QUAD DRAW---------------------*//*
+
 
 	public static void rect(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder color)
 	{
@@ -150,7 +153,9 @@ public class RenderUtil
 	}
 
 
-	/*-----------------------3D DRAW---------------------*/
+	*/
+/*-----------------------3D DRAW---------------------*//*
+
 	public static void drawTextInWorld(BlockPos pos, String text)
 	{
 
@@ -254,3 +259,4 @@ public class RenderUtil
 		RenderUtil.zIndex = zIndex;
 	}
 }
+*/

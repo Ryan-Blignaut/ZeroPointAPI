@@ -1,6 +1,6 @@
 package me.thesilverecho.zeropoint.impl.render;
 
-import me.thesilverecho.zeropoint.api.render.RenderUtil;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.ui.APIScreen;
 import me.thesilverecho.zeropoint.api.ui.widgets.TextBoxComponent;
@@ -50,7 +50,7 @@ public class ConfigScreen extends APIScreen
 		final float topOfFrame = halfScaledHeight - winHeight / 2f;
 		final float sizeOfColumn = 80;
 
-		RenderUtil.roundRect(matrixStack, leftOfFrame, topOfFrame, halfScaledWidth + winWidth / 2f, halfScaledHeight + winHeight / 2f, 10, ColourHolder.decode("#272537"));
+		RenderUtilV2.roundRect(matrixStack, leftOfFrame, topOfFrame, halfScaledWidth + winWidth / 2f, halfScaledHeight + winHeight / 2f, 10, ColourHolder.decode("#272537"));
 		APIFonts.FREE_SANS.getFont().setFontScale((float) ((1 / scaleFactor) / 18 * 22)).render(matrixStack, "${#f8f8ff}ZERO-POINT", leftOfFrame + 10, topOfFrame + 8);
 		textBoxComponent.render(matrixStack, mouseX, mouseY, delta);
 		super.render(matrixStack, mouseX, mouseY, delta);

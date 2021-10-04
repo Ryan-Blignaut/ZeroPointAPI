@@ -19,7 +19,7 @@ public class Texture2D
 {
 	private int textureId = -1;
 
-	public void bindTexture()
+	private void bindTexture()
 	{
 		if (!RenderSystem.isOnRenderThreadOrInit())
 			RenderSystem.recordRenderCall(() -> GlStateManager._bindTexture(this.getID()));

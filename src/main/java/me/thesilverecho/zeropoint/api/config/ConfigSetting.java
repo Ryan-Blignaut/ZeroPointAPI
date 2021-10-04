@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that renderer method declaration is intended to be dynamically called
+ * Indicates that renderer method declaration is intended to be dynamically called.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

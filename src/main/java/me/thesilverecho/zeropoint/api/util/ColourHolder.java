@@ -5,6 +5,8 @@ package me.thesilverecho.zeropoint.api.util;
  */
 public record ColourHolder(int red, int green, int blue, int alpha)
 {
+	public final static ColourHolder FULL = new ColourHolder(255, 255, 255, 255);
+
 	/**
 	 * Creates an instance of renderer {@link ColourHolder} using the string provided.
 	 *

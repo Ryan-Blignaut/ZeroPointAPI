@@ -1,3 +1,4 @@
+/*
 package me.thesilverecho.zeropoint.api.cosmetics;
 
 import net.minecraft.client.model.*;
@@ -42,3 +43,4 @@ public class Cape extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEnti
 
 	}
 }
+*/

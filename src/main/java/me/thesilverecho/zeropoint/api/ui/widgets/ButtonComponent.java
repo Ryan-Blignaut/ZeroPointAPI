@@ -3,7 +3,7 @@ package me.thesilverecho.zeropoint.api.ui.widgets;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.event.events.MouseEvent;
-import me.thesilverecho.zeropoint.api.render.RenderUtil;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
@@ -46,7 +46,7 @@ public class ButtonComponent extends IntractableComponent
 	@Override
 	public void renderComp(MatrixStack matrices, float mouseX, float mouseY, double delta)
 	{
-		RenderUtil.roundRect(matrices, x, y, x + w, y + w, 3, colourHolder);
+		RenderUtilV2.roundRect(matrices, x, y, x + w, y + w, 3, colourHolder);
 		font.render(matrices, text, x + padding, y + padding);
 	}
 

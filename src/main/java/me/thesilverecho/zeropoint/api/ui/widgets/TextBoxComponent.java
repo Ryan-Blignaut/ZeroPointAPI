@@ -5,7 +5,7 @@ import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.event.events.MouseEvent;
 import me.thesilverecho.zeropoint.api.event.events.ScreenCharEvent;
 import me.thesilverecho.zeropoint.api.event.events.ScreenKeyboardEvent;
-import me.thesilverecho.zeropoint.api.render.RenderUtil;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
@@ -43,7 +43,7 @@ public class TextBoxComponent extends IntractableComponent
 			//Render cursor blinker
 			final float width = font.getWidth(text.substring(0, caretPos));
 //			if (delta >= 0.1)
-			RenderUtil.rect(matrices, x + width, y + padding, x + width + 3, y + padding + font.getHeight(), ColourHolder.decode("#EDDDBC"));
+			RenderUtilV2.rectangle(matrices, x + width, y + padding, x + width + 3, y + padding + font.getHeight(), ColourHolder.decode("#EDDDBC"));
 		}
 		//No text show prompt text
 		if (text.isEmpty() && !focus)

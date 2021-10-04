@@ -1,25 +1,22 @@
 package me.thesilverecho.zeropoint.api.render.layer;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.thesilverecho.zeropoint.api.render.RenderUtil;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL43;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3f;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -28,24 +25,32 @@ import java.util.function.BiFunction;
 public class ModRenderLayer extends RenderLayer
 {
 	public static final ArrayList<ModRenderLayer> ALL_LAYERS = new ArrayList<>();
-	public static final RenderLayer POT_OVERLAY = basic("glint_direct", ModMultiPhaseParameters.builder().shader(DIRECT_GLINT_SHADER).texture(new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false)).writeMaskState(COLOR_MASK).cull(ENABLE_CULLING).depthTest(LEQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(GLINT_TEXTURING).build(false));
-	public static final RenderLayer RENDER_LAYER = of("sword_test", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 256, ModMultiPhaseParameters.builder().shader(POSITION_TEXTURE_SHADER).texture(new ModRenderPhase.Texture(new Identifier(ZeroPointClient.MOD_ID, "textures/bg.png"), true, false)).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).build(false));
-	public static final RenderLayer POT_OVERLAY2;
+	public static final RenderLayer POT_OVERLAY;
 
 	static
 	{
-		final ModRenderPhase.Texture texture = new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false);
-		POT_OVERLAY2 = basic("test", ModMultiPhaseParameters.builder().shader(RenderPhase.POSITION_COLOR_TEXTURE_SHADER).modShader(new ModRenderPhase.ModShader(APIShaders.TEST_TEXTURE_SHADER.getShader(), shader ->
-				texture.getId().ifPresent(identifier ->
-				{
-					RenderUtil.setShaderTexture(identifier);
-					TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-					AbstractTexture abstractTexture = textureManager.getTexture(identifier);
-					GlStateManager._bindTexture(abstractTexture.getGlId());
-					GL20.glUniform1i(2, 0);
-					RenderSystem.activeTexture(GL43.GL_TEXTURE0);
-				}))).texture(texture).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).build(false));
+		final Texturing glintTexturing = new RenderPhase.Texturing("glint_texturing", () ->
+		{
+//			RenderSystem.setShaderColor(255, 0, 0, 255);
+			long l = Util.getMeasuringTimeMs() * 8L;
+			float f = (float) (l % 110000L) / 110000.0F;
+			float g = (float) (l % 30000L) / 30000.0F;
+			Matrix4f matrix4f = Matrix4f.translate(-f, -g, 0.0F);
+			matrix4f.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(10.0F));
+			matrix4f.multiply(Matrix4f.scale(8, 8, 8));
+			RenderSystem.setTextureMatrix(matrix4f);
+		}, RenderSystem::resetTextureMatrix);
+		POT_OVERLAY = basic("glint_direct", ModMultiPhaseParameters.builder().shader(DIRECT_GLINT_SHADER).texture(new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false)).writeMaskState(COLOR_MASK).cull(ENABLE_CULLING).depthTest(LEQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(glintTexturing).build(false));
 	}
+
+	public static final RenderLayer RENDER_LAYER = of("sword_test", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 256, ModMultiPhaseParameters.builder().shader(POSITION_TEXTURE_SHADER).texture(new ModRenderPhase.Texture(new Identifier(ZeroPointClient.MOD_ID, "textures/bg.png"), true, false)).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).build(false));
+	public static final RenderLayer POT_OVERLAY2 = basic("test", ModMultiPhaseParameters.builder().modShader(new ModRenderPhase.ModShader(APIShaders.RECTANGLE_TEXTURE_SHADER.getShader(), shader ->
+			new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false).getId().ifPresent(identifier ->
+			{
+//				RenderUtilV2.setTextureFromLocation(identifier);
+				shader.setArgument("u_Radius", new Vec2f(0, 0));
+				RenderUtilV2.applyTextureToShader(shader);
+			}))).texture(new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false)).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).build(false));
 
 	public static ModRenderLayer.ModMultiPhase basic(String name, ModMultiPhaseParameters parameters)
 	{

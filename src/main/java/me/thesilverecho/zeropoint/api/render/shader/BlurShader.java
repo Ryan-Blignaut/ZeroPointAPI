@@ -22,7 +22,7 @@ public class BlurShader extends PostProcessShader
 	}
 
 	@Override
-	protected void applyExtraUniforms()
+	public void applyExtraUniforms()
 	{
 		GL20.glUniform1f(1, radius);
 		GL20.glUniform2f(2, dir.x, dir.y);

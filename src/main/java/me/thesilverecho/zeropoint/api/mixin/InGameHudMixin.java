@@ -40,10 +40,11 @@ public abstract class InGameHudMixin
 	}
 
 	@Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
-	private void onDraw1(MatrixStack matrixStack, float tickDelta, CallbackInfo ci)
+	private void renderScreen(MatrixStack matrixStack, float tickDelta, CallbackInfo ci)
 	{
 		if (MinecraftClient.getInstance().options.debugEnabled)
 			return;
+
 		EventManager.call(new Render2dEvent(matrixStack, tickDelta, scaledWidth, scaledHeight, ci));
 	}
 

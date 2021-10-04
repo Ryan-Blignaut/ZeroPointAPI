@@ -2,10 +2,11 @@ package me.thesilverecho.zeropoint.api.render.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.SimpleFramebuffer;
-import net.minecraft.client.render.OutlineVertexConsumerProvider;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
@@ -43,7 +44,9 @@ public class PostProcessShader extends Shader
 		float g = (float) output.textureHeight;
 		RenderSystem.viewport(0, 0, (int) f, (int) g);
 		glUseProgram(programId);
-		setArgument("ProjMat", Matrix4f.projectionMatrix(0.0F, (float) input.textureWidth, (float) input.textureHeight, 0.0F, 0.1F, 1000.0F));
+		setArgument("ProjMat", Matrix4f.projectionMatrix((float) input.textureWidth, (float) (-input.textureHeight), 1000.0F, 3000.0F));
+
+//		setArgument("ProjMat", Matrix4f.projectionMatrix(0.0F, (float) input.textureWidth, (float) input.textureHeight, 0.0F, 0.1F, 1000.0F));
 		GlStateManager._bindTexture(input.getColorAttachment());
 		GL20.glUniform1i(0, 0);
 		RenderSystem.activeTexture(GL43.GL_TEXTURE0);
@@ -54,6 +57,25 @@ public class PostProcessShader extends Shader
 		RenderSystem.depthFunc(519);
 		return this;
 	}
+
+
+	public void drawInternal()
+	{
+		this.bind();
+		float f = (float) output.textureWidth;
+		float g = (float) output.textureHeight;
+		Tessellator tessellator = RenderSystem.renderThreadTesselator();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		RenderSystem.depthFunc(519);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+		bufferBuilder.vertex(0.0D, 0.0D, 500.0D).next();
+		bufferBuilder.vertex((double) f, 0.0D, 500.0D).next();
+		bufferBuilder.vertex((double) f, (double) g, 500.0D).next();
+		bufferBuilder.vertex(0.0D, (double) g, 500.0D).next();
+		bufferBuilder.end();
+		this.unBind();
+	}
+
 
 	protected void applyExtraUniforms()
 	{

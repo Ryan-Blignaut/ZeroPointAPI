@@ -7,7 +7,6 @@ import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.module.SimpleModuleHolder;
 import me.thesilverecho.zeropoint.api.util.DynamicClassUtil;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
-import net.minecraft.client.render.RenderLayer;
 
 import java.util.ArrayList;
 import java.util.Optional;

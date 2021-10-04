@@ -22,5 +22,5 @@ public class MainGuiHud extends BaseModule
 
 	@Override
 	protected void runToggleActions()
-	{ }
+	{}
 }

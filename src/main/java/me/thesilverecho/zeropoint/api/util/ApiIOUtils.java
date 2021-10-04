@@ -15,13 +15,23 @@ import java.util.Optional;
 
 public class ApiIOUtils
 {
-	private static final DefaultResourcePack PACK = MinecraftClient.getInstance().getResourcePackProvider().getPack();
+
 
 	public static Optional<InputStream> getResourceFromClientPack(Identifier location)
 	{
+//		final DefaultResourcePack PACK = MinecraftClient.getInstance().getResourcePackProvider().getPack();
+//		try
+//		{
+//			return Optional.of(PACK.open(ResourceType.CLIENT_RESOURCES, location));
+//		} catch (IOException e)
+//		{
+//			ZeroPointApiLogger.error("Error finding resource: " + location, e);
+//		}
+
 		try
 		{
-			return Optional.of(PACK.open(ResourceType.CLIENT_RESOURCES, location));
+			InputStream inputStream = MinecraftClient.getInstance().getResourceManager().getResource(location).getInputStream();
+			return Optional.of(inputStream);
 		} catch (IOException e)
 		{
 			ZeroPointApiLogger.error("Error finding resource: " + location, e);

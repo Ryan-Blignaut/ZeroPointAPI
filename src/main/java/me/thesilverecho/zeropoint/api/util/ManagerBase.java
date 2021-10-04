@@ -16,6 +16,7 @@ public abstract class ManagerBase<T>
 		this.name = name;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <Q extends T> Q getClassCacheMap(Class<Q> clazz)
 	{
 		return (Q) classCacheMap.computeIfAbsent(clazz, this::apply);

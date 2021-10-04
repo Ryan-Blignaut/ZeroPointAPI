@@ -23,7 +23,7 @@ public abstract class BlockEntityRenderDispatcherMixin
 	public abstract <E extends BlockEntity> BlockEntityRenderer<E> get(E blockEntity);
 
 	@Shadow
-	private static void runReported(BlockEntity blockEntity, Runnable runnable) { }
+	private static void runReported(BlockEntity blockEntity, Runnable runnable) {}
 
 	@Shadow public Camera camera;
 

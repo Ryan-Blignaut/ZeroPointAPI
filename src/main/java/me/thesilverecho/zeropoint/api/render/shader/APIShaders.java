@@ -8,27 +8,39 @@ import net.minecraft.util.Identifier;
  */
 public enum APIShaders
 {
-	RECTANGLE_SHADER("rectangle.frag", false),
-	RECTANGLE_TEXTURE_SHADER("rectangle_texture.frag", true),
+	//  BASIC SHADERS
+	RECTANGLE_SHADER("rectangle.frag"),
+	ROUND_RECTANGLE_SHADER("round_rectangle.frag"),
+	CIRCLE_SHADER("circle.frag"),
+	HEXAGON_SHADER("hexagon.frag"),
+	BEZIER_SHADER("bezier.frag"),
 
-	ROUND_RECTANGLE_SHADER("round_rectangle.frag", false),
-	ROUND_RECTANGLE_TEXTURE_SHADER("round_rectangle_texture.frag", true),
+	//  TEXTURE SHADERS
+	RECTANGLE_TEXTURE_SHADER("rectangle_texture.frag", false),
+	ROUND_RECTANGLE_TEXTURE_SHADER("round_rectangle_texture.frag", false),
+	CIRCLE_TEXTURE_SHADER("circle_texture.frag", false),
 
-	TEST_TEXTURE_SHADER("test.frag", true),
+	FONT_MASK_TEXTURE("text_mask_texture.frag", false),
 
-	CIRCLE_SHADER("circle.frag", false),
-	CIRCLE_TEXTURE_SHADER("circle_texture.frag", true),
+	//	POST SHADERS
+	BLUR_RECTANGLE_SHADER("blur.frag", true);
 
-	TEXT_MASK_TEXTURE("text_mask_texture.frag", true),
-	TEXT_MASK_TEXTURE_V2("text_mask_texturev2.frag", true);
 	private final Shader shader;
 	private static final String BASE_SHADER_PATH = "shaders/";
 	private static final String DEFAULT_COL_VERT_PATH = "colour.vert";
-	private static final String DEFAULT_TEXT_VERT_PATH = "colour_text.vert";
+	private static final String DEFAULT_TEXTURE_VERT_PATH = "colour_texture.vert";
+	private static final String DEFAULT_POST_TEXTURE_VERT_PATH = "post_process_texture.vert";
 
-	APIShaders(String frag, boolean textured)
+
+	APIShaders(String frag)
 	{
-		this(frag, textured ? DEFAULT_TEXT_VERT_PATH : DEFAULT_COL_VERT_PATH);
+		this(frag, DEFAULT_COL_VERT_PATH);
+	}
+
+
+	APIShaders(String frag, boolean post)
+	{
+		this(frag, post ? DEFAULT_POST_TEXTURE_VERT_PATH : DEFAULT_TEXTURE_VERT_PATH);
 	}
 
 	APIShaders(String frag, String vert)
@@ -38,6 +50,6 @@ public enum APIShaders
 
 	public Shader getShader()
 	{
-		return shader.getShader();
+		return shader;
 	}
 }

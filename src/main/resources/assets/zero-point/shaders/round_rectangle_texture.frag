@@ -2,9 +2,9 @@
 
 precision highp float;
 
-layout(location = 0) uniform vec2 u_Radius;
-layout(location = 1) uniform vec4 u_InnerRect;
-layout(location = 2) uniform sampler2D u_Sampler;
+uniform vec2 u_Radius;
+uniform vec4 u_InnerRect;
+uniform sampler2D u_Texture;
 
 smooth in vec2 position;
 smooth in vec4 vertexColor;
@@ -27,5 +27,5 @@ void main() {
 
     float a = 1.0 - smoothstep(-u_Radius.y, 0.0, v);
 
-    fragColor = texture(u_Sampler, text) * vec4(1.0, 1.0, 1.0, a);
+    fragColor = texture(u_Texture, text) * vec4(1.0, 1.0, 1.0, a);
 }

@@ -21,6 +21,6 @@ public enum APIFonts
 
 	public CustomFont getFont()
 	{
-		return this.font;
+		return this.font.getFontLazy();
 	}
 }

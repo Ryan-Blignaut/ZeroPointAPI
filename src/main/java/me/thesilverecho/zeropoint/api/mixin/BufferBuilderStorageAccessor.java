@@ -16,9 +16,6 @@ import java.util.SortedMap;
 @Mixin(BufferBuilderStorage.class)
 public abstract class BufferBuilderStorageAccessor
 {
-//	@Accessor
-//	SortedMap<RenderLayer, BufferBuilder> getEntityBuilders();
-
 
 	@Shadow
 	@Final

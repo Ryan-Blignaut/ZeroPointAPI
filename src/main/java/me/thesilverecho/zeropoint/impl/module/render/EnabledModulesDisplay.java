@@ -1,15 +1,14 @@
 package me.thesilverecho.zeropoint.impl.module.render;
 
 import me.thesilverecho.zeropoint.api.event.EventListener;
+import me.thesilverecho.zeropoint.api.event.events.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.Framebuffer;
-import me.thesilverecho.zeropoint.api.render.RenderUtil;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
-import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
-import me.thesilverecho.zeropoint.api.event.events.Render2dEvent;
 import net.minecraft.client.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -20,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ClientModule(name = "Enabled modules", active = true, keyBinding = GLFW.GLFW_KEY_R)
 public class EnabledModulesDisplay extends BaseModule
 {
-	private float scale = 0.5f;
+	private final float scale = 0.5f;
 
 	public EnabledModulesDisplay(@Nullable Boolean active, @Nullable Integer key)
 	{
@@ -45,7 +44,7 @@ public class EnabledModulesDisplay extends BaseModule
 			final float x = event.scaledWidth() - width;
 			final float y = yPos.getAndAdd((int) (font.getHeight()));
 			font.render(matrixStack, "1", 1, 1);
-			RenderUtil.rect(matrixStack, x, y, event.scaledWidth(), yPos.get(), new ColourHolder(50, 50, 50, 180));
+			RenderUtilV2.rectangle(matrixStack, x, y, event.scaledWidth(), yPos.get(), new ColourHolder(50, 50, 50, 180));
 			font.render(matrixStack, "${#7EFC20}" + text, x, y);
 		});
 		framebuffer.unbind();
