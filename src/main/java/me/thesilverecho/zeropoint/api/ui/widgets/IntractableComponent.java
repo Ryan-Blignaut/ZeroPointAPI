@@ -1,6 +1,6 @@
 package me.thesilverecho.zeropoint.api.ui.widgets;
 
-public class IntractableComponent extends Component2D
+public abstract class IntractableComponent extends Component2D
 {
 	public IntractableComponent(float x, float y, float w, float h, Component2D parent)
 	{

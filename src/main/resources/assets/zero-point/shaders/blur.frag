@@ -10,9 +10,9 @@ in vec2 oneTexel;
 out vec4 fragColor;
 
 void main() {
-    vec3 finVar = vec3(0.0);
+   /* vec3 finVar = vec3(0.0);
     for (float i = -u_Radius; i <= u_Radius; i += 2.0) {
         finVar += texture(u_Texture, texCoord + oneTexel * (i + 0.5) * u_Direction).rgb;
-    }
-    fragColor = vec4(finVar / (u_Radius + 1.0), 1.0);
+    }*/
+    fragColor = vec4(1.0,1.0,0.6,1.0);//vec4(finVar / (u_Radius + 1.0), 1.0);
 }

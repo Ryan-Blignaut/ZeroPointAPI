@@ -13,18 +13,12 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
 import net.minecraft.item.SwordItem;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @ClientModule(name = "Render Layer Test", active = true, keyBinding = GLFW.GLFW_KEY_RIGHT_CONTROL)
 public class RenderLayerTest extends BaseModule
 {
-	public RenderLayerTest(@Nullable Boolean active, @Nullable Integer key)
-	{
-		super(active, key);
-	}
-
 	@EventListener
 	public void renderEvent(RenderItemEvent event)
 	{
@@ -36,7 +30,7 @@ public class RenderLayerTest extends BaseModule
 		final ModelTransformation.Mode transformation = event.getTransformation();
 		if (stack.getItem() instanceof SwordItem)
 		{
-			final VertexConsumer union = VertexConsumers.union(vertexConsumerProvider.getBuffer(ModRenderLayer.POT_OVERLAY2), vertexConsumerProvider.getBuffer(layer));
+			final VertexConsumer union = VertexConsumers.union(vertexConsumerProvider.getBuffer(ModRenderLayer.COSMIC_RENDER_TYPE), vertexConsumerProvider.getBuffer(layer));
 			cancelInfo.setReturnValue(union);
 		}
 		if (glint && stack.getItem() instanceof PotionItem)

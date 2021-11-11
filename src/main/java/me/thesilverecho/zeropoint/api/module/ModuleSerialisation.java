@@ -25,6 +25,6 @@ public class ModuleSerialisation implements JsonDeserializer<BaseModule>, JsonSe
 		final JsonObject lev2 = jsonObject.get(name).getAsJsonObject();
 		final boolean enabled = lev2.get("enabled").getAsBoolean();
 		final int key = lev2.get("key").getAsInt();
-		return new BaseModule(enabled, key);
+		return new BaseModule().setEnabled(enabled).setKeybind(key);
 	}
 }

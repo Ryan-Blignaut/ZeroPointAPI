@@ -83,14 +83,15 @@ public class ReflectionUtil
 			final int length = params.length;
 			Class<?>[] parameterTypes = new Class[length];
 			// Not the best implantation but I want to use nulls with this method, thus getting the class of the params is not possible.
-			for (Constructor<?> constructor : clazz.asSubclass(type).getConstructors())
-				if (constructor.getParameterCount() == length)
-				{
-					System.arraycopy(constructor.getParameterTypes(), 0, parameterTypes, 0, length);
-					break;
-				}
-			Constructor<? extends T> constructor = clazz.asSubclass(type).getConstructor(parameterTypes);
-			return Optional.of(constructor.newInstance(params));
+//			for (Constructor<?> constructor : clazz.asSubclass(type).getConstructors())
+//				if (constructor.getParameterCount() == length)
+//				{
+//					System.arraycopy(constructor.getParameterTypes(), 0, parameterTypes, 0, length);
+//					break;
+//				}
+//			Constructor<? extends T> constructor = clazz.asSubclass(type).getConstructor(parameterTypes);
+			Constructor<? extends T> constructor = clazz.asSubclass(type).getConstructor();
+			return Optional.of(constructor.newInstance());
 
 		} catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e)
 		{

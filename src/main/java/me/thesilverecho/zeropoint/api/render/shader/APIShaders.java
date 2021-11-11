@@ -14,6 +14,8 @@ public enum APIShaders
 	CIRCLE_SHADER("circle.frag"),
 	HEXAGON_SHADER("hexagon.frag"),
 	BEZIER_SHADER("bezier.frag"),
+	POLYGON_SHADER("polygon.frag"),
+	COLOUR_PICKER("colour_picker.frag"),
 
 	//  TEXTURE SHADERS
 	RECTANGLE_TEXTURE_SHADER("rectangle_texture.frag", false),
@@ -21,6 +23,9 @@ public enum APIShaders
 	CIRCLE_TEXTURE_SHADER("circle_texture.frag", false),
 
 	FONT_MASK_TEXTURE("text_mask_texture.frag", false),
+
+	BOKEH_TEXTURE_SHADER("bokeh_disc.frag", false),
+
 
 	//	POST SHADERS
 	BLUR_RECTANGLE_SHADER("blur.frag", true);

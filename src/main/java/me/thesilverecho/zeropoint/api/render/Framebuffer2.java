@@ -1,6 +1,7 @@
 package me.thesilverecho.zeropoint.api.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.thesilverecho.zeropoint.api.render.texture.Texture2D;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;

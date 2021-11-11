@@ -87,8 +87,6 @@ public class Shader
 
 		if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE)
 			ZeroPointApiLogger.error(GL20.glGetProgramInfoLog(programId));
-
-
 	}
 
 	private void apply(int id, Consumer<Integer> consumer)
@@ -126,6 +124,12 @@ public class Shader
 			return this;
 		});
 		return shaderHashMap.get(fragLocation);
+	}
+
+	public static void resetShaderHashMap()
+	{
+		System.out.println("shader map cleared ");
+		shaderHashMap.clear();
 	}
 
 	public void setArgument(String var, Object value)

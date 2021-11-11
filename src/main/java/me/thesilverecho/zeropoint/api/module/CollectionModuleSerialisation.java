@@ -40,8 +40,7 @@ public class CollectionModuleSerialisation extends TypeAdapter<ArrayList<BaseMod
 			final boolean b = in.nextBoolean();
 			in.nextName();
 			final int i = in.nextInt();
-
-			t.add(new BaseModule(b, i));
+			t.add(new BaseModule().setKeybind(i).setEnabled(b));
 			in.endObject();
 		}
 		in.endObject();

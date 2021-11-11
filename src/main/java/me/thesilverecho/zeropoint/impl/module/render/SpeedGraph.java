@@ -9,18 +9,11 @@ import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 @ClientModule(name = "speed graph", active = true, keyBinding = GLFW.GLFW_KEY_M)
 public class SpeedGraph extends BaseModule
 {
-	public SpeedGraph(@Nullable Boolean active, @Nullable Integer key)
-	{
-		super(active, key);
-	}
-
-
 	static double speed = 0;
 
 	@EventListener

@@ -11,12 +11,12 @@ public class APIScreen extends Screen
 {
 	private final ArrayList<IntractableComponent> components = new ArrayList<>();
 
-	protected void addComp(IntractableComponent component)
+	public void addComp(IntractableComponent component)
 	{
 		components.add(component);
 	}
 
-	protected APIScreen(Text title)
+	public APIScreen(Text title)
 	{
 		super(title);
 	}
@@ -32,7 +32,7 @@ public class APIScreen extends Screen
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta)
 	{
 		super.render(matrices, mouseX, mouseY, delta);
-		components.forEach(component -> component.renderComp(matrices, mouseX, mouseY, delta));
+		components.forEach(component -> component.render(matrices, mouseX, mouseY, delta));
 	}
 
 	@Override

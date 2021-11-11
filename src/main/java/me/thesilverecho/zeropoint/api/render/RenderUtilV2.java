@@ -26,20 +26,11 @@ public class RenderUtilV2
 	public static float zIndex;
 	public static Shader shader;
 	private static int textureId = -1;
+	private static ColourHolder colourHolder = ColourHolder.FULL;
 	private static Consumer<Shader> afterBindTasks = shader ->
 	{
 	};
 
-	/*-----------------------2D QUAD DRAW---------------------*/
-	public static void quadTexture(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder color)
-	{
-		quadTexture(matrixStack, x, y, x + width, y + height, 0, 0, 1, 1, color, color, color, color);
-	}
-
-	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder color)
-	{
-		quad(matrixStack, x, y, x + width, y + height, color, color, color, color);
-	}
 
 	public static int getTextureFromLocation(Identifier identifier)
 	{
@@ -51,82 +42,6 @@ public class RenderUtilV2
 	public static void setAfterBindTasks(Consumer<Shader> afterBindTasks)
 	{
 		RenderUtilV2.afterBindTasks = afterBindTasks;
-	}
-
-	public static void quadTexture(MatrixStack matrixStack, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
-	{
-		quadTexture(matrixStack.peek().getModel(), x, y, width, height, u0, v0, u1, v1, cTopLeft, cTopRight, cBottomRight, cBottomLeft);
-	}
-
-	public static void quadTexture(Matrix4f matrix4f, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
-	{
-		GLWrapper.enableGL2D();
-		if (textureId != -1)
-		{
-			final BufferBuilder builder = Tessellator.getInstance().getBuffer();
-			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
-			builder.vertex(matrix4f, x, y, zIndex).color(cTopLeft.red(), cTopLeft.green(), cTopLeft.blue(), cTopLeft.alpha()).texture(u0, v0).next();
-			builder.vertex(matrix4f, x, height, zIndex).color(cBottomLeft.red(), cBottomLeft.green(), cBottomLeft.blue(), cBottomLeft.alpha()).texture(u0, v1).next();
-			builder.vertex(matrix4f, width, height, zIndex).color(cBottomRight.red(), cBottomRight.green(), cBottomRight.blue(), cBottomRight.alpha()).texture(u1, v1).next();
-			builder.vertex(matrix4f, width, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).texture(u1, v0).next();
-			builder.end();
-			shader.bind();
-			afterBindTasks/*.andThen(RenderUtilV2::applyTextureToShader)*/.accept(shader);
-			applyTextureToShader(shader);
-			BufferRenderer.postDraw(builder);
-			shader.unBind();
-		}
-		GLWrapper.disableGL2D();
-	}
-
-	public static void quadFramebuffer(float x, float y, float width, float height, ColourHolder color)
-	{
-		quadFramebuffer(x, y, x + width, y + height, 0, 0, 1, 1, color, color, color, color);
-	}
-
-	public static void quadFramebuffer(float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
-	{
-		GLWrapper.enableGL2D();
-		if (textureId != -1)
-		{
-			final BufferBuilder builder = Tessellator.getInstance().getBuffer();
-			RenderSystem.depthFunc(519);
-			final Framebuffer output = MinecraftClient.getInstance().getFramebuffer();
-			float f = (float) output.textureWidth;
-			float g = (float) output.textureHeight;
-
-			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-			builder.vertex(0.0D, 0.0D, 500.0D).next();
-			builder.vertex(f, 0.0D, 500.0D).next();
-			builder.vertex(f, g, 500.0D).next();
-			builder.vertex(0.0D, g, 500.0D).next();
-			builder.end();
-			shader.bind();
-			afterBindTasks.accept(shader);
-			applyTextureToShader(shader);
-			BufferRenderer.postDraw(builder);
-			shader.unBind();
-		}
-		GLWrapper.disableGL2D();
-	}
-
-
-	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
-	{
-		GLWrapper.enableGL2D();
-		final Matrix4f matrix4f = matrixStack.peek().getModel();
-		final BufferBuilder builder = Tessellator.getInstance().getBuffer();
-		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		builder.vertex(matrix4f, x, y, zIndex).color(cTopLeft.red(), cTopLeft.green(), cTopLeft.blue(), cTopLeft.alpha()).next();
-		builder.vertex(matrix4f, x, height, zIndex).color(cBottomLeft.red(), cBottomLeft.green(), cBottomLeft.blue(), cBottomLeft.alpha()).next();
-		builder.vertex(matrix4f, width, height, zIndex).color(cBottomRight.red(), cBottomRight.green(), cBottomRight.blue(), cBottomRight.alpha()).next();
-		builder.vertex(matrix4f, width, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).next();
-		builder.end();
-		shader.bind();
-		afterBindTasks.accept(shader);
-		BufferRenderer.postDraw(builder);
-		shader.unBind();
-		GLWrapper.disableGL2D();
 	}
 
 	public static void setShader(Shader shader)
@@ -149,12 +64,41 @@ public class RenderUtilV2
 		RenderUtilV2.zIndex = zIndex;
 	}
 
+	public static void setColourHolder(ColourHolder colourHolder)
+	{
+		RenderUtilV2.colourHolder = colourHolder;
+	}
+
 	public static void applyTextureToShader(Shader shader)
 	{
 		GlStateManager._bindTexture(textureId);
 //		GL11.glBindTexture(3553, textureId);
 		RenderSystem.activeTexture(GL43.GL_TEXTURE0);
 		shader.setArgument("u_Texture", 0);
+	}
+
+	/*-----------------------2D QUAD DRAW---------------------*/
+	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder color)
+	{
+		quad(matrixStack, x, y, x + width, y + height, color, color, color, color);
+	}
+
+	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
+	{
+		GLWrapper.enableGL2D();
+		final Matrix4f matrix4f = matrixStack.peek().getModel();
+		final BufferBuilder builder = Tessellator.getInstance().getBuffer();
+		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+		builder.vertex(matrix4f, x, y, zIndex).color(cTopLeft.red(), cTopLeft.green(), cTopLeft.blue(), cTopLeft.alpha()).next();
+		builder.vertex(matrix4f, x, height, zIndex).color(cBottomLeft.red(), cBottomLeft.green(), cBottomLeft.blue(), cBottomLeft.alpha()).next();
+		builder.vertex(matrix4f, width, height, zIndex).color(cBottomRight.red(), cBottomRight.green(), cBottomRight.blue(), cBottomRight.alpha()).next();
+		builder.vertex(matrix4f, width, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).next();
+		builder.end();
+		shader.bind();
+		afterBindTasks.accept(shader);
+		BufferRenderer.postDraw(builder);
+		shader.unBind();
+		GLWrapper.disableGL2D();
 	}
 
 	public static void rectangle(MatrixStack matrixStack, float x, float y, float width, float height, float radius, ColourHolder colourHolder)
@@ -201,12 +145,33 @@ public class RenderUtilV2
 		RenderUtilV2.quad(matrixStack, x, y, width, height, colourHolder);
 	}
 
-
-	public static void hexagon(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder colourHolder)
+	public static void colourPicker(MatrixStack matrixStack, float x, float y, float width, float height, float hue, ColourHolder colourHolder)
 	{
-		setShader(APIShaders.HEXAGON_SHADER.getShader());
-		shader.setArgument("u_Center_Pos", new Vec2f(x + height / 2, y + width / 2));
-		quad(matrixStack, x, y, width, height, colourHolder);
+		RenderUtilV2.setShader(APIShaders.COLOUR_PICKER.getShader());
+		RenderUtilV2.setAfterBindTasks(shader -> shader.setArgument("u_Hue", hue));
+		RenderUtilV2.quad(matrixStack, x, y, width, height, colourHolder);
+	}
+
+
+	public static void quadTexture(Matrix4f matrix4f, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
+	{
+		GLWrapper.enableGL2D();
+		if (textureId != -1)
+		{
+			final BufferBuilder builder = Tessellator.getInstance().getBuffer();
+			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+			builder.vertex(matrix4f, x, y, zIndex).color(cTopLeft.red(), cTopLeft.green(), cTopLeft.blue(), cTopLeft.alpha()).texture(u0, v0).next();
+			builder.vertex(matrix4f, x, height, zIndex).color(cBottomLeft.red(), cBottomLeft.green(), cBottomLeft.blue(), cBottomLeft.alpha()).texture(u0, v1).next();
+			builder.vertex(matrix4f, width, height, zIndex).color(cBottomRight.red(), cBottomRight.green(), cBottomRight.blue(), cBottomRight.alpha()).texture(u1, v1).next();
+			builder.vertex(matrix4f, width, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).texture(u1, v0).next();
+			builder.end();
+			shader.bind();
+			afterBindTasks/*.andThen(RenderUtilV2::applyTextureToShader)*/.accept(shader);
+			applyTextureToShader(shader);
+			BufferRenderer.postDraw(builder);
+			shader.unBind();
+		}
+		GLWrapper.disableGL2D();
 	}
 
 	//	TODO: change this so that we dont need a width and height, using midPoint for the max/min y of the quad
@@ -227,6 +192,24 @@ public class RenderUtilV2
 			shader.setArgument("thickness", thickness);
 			shader.setArgument("smoothR", 0.6f);
 
+		});
+		quad(matrixStack, x, y, width, height, colourHolder);
+	}
+
+
+	public static void hexagon(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder colourHolder)
+	{
+		setShader(APIShaders.HEXAGON_SHADER.getShader());
+		shader.setArgument("u_Center_Pos", new Vec2f(x + height / 2, y + width / 2));
+		quad(matrixStack, x, y, width, height, colourHolder);
+	}
+
+
+	public static void polygon(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder colourHolder)
+	{
+		setShader(APIShaders.POLYGON_SHADER.getShader());
+		setAfterBindTasks(shader ->
+		{
 		});
 		quad(matrixStack, x, y, width, height, colourHolder);
 	}
@@ -254,19 +237,29 @@ public class RenderUtilV2
 	}
 
 
-	public static void rectangleFbo(float x, float y, float width, float height, float radius, int textureLoc, ColourHolder colourHolder)
+	public static void quadTexture(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder colourHolder)
 	{
-		setShader(APIShaders.BLUR_RECTANGLE_SHADER.getShader());
-		setTextureId(textureLoc);
-		quadFramebuffer(x, y, width, height, colourHolder);
+		quadTexture(matrixStack, x, y, x + width, y + height, 0, 0, 1, 1, colourHolder, colourHolder, colourHolder, colourHolder);
 	}
 
+	public static void quadTexture(MatrixStack matrixStack, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
+	{
+		quadTexture(matrixStack.peek().getModel(), x, y, width, height, u0, v0, u1, v1, cTopLeft, cTopRight, cBottomRight, cBottomLeft);
+	}
 
 	public static void rectangleTexture(MatrixStack matrixStack, float x, float y, float width, float height, float radius, int textureLoc, ColourHolder colourHolder)
 	{
 		setShader(APIShaders.RECTANGLE_TEXTURE_SHADER.getShader());
 		setTextureId(textureLoc);
 		setAfterBindTasks(shader -> shader.setArgument("u_Radius", new Vec2f(radius, 0)));
+		quadTexture(matrixStack, x, y, width, height, colourHolder);
+	}
+
+	public static void rectangleBokeh(MatrixStack matrixStack, float x, float y, float width, float height, float size, int textureLoc, ColourHolder colourHolder)
+	{
+		setShader(APIShaders.BOKEH_TEXTURE_SHADER.getShader());
+		setTextureId(textureLoc);
+		setAfterBindTasks(shader -> shader.setArgument("size", size));
 		quadTexture(matrixStack, x, y, width, height, colourHolder);
 	}
 
@@ -308,6 +301,63 @@ public class RenderUtilV2
 		});
 		RenderUtilV2.quadTexture(matrixStack, x, y, width, height, colourHolder);
 	}
+
+
+	public static void fBOTexture(int width, int height, boolean disableBlend)
+	{
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		GlStateManager._colorMask(true, true, true, false);
+		GlStateManager._disableDepthTest();
+		GlStateManager._depthMask(false);
+//		GlStateManager._viewport(0, 0, width, height);
+		if (disableBlend)
+		{
+			GlStateManager._disableBlend();
+		}
+
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		final Framebuffer framebuffer = minecraftClient.getFramebuffer();
+//		net.minecraft.client.render.Shader shader = minecraftClient.gameRenderer.blitScreenShader;
+//		shader.addSampler("DiffuseSampler", this.colorAttachment);
+		Matrix4f matrix4f = Matrix4f.projectionMatrix((float) width, (float) (-height), 1000.0F, 3000.0F);
+//		RenderSystem.setProjectionMatrix(matrix4f);
+
+//		if (shader.modelViewMat != null) {
+//			shader.modelViewMat.set(Matrix4f.translate(0.0F, 0.0F, -2000.0F));
+//		}
+
+//		if (shader.projectionMat != null) {
+//			shader.projectionMat.set(matrix4f);
+//		}
+
+
+		shader.bind();
+		shader.setArgument("InSize", new Vec2f(width, height));
+		shader.setArgument("OutSize", new Vec2f(width, height));
+		shader.setArgument("ProjMat", Matrix4f.translate(0.0F, 0.0F, -2000.0F));
+
+		shader.setArgument("u_Texture", framebuffer.getColorAttachment());
+		shader.setArgument("u_Radius", 12);
+		shader.setArgument("u_Direction", new Vec2f(1, 1));
+
+		float f = (float) width;
+		float g = (float) height;
+		float h = (float) framebuffer.viewportWidth /*/ (float) 120*/;
+		float i = (float) framebuffer.viewportHeight/* / (float) 120*/;
+		Tessellator tessellator = RenderSystem.renderThreadTesselator();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+		bufferBuilder.vertex(0.0D, g, 0.0D).texture(0.0F, 0.0F).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(f, g, 0.0D).texture(h, 0.0F).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(f, 0.0D, 0.0D).texture(h, i).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(0.0F, i).color(255, 255, 255, 255).next();
+		bufferBuilder.end();
+		BufferRenderer.postDraw(bufferBuilder);
+		shader.unBind();
+		GlStateManager._depthMask(true);
+		GlStateManager._colorMask(true, true, true, true);
+	}
+
 
 	public static double getAnimationState(double animation, double finalState, double speed)
 	{

@@ -10,7 +10,6 @@ import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Comparator;
@@ -20,11 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EnabledModulesDisplay extends BaseModule
 {
 	private final float scale = 0.5f;
-
-	public EnabledModulesDisplay(@Nullable Boolean active, @Nullable Integer key)
-	{
-		super(active, key);
-	}
 
 	Framebuffer framebuffer;
 

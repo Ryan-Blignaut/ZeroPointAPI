@@ -1,5 +1,6 @@
 package me.thesilverecho.zeropoint.api.render;
 
+import me.thesilverecho.zeropoint.api.render.texture.Texture2D;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 

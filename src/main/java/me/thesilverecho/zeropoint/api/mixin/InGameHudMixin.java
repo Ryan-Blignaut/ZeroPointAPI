@@ -35,8 +35,6 @@ public abstract class InGameHudMixin
 	private void renderScoreboardSidebar(MatrixStack matrixStack, ScoreboardObjective scoreboardObjective, CallbackInfo ci)
 	{
 		EventManager.call(new RenderUIEvent.ScoreBoard(matrixStack, scoreboardObjective, ci));
-
-		EventManager.call(new RenderScoreboardEvent(matrixStack, scoreboardObjective, ci));
 	}
 
 	@Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)

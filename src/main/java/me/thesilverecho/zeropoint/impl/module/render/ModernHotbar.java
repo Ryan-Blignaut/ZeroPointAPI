@@ -2,6 +2,7 @@ package me.thesilverecho.zeropoint.impl.module.render;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.RenderHotbarEvent;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
@@ -20,7 +21,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.time.LocalDateTime;
@@ -29,12 +29,10 @@ import java.time.format.DateTimeFormatter;
 @ClientModule(name = "Modern Hotbar", active = true, keyBinding = GLFW.GLFW_KEY_H)
 public class ModernHotbar extends BaseModule
 {
-	public ModernHotbar(@Nullable Boolean active, @Nullable Integer key)
-	{
-		super(active, key);
-	}
-
 	private float animationX = 0;
+
+	@ConfigSetting
+	private String hudCol = "#323232", fpsCol = "";
 
 	@EventListener
 	public void render(RenderHotbarEvent event)
@@ -44,7 +42,7 @@ public class ModernHotbar extends BaseModule
 		final int width = event.scaledWidth();
 		final MatrixStack matrixStack = event.matrixStack();
 
-		RenderUtilV2.rectangle(matrixStack, 0, height - 23, width, 23, 0, new ColourHolder(55, 55, 55, 80));
+		RenderUtilV2.rectangle(matrixStack, 0, height - 23, width, 23, 0, ColourHolder.decode(hudCol).setAlpha(180));
 		PlayerEntity playerEntity = event.player();
 		final PlayerInventory inventory = playerEntity.getInventory();
 
@@ -80,26 +78,27 @@ public class ModernHotbar extends BaseModule
 	}
 
 
-	private String ping, fps, pos, date, time;
+	private String ping = "", fps = "", pos = "", date = "", time = "";
 
 	@EventListener
 	public void onTick(TickEvent.StartTickEvent event)
 	{
 		final MinecraftClient client = event.client();
-
 		final ClientPlayerEntity player = client.player;
-		final PlayerListEntry playerListEntry = client.getNetworkHandler().getPlayerListEntry(player.getUuid());
-		ping = "Ping: ${#388E3C} " + (playerListEntry != null ? Integer.toString(playerListEntry.getLatency()) : "0");
-
-		fps = "FPS: " + ((MinecraftClientAccessor) client).getCurrentFps();
-
-		final Vec3d playerPos = player.getPos();
-		pos = "X: " + (int) playerPos.getX() + " Y: " + (int) playerPos.getY() + " Z: " + (int) playerPos.getZ();
-
-		final LocalDateTime now = LocalDateTime.now();
-		time = DateTimeFormatter.ofPattern("HH:mm").format(now);
-		date = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(now);
-
+		if (player != null)
+		{
+			if (client.getNetworkHandler() != null)
+			{
+				final PlayerListEntry playerListEntry = client.getNetworkHandler().getPlayerListEntry(player.getUuid());
+				ping = "Ping: ${#388E3C} " + (playerListEntry != null ? Integer.toString(playerListEntry.getLatency()) : "0");
+			}
+			fps = "FPS: " + ((MinecraftClientAccessor) client).getCurrentFps();
+			final Vec3d playerPos = player.getPos();
+			pos = "X: " + (int) playerPos.getX() + " Y: " + (int) playerPos.getY() + " Z: " + (int) playerPos.getZ();
+			final LocalDateTime now = LocalDateTime.now();
+			time = DateTimeFormatter.ofPattern("HH:mm").format(now);
+			date = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(now);
+		}
 	}
 
 	private void renderHotbarItem(RenderHotbarEvent event, int x, int y, ItemStack stack, int seed)

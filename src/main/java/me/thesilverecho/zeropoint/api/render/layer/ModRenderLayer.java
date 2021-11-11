@@ -27,6 +27,21 @@ public class ModRenderLayer extends RenderLayer
 	public static final ArrayList<ModRenderLayer> ALL_LAYERS = new ArrayList<>();
 	public static final RenderLayer POT_OVERLAY;
 
+	public static final RenderLayer COSMIC_RENDER_TYPE = of(ZeroPointClient.MOD_ID + ":cosmic",
+			VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+			VertexFormat.DrawMode.QUADS,
+			256,
+			true,
+			false,
+			ModMultiPhaseParameters.builder()
+			                       .modShader(new ModRenderPhase.ModShader(APIShaders.FONT_MASK_TEXTURE.getShader()))
+//			                       .texture( MultiTextureStateShard.builder().add(BLOCK_ITEM_LOC, false, false).add(new ResourceLocation(Avaritia.MOD_ID, "textures/shader/cosmic_sheet.png")/*TheEndPortalRenderer.END_PORTAL_LOCATION*/, false, false).build())
+                                   .transparency(TRANSLUCENT_TRANSPARENCY)
+                                   .cull(DISABLE_CULLING)
+//                                   .layering(VIEW_OFFSET_Z_LAYERING)
+                                   .lightmap(ENABLE_LIGHTMAP)
+                                   .build(false));
+
 	static
 	{
 		final Texturing glintTexturing = new RenderPhase.Texturing("glint_texturing", () ->

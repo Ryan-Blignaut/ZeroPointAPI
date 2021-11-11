@@ -2,7 +2,7 @@ package me.thesilverecho.zeropoint.api.ui.widgets;
 
 import net.minecraft.client.util.math.MatrixStack;
 
-public class Component2D
+public abstract class Component2D
 {
 	public boolean visible = true;
 
@@ -54,10 +54,7 @@ public class Component2D
 	}
 
 
-	public void renderComp(MatrixStack matrices, float mouseX, float mouseY, double delta)
-	{
-
-	}
+	protected abstract void renderComp(MatrixStack matrices, float mouseX, float mouseY, double delta);
 
 	public Component2D getBaseParent()
 	{

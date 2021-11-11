@@ -1,9 +1,7 @@
 package me.thesilverecho.zeropoint.api.util;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.lwjgl.BufferUtils;

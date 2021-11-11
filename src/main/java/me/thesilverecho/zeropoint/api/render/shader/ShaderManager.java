@@ -1,3 +1,4 @@
+/*
 package me.thesilverecho.zeropoint.api.render.shader;
 
 
@@ -66,3 +67,4 @@ public class ShaderManager extends ManagerBase<Shader>
 //		shaders.forEach(shader -> shader.create(manager));
 	}
 }
+*/

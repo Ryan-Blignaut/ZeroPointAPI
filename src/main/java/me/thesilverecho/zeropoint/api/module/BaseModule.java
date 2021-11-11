@@ -3,10 +3,8 @@ package me.thesilverecho.zeropoint.api.module;
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.util.Keybind;
 import net.minecraft.client.MinecraftClient;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class BaseModule implements IModule
 {
@@ -15,30 +13,45 @@ public class BaseModule implements IModule
 
 	// Instance variables, set by ClientModule annotation
 	private final String name, description;
-	private final Keybind keybind;
 	private final boolean shouldDraw;
+	private Keybind keybind;
 	private boolean enabled;
 	public static final HashMap<String, BaseModule> ENABLE_MODULES = new HashMap<>();
 
 	/**
 	 * Constructor to set instance variables from {@link ClientModule} annotation, registers renderer toggle keybind and calls toggleOptions so that enabled can take effect.
-	 *
-	 * @param active if the current module is active, use null to get from annotation.
-	 * @param key    current keybind for the, use null to get from annotation.
 	 */
-	public BaseModule(@Nullable Boolean active, @Nullable Integer key)
+	public BaseModule()
 	{
-		ClientModule annotation = this.getClass().getAnnotation(ClientModule.class);
-		this.enabled = Objects.requireNonNullElseGet(active, annotation::active);
+		final ClientModule annotation = this.getClass().getAnnotation(ClientModule.class);
 		this.name = annotation.name();
 		this.description = annotation.description();
 		this.shouldDraw = annotation.shouldDraw();
-		this.keybind = new Keybind(Objects.requireNonNullElseGet(key, annotation::keyBinding), Keybind.Duration.TOGGLED, clickType ->
+		this.enabled = annotation.active();
+		this.keybind = new Keybind(annotation.keyBinding(), Keybind.Duration.TOGGLED, clickType ->
 		{
 			if (clickType == Keybind.ClickType.PRESSED)
 				this.toggle();
 		});
-		this.runToggleActions();
+		this.setEnabled(this.enabled);
+//		this.runToggleActions();
+	}
+
+	public BaseModule setKeybind(int key)
+	{
+		this.keybind = new Keybind(key, Keybind.Duration.TOGGLED, clickType ->
+		{
+			if (clickType == Keybind.ClickType.PRESSED)
+				this.toggle();
+		});
+		return this;
+	}
+
+	public BaseModule setEnabled(boolean enabled)
+	{
+		this.enabled = !enabled;
+		runToggleActions();
+		return this;
 	}
 
 	/**

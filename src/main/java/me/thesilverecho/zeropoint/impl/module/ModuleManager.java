@@ -29,8 +29,13 @@ public class ModuleManager
 						final String name = clazz.getAnnotation(ClientModule.class).name();
 						final Optional<SimpleModuleHolder> first = instance.baseModules.stream().filter(module -> module.getName().equals(name)).findFirst();
 						if (first.isPresent())
-							ReflectionUtil.callConstructor(clazz, BaseModule.class, first.get().isEnabled(), first.get().getKey());
-						else
+						{
+							ReflectionUtil.callConstructor(clazz, BaseModule.class, null, null).ifPresent(baseModule ->
+							{
+								baseModule.setKeybind(first.get().getKey()).setEnabled(first.get().isEnabled());
+							});
+//									ReflectionUtil.callConstructor(clazz, BaseModule.class, first.get().isEnabled(), first.get().getKey());
+						} else
 							ReflectionUtil.callConstructor(clazz, BaseModule.class, null, null).ifPresent(baseModule ->
 									instance.baseModules.add(new SimpleModuleHolder(baseModule)));
 					}

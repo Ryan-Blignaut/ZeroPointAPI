@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.api.render.font;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.render.Texture2D;
+import me.thesilverecho.zeropoint.api.render.texture.Texture2D;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
@@ -44,12 +44,6 @@ public class CustomFont
 	{
 		this.customFont = identifier;
 	}
-
-	/*public void init(ResourceManager manager)
-	{
-		ApiIOUtils.getResourceByID(manager, customFont).ifPresent(stream -> create(ApiIOUtils.readBytesToBuffer(stream), 18));
-	}*/
-
 
 	/**
 	 * Gets the font or creates if not already created.
@@ -235,7 +229,6 @@ public class CustomFont
 						vertexColours[1] == null ? defaultColour : vertexColours[1],
 						vertexColours[2] == null ? defaultColour : vertexColours[2],
 						vertexColours[3] == null ? defaultColour : vertexColours[3]);
-//				RenderUtil.quadTexture(matrixStack, x + glyph.x() * scale, y + glyph.y() * scale, x + glyph.w() * scale, y + glyph.h() * scale, glyph.u0(), glyph.v0(), glyph.u1(), glyph.v1(), colourHolder);
 				x += glyph.xAdvance() * scale;
 			}
 
