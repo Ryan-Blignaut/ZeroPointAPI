@@ -34,21 +34,18 @@ public class BaseModule implements IModule
 				this.toggle();
 		});
 		this.setEnabled(this.enabled);
-//		this.runToggleActions();
 	}
 
 	public BaseModule setKeybind(int key)
 	{
-		this.keybind = new Keybind(key, Keybind.Duration.TOGGLED, clickType ->
-		{
-			if (clickType == Keybind.ClickType.PRESSED)
-				this.toggle();
-		});
+		this.keybind.setKeyCode(key);
 		return this;
 	}
 
 	public BaseModule setEnabled(boolean enabled)
 	{
+//		TODO:fix this up a bit so that the register function is only called once, instead of when the obj is created and when the enabled var is set
+		deregister();
 		this.enabled = !enabled;
 		runToggleActions();
 		return this;
@@ -68,17 +65,22 @@ public class BaseModule implements IModule
 	 */
 	protected void runToggleActions()
 	{
-		if (!enabled)
-		{
-			onEnable();
-			EventManager.register(this);
-			ENABLE_MODULES.put(this.getName(), this);
-		} else
-		{
-			ENABLE_MODULES.remove(this.getName());
-			EventManager.deregister(this);
-			onDisable();
-		}
+		if (!enabled) register();
+		else deregister();
+	}
+
+	private void register()
+	{
+		onEnable();
+		EventManager.register(this);
+		ENABLE_MODULES.put(this.getName(), this);
+	}
+
+	private void deregister()
+	{
+		ENABLE_MODULES.remove(this.getName());
+		EventManager.deregister(this);
+		onDisable();
 	}
 
 

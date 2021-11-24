@@ -2,6 +2,8 @@ package me.thesilverecho.zeropoint.impl.screen;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
+import me.thesilverecho.zeropoint.api.render.font.CustomFont;
+import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.ui.widgets.ColourSelector;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
@@ -34,13 +36,23 @@ public class StartScreen
 
 
 		RenderUtilV2.roundRect(matrixStack, width / 2 - 150 / 2f, 120, 280, 220, 4, new ColourHolder(255, 255, 255, 120));
-		APIFonts.REGULAR.getFont().setFontScale(0.7f).render(matrixStack, "${#2B2B2B}Change ${#2B2B2B}log", width / 2 - 150 / 2f + 5 + 0.5f, 125 + 0.5f);
-		APIFonts.REGULAR.getFont().setFontScale(0.7f).render(matrixStack, "${#9FA6CE}Change log", width / 2 - 150 / 2f + 5, 125);
+		final CustomFont font = APIFonts.REGULAR.getFont();
+//		font.setFontScale(0.7f).render(matrixStack, "${#2B2B2B}Change ${#2B2B2B}log", width / 2 - 150 / 2f + 5 + 0.5f, 125 + 0.5f);
+		final float v = FontRenderer.renderRainbowText(font, 0.7f, "${#9FA6CE}Change log", true, matrixStack, width / 2 - 150 / 2f + 5, 125);
+		FontRenderer.renderText(font, 0.7f, "Change log", ColourHolder.FULL, true, matrixStack, v + 10, 125);
+
+//		font.setFontScale(0.7f).render(matrixStack, "${#9FA6CE}Change log", width / 2 - 150 / 2f + 5, 125);
+//		final Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
+	/*	final int fbo = framebuffer.fbo;
 
 
+		framebuffer.endWrite();
+		framebuffer2.bind();
+//		RenderUtilV2.rectangleTexturePos(matrixStack, 120, 100, 32, 32, fbo);
+		RenderUtilV2.rectangle(matrixStack, 0, 0, 1920, 1080, ColourHolder.FULL);
+		framebuffer2.unbind();
+		framebuffer.beginWrite(false);
+		RenderUtilV2.rectangleTexturePos(matrixStack, 0, 0, 1920, 1080, framebuffer2.texture);*/
 
-		selector.render(matrixStack, mouseX, mouseY, delta);
-
-//		RenderUtilV2.rectangle(matrixStack, 0, 0, width, height, 0, new ColourHolder(50, 50, 50, 255));
 	}
 }

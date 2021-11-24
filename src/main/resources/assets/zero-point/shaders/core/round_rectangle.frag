@@ -2,8 +2,8 @@
 
 precision highp float;
 
-layout(location = 0) uniform vec2 u_Radius;
-layout(location = 1) uniform vec4 u_InnerRect;
+uniform vec2 Radius;
+uniform vec4 Rectangle;
 
 smooth in vec2 position;
 smooth in vec4 vertexColor;
@@ -16,7 +16,8 @@ void main() {
         discard;
     }
 
-    vec2 tl = u_InnerRect.xy - position;
+
+   /* vec2 tl = u_InnerRect.xy - position;
     vec2 br = position - u_InnerRect.zw;
 
     vec2 dis = max(br, tl);
@@ -25,5 +26,9 @@ void main() {
 
     float a = 1.0 - smoothstep(-u_Radius.y, 0.0, v);
 
-    fragColor = vertexColor * vec4(1.0, 1.0, 1.0, a);
+    fragColor = VertexColor * vec4(1.0, 1.0, 1.0, a);*/
+
+    float sdf = length(max(vec2(0.0),max(Rectangle.xy - position, position - Rectangle.zw))) - Radius.x;
+    float alpha = 1.0 - smoothstep(-Radius.y, 0.0, sdf);
+    fragColor = vertexColor * vec4(1.0, 1.0, 1.0, alpha);
 }

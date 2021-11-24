@@ -34,5 +34,4 @@ public class ZeroPointClient implements ClientModInitializer
 	}
 
 
-
 }

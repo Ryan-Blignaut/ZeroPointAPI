@@ -9,13 +9,11 @@ import net.minecraft.util.Identifier;
 public enum APIShaders
 {
 	//  BASIC SHADERS
+	BEZIER_SHADER("bezier.frag"),
+	CIRCLE_SHADER("circle.frag"),
+	COLOUR_PICKER("colour_picker.frag"),
 	RECTANGLE_SHADER("rectangle.frag"),
 	ROUND_RECTANGLE_SHADER("round_rectangle.frag"),
-	CIRCLE_SHADER("circle.frag"),
-	HEXAGON_SHADER("hexagon.frag"),
-	BEZIER_SHADER("bezier.frag"),
-	POLYGON_SHADER("polygon.frag"),
-	COLOUR_PICKER("colour_picker.frag"),
 
 	//  TEXTURE SHADERS
 	RECTANGLE_TEXTURE_SHADER("rectangle_texture.frag", false),
@@ -28,7 +26,9 @@ public enum APIShaders
 
 
 	//	POST SHADERS
-	BLUR_RECTANGLE_SHADER("blur.frag", true);
+	BLUR_RECTANGLE_SHADER("blur.frag", true),
+	GAUSSIAN_BLUR_SHADER("gaussian_blur.frag", true);
+
 
 	private final Shader shader;
 	private static final String BASE_SHADER_PATH = "shaders/";
@@ -39,13 +39,13 @@ public enum APIShaders
 
 	APIShaders(String frag)
 	{
-		this(frag, DEFAULT_COL_VERT_PATH);
+		this("core/" + frag, DEFAULT_COL_VERT_PATH);
 	}
 
 
 	APIShaders(String frag, boolean post)
 	{
-		this(frag, post ? DEFAULT_POST_TEXTURE_VERT_PATH : DEFAULT_TEXTURE_VERT_PATH);
+		this((post ? "post/" : "core/") + frag, post ? DEFAULT_POST_TEXTURE_VERT_PATH : DEFAULT_TEXTURE_VERT_PATH);
 	}
 
 	APIShaders(String frag, String vert)

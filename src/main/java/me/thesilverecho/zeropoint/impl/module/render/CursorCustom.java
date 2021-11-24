@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.impl.module.render;
 
 import me.thesilverecho.zeropoint.api.event.EventListener;
-import me.thesilverecho.zeropoint.api.event.events.RenderScreenEvent;
+import me.thesilverecho.zeropoint.api.event.events.render.RenderScreenEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.cursor.APICursors;
@@ -12,8 +12,6 @@ import net.minecraft.client.gui.screen.Screen;
 @ClientModule(name = "Custom Cursor", active = true)
 public class CursorCustom extends BaseModule
 {
-
-
 	@EventListener
 	public void renderEvent(RenderScreenEvent.POST e)
 	{

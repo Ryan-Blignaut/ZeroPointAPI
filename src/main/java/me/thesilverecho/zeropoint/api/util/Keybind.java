@@ -7,12 +7,16 @@ import java.util.function.Consumer;
 
 import static me.thesilverecho.zeropoint.api.util.Keybind.ClickType.*;
 
-public record Keybind(int code, Duration duration, @ExcludedSelector Consumer<ClickType> consumer)
+public final class Keybind
 {
 	/**
 	 * List containing all the keybinds registered.
 	 */
 	public static final ArrayList<Keybind> REGISTERED_KEYBINDS = new ArrayList<>();
+	private int code;
+	private final Duration duration;
+	@ExcludedSelector private final Consumer<ClickType> consumer;
+
 
 	public Keybind(int code, Duration duration, Consumer<ClickType> consumer)
 	{
@@ -40,6 +44,21 @@ public record Keybind(int code, Duration duration, @ExcludedSelector Consumer<Cl
 	{
 		consumer.accept(HELD_TICK_CLICK);
 	}
+
+	public int getKeyCode() {return code;}
+
+	public void setKeyCode(int code) {this.code = code;}
+
+
+	@Override
+	public String toString()
+	{
+		return "Keybind[" +
+				"code=" + code + ", " +
+				"duration=" + duration + ", " +
+				"consumer=" + consumer + ']';
+	}
+
 
 	/**
 	 * Enum for {@code Duration}, determining if the click will be activated while the key is released/held

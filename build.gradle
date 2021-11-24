@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.9-SNAPSHOT'
     id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 repositories {
@@ -8,8 +9,7 @@ repositories {
 
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -28,10 +28,20 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     implementation 'net.sourceforge.jaadec:jaad:0.8.5'
+
     implementation 'club.minnced:java-discord-rpc:2.0.1'
+    shadow 'club.minnced:java-discord-rpc:2.0.1'
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
+}
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    it.options.release = 16
+}
+
+shadowJar {
+    configurations = [ project.configurations.shadow ]
 }
 
 processResources {
@@ -71,6 +81,11 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 jar {
     from "LICENSE"
+}
+
+remapJar {
+    dependsOn shadowJar
+    input.set(shadowJar.archiveFile)
 }
 
 // configure the maven publication

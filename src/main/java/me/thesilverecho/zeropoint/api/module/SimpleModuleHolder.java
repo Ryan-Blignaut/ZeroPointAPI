@@ -16,15 +16,15 @@ public final class SimpleModuleHolder
 	public SimpleModuleHolder(BaseModule baseModule)
 	{
 		this.name = baseModule.getName();
-		this.key = baseModule.getKeybind().code();
+		this.key = baseModule.getKeybind().getKeyCode();
 		this.enabled = baseModule.isEnabled();
 	}
 
-	public String getName() { return name; }
+	public String getName() {return name;}
 
-	public int getKey() { return key; }
+	public int getKey() {return key;}
 
-	public boolean isEnabled() { return enabled; }
+	public boolean isEnabled() {return enabled;}
 
 
 }

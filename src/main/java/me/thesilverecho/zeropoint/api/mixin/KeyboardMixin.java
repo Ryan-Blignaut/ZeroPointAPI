@@ -21,7 +21,7 @@ public abstract class KeyboardMixin
 	public void onKeyEvent(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci)
 	{
 		EventManager.call(new KeyEvent(key, action, modifiers));
-		Stream<Keybind> keybinds = Keybind.REGISTERED_KEYBINDS.stream().filter(bind -> bind.code() != GLFW.GLFW_KEY_UNKNOWN && bind.code() == key);
+		Stream<Keybind> keybinds = Keybind.REGISTERED_KEYBINDS.stream().filter(bind -> bind.getKeyCode() != GLFW.GLFW_KEY_UNKNOWN && bind.getKeyCode() == key);
 		switch (action)
 		{
 			case GLFW.GLFW_PRESS -> keybinds.forEach(Keybind::onPress);

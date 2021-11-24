@@ -8,6 +8,7 @@ import me.thesilverecho.zeropoint.api.event.events.ScreenKeyboardEvent;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
+import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
@@ -19,7 +20,7 @@ public class TextBoxComponent extends IntractableComponent
 	private String promptText = "Enter text";
 	private String text = "";
 	private int caretPos, selectionStart, selectionEnd;
-	private boolean editable = true;
+	private final boolean editable = true;
 
 	public TextBoxComponent(float x, float y, float w, float h, Component2D parent, float padding)
 	{
@@ -47,9 +48,10 @@ public class TextBoxComponent extends IntractableComponent
 		}
 		//No text show prompt text
 		if (text.isEmpty() && !focus)
-			font.render(matrices, promptText, x + padding, y + padding);
+			FontRenderer.renderText(font, matrices, promptText, false, x + padding, y + padding);
 		else
-			font.render(matrices, text, x + padding, y + padding);
+			FontRenderer.renderText(font, matrices, text, false, x + padding, y + padding);
+
 
 		//Change mouse to text icon
 		if (mouseOver)

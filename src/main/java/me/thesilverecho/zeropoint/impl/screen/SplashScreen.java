@@ -2,6 +2,7 @@ package me.thesilverecho.zeropoint.impl.screen;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
+import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import net.minecraft.client.MinecraftClient;
@@ -43,7 +44,6 @@ public class SplashScreen
 		int i = MathHelper.ceil((w * 2 - 2) * progress);
 		int height = 7;
 		RenderUtilV2.roundRect(matrices, minX + 1, x - height / 2f, i, height, 3, new ColourHolder(0, 75, 85, 255));
-
-		APIFonts.REGULAR.getFont().setFontScale(0.7f).render(matrices, "Progress: %d%%".formatted((int) (progress * 100)), 10, 10);
+		FontRenderer.renderText(APIFonts.FREE_SANS.getFont(), 0.75f, matrices, "Progress: %d%%".formatted((int) (progress * 100)), true, 10, 10);
 	}
 }

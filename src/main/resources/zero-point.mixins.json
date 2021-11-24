@@ -13,6 +13,7 @@
     "SplashOverlayMixin",
     "TextRenderMixin",
     "TitleScreenMixin",
+    "TooltipAccessor",
     "WorldRendererMixin"
   ],
   "client": [

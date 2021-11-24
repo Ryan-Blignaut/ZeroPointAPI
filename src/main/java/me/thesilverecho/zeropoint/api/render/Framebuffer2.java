@@ -16,7 +16,8 @@ public class Framebuffer2
 	public Framebuffer2(int width, int height)
 	{
 		id = glGenFramebuffers();
-		glBindFramebuffer(GL_FRAMEBUFFER, id);
+//		glBindFramebuffer(GL_FRAMEBUFFER, id);
+		bind();
 		Texture2D texture2D = new Texture2D(width, height, Texture2D.Format.RGB);
 		this.texture = texture2D.getID();
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.texture, 0);
@@ -28,7 +29,8 @@ public class Framebuffer2
 		{
 			ZeroPointApiLogger.error("Frame buffer ran into issue");
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		unbind();
 	}
 
 	private void init()
@@ -49,7 +51,7 @@ public class Framebuffer2
 
 	public void bind()
 	{
-//		MinecraftClient.getInstance().getFramebuffer().endWrite();
+		MinecraftClient.getInstance().getFramebuffer().endWrite();
 //		glBindFramebuffer(GL_FRAMEBUFFER, id);
 		GlStateManager._glBindFramebuffer(36160, id);
 
@@ -57,15 +59,15 @@ public class Framebuffer2
 
 	public void unbind()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//		MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		GlStateManager._glBindFramebuffer(36160, id);
+//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 	}
 
 	public void resize()
 	{
 		glDeleteFramebuffers(id);
 		glDeleteTextures(texture);
-
 		init();
 	}
 }

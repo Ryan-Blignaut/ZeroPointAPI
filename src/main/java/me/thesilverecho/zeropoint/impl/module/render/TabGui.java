@@ -3,7 +3,7 @@ package me.thesilverecho.zeropoint.impl.module.render;
 import com.google.common.util.concurrent.AtomicDouble;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.KeyEvent;
-import me.thesilverecho.zeropoint.api.event.events.Render2dEvent;
+import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
@@ -20,7 +20,7 @@ public class TabGui extends BaseModule
 {
 
 	@EventListener
-	public void renderEvent(Render2dEvent event)
+	public void renderEvent(Render2dEvent.Pre event)
 	{
 		final MatrixStack matrixStack = event.matrixStack();
 		AtomicDouble yCord = new AtomicDouble(3);
@@ -31,7 +31,7 @@ public class TabGui extends BaseModule
 			                         final double v = yCord.get();
 			                         final float andAdd = (float) yCord.getAndAdd(font.getHeight());
 			                         RenderUtilV2.rectangle(matrixStack, 2, (float) v, font.getWidth(s) + 3, font.getHeight() + 1, 0, new ColourHolder(50, 50, 50, 80));
-			                         font.render(matrixStack, s, 3, andAdd + 1);
+//			                         font.render(matrixStack, s, 3, andAdd + 1);
 
 		                         });
 

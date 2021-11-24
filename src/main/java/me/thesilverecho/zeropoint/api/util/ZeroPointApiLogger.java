@@ -21,7 +21,7 @@ public class ZeroPointApiLogger
 			String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
 			String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
 			int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-			LOGGER.error(className + "." + methodName + "():" + lineNumber +" \t "+ message);
+			LOGGER.error(className + "." + methodName + "():" + lineNumber + " \t " + message);
 		}
 	}
 

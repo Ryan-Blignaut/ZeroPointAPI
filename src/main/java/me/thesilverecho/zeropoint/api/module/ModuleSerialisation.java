@@ -13,7 +13,7 @@ public class ModuleSerialisation implements JsonDeserializer<BaseModule>, JsonSe
 
 		final JsonObject base = new JsonPrimitive(src.getName()).getAsJsonObject();
 		base.add("enabled", new JsonPrimitive(src.isEnabled()));
-		base.add("key", new JsonPrimitive(src.getKeybind().code()));
+		base.add("key", new JsonPrimitive(src.getKeybind().getKeyCode()));
 		return base;
 	}
 

@@ -1,15 +1,14 @@
-#version 430 compatibility
 #define ITERATIONS 320
 #define GOLDEN_ANGLE 2.39996
 
 precision highp float;
 
-uniform sampler2D u_Texture;
-uniform float size;
+uniform sampler2D Sampler0;
+uniform float Size;
 
 
 smooth in vec2 position;
-smooth in vec4 vertexColor;
+smooth in vec4 VertexColor;
 smooth in vec2 text;
 
 out vec4 fragColor;
@@ -37,6 +36,6 @@ vec3 Bokeh(sampler2D tex, vec2 uv, float radius)
 }
 
 void main() {
-//    texture(u_Texture, text)
-    fragColor =  vec4(Bokeh(u_Texture, text, size), 1.0);
+    //    texture(u_Texture, text)
+    fragColor =  vec4(Bokeh(Sampler0, text, size), 1.0);
 }

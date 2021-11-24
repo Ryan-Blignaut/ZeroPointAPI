@@ -66,7 +66,7 @@ public class GIFTexture
 		readHead();
 	}
 
-	private InputStream stream;
+	private final InputStream stream;
 
 	private void readHead()
 	{

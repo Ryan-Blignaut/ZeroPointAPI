@@ -9,11 +9,11 @@ uniform mat4 ProjMat;
 
 smooth out vec2 position;
 smooth out vec4 vertexColor;
-smooth out vec2 text;
+smooth out vec2 textureCoord;
 
 void main() {
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
     position = Position.xy;
     vertexColor = Color;
-    text = UV;
+    textureCoord = UV;
 }

@@ -5,7 +5,7 @@ precision highp float;
 smooth in vec2 position;
 //smooth in vec4 vertexColor;
 
-uniform float u_Hue;
+uniform float Hue;
 
 out vec4 fragColor;
 
@@ -55,7 +55,7 @@ vec4 hueToRGB(float hue){
 
 void main()
 {
-   float hue1 =  position.y;//map(position.y, 0.1, 1.0, 360.0, 0.0);
+    float hue1 =  position.y;//map(position.y, 0.1, 1.0, 360.0, 0.0);
 
     fragColor = pow(hueToRGB(hue1), vec4(1.0/2.2));
     //fragColor = vertexColor * vec4(1.0, 1.0, 1.0, 1.0);

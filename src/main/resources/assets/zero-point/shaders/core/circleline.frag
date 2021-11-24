@@ -2,8 +2,8 @@
 
 precision highp float;
 
-layout(location = 0) uniform vec2 centerPos;
-layout(location = 1) uniform vec2 radius;
+uniform vec2 CenterPosition;
+uniform vec2 Radius;
 
 smooth in vec2 position;
 smooth in vec4 vertexColor;
@@ -17,9 +17,9 @@ void main() {
     }
 
     //Distance from position to center
-    float v = length(position - centerPos);
+    float dist = length(position - CenterPosition);
     //1 - interpelated value from radius - feather to radius where v is source
-    float alpha = smoothstep(radius.x - radius.y, radius.x, v) * (1.0 - smoothstep(radius.x - radius.y, radius.x, v));
+    float alpha = abs(smoothstep(radius.x - radius.y, radius.x, dist));//* (1.0 - smoothstep(radius.x - radius.y, radius.x, v));
 
     fragColor = vertexColor * vec4(1.0, 1.0, 1.0, alpha);
 }

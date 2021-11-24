@@ -1,11 +1,10 @@
 package me.thesilverecho.zeropoint.api.render.font;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.render.texture.Texture2D;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
+import me.thesilverecho.zeropoint.api.render.texture.Texture2D;
 import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -17,46 +16,56 @@ import org.lwjgl.system.MemoryStack;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.lwjgl.stb.STBTruetype.*;
 
 public class CustomFont
 {
-	//	Map containing all loaded fonts.
-	private static final HashMap<Identifier, CustomFont> LOADED_FONTS = new HashMap<>();
+	//	Map containing all fonts.
+	private static final HashMap<String, CustomFont> ALL_FONTS = new HashMap<>();
 
-	private final Identifier customFont;
+	private boolean loaded;
+	private final String name;
+	private final Identifier customFontID;
+
 	private int height;
-	private float scale, fontScale = 1, ascent;
+	private float scale, ascent;
+
 	public Texture2D texture;
 	private GlyphInfo[] glyphs;
-	final ColourHolder[] vertexColours = new ColourHolder[4];
+	private final ColourHolder[] vertexColours = new ColourHolder[4];
+	private float fontScale;
 
-
-	/**
-	 * Constructor taking in an identifier of where the font file is located.
-	 *
-	 * @param identifier where the font is located.
-	 */
-	public CustomFont(Identifier identifier)
+	public CustomFont(String nameSpace, String path)
 	{
-		this.customFont = identifier;
+		this.customFontID = new Identifier(nameSpace, path);
+		final int lastSlash = path.lastIndexOf("/");
+		final int extensionStart = path.lastIndexOf(".");
+		this.name = lastSlash == -1 ? path : path.substring(lastSlash + 1, extensionStart);
 	}
 
-	/**
-	 * Gets the font or creates if not already created.
-	 *
-	 * @return Font or newly created font.
-	 */
-	public CustomFont getFontLazy()
+	public static CustomFont getFontByName(String name)
 	{
-		return LOADED_FONTS.computeIfAbsent(customFont, identifier ->
-		{
-			ApiIOUtils.getResourceFromClientPack(identifier).ifPresent(this::loadFont);
-			return this;
-		});
+		final CustomFont customFont = ALL_FONTS.get(name);
+		if (customFont == null)
+			return APIFonts.REGULAR.getFont();
+		return customFont.get();
+	}
+
+	public CustomFont get()
+	{
+		ALL_FONTS.putIfAbsent(this.name, this);
+		if (!this.loaded)
+			loadFont();
+		return this;
+	}
+
+
+	private void loadFont()
+	{
+		ApiIOUtils.getResourceFromClientPack(this.customFontID).ifPresent(this::loadFont);
+		this.loaded = true;
 	}
 
 	/**
@@ -67,6 +76,11 @@ public class CustomFont
 	public void loadFont(InputStream inputStream)
 	{
 		this.create(ApiIOUtils.readBytesToBuffer(inputStream), 18);
+	}
+
+	public String getName()
+	{
+		return name;
 	}
 
 	public void create(ByteBuffer buffer, int height)
@@ -114,7 +128,12 @@ public class CustomFont
 		}
 	}
 
-	public float render(MatrixStack matrixStack, String string, float x, float y)
+	public GlyphInfo[] getGlyphs()
+	{
+		return glyphs;
+	}
+
+/*	public float render(MatrixStack matrixStack, String string, float x, float y)
 	{
 		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, fontScale, false);
 	}
@@ -124,10 +143,20 @@ public class CustomFont
 		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, false);
 	}
 
+	public float renderOutline(MatrixStack matrixStack, String string, float x, float y)
+	{
+		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, fontScale, true);
+	}
+
+	public float renderOutline(MatrixStack matrixStack, String string, float x, float y, float scale)
+	{
+		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, true);
+	}
+
 	public float render(MatrixStack matrixStack, String string, float x, float y, float scale, boolean outline)
 	{
 		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, outline);
-	}
+	}*/
 
 	public float getHeight()
 	{
@@ -157,7 +186,7 @@ public class CustomFont
 			} else
 			{
 				final GlyphInfo glyph = glyphs[character - 32];
-				x += glyph.xAdvance() * fontScale;
+				x += glyph.xAdvance();
 			}
 
 		}
@@ -165,7 +194,7 @@ public class CustomFont
 		return x;
 	}
 
-	public float render(Matrix4f matrixStack, String string, ColourHolder defaultColour, float x, float y, float scale, boolean outline)
+	/*public float render(Matrix4f matrixStack, String string, ColourHolder defaultColour, float x, float y, float scale, boolean outline)
 	{
 //		Fills the vertex colours with the default colour every time a new string is rendered.
 		Arrays.fill(vertexColours, defaultColour);
@@ -177,6 +206,7 @@ public class CustomFont
 //			If the character is out of bounds replace it with default.
 			if (character < 32 || character > 256) character = 32;
 //			Look for custom formatting from the string ${format type}.
+//			\$\{(.*?)}
 			if (character == '$' && i + 1 < string.length() && string.charAt(i + 1) == '{')
 			{
 				final int startOfFormatString = string.indexOf("${", i);
@@ -212,29 +242,54 @@ public class CustomFont
 					Arrays.fill(vertexColours, defaultColour);
 
 
-				final GlyphInfo glyph = glyphs[character - 32];
-				RenderUtilV2.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
-				RenderUtilV2.setTextureId(texture.getID());
-
-				RenderUtilV2.quadTexture(matrixStack,
-						x + glyph.x() * scale,
-						y + glyph.y() * scale,
-						x + glyph.w() * scale,
-						y + glyph.h() * scale,
-						glyph.u0(),
-						glyph.v0(),
-						glyph.u1(),
-						glyph.v1(),
-						vertexColours[0] == null ? defaultColour : vertexColours[0],
-						vertexColours[1] == null ? defaultColour : vertexColours[1],
-						vertexColours[2] == null ? defaultColour : vertexColours[2],
-						vertexColours[3] == null ? defaultColour : vertexColours[3]);
-				x += glyph.xAdvance() * scale;
+				x = getX(matrixStack, defaultColour, x, y, scale, glyphs[character - 32]);
 			}
 
 		}
 		return x;
+	}*/
+
+	public float getX(Matrix4f matrixStack, ColourHolder defaultColour, float x, float y, float scale, GlyphInfo glyph1)
+	{
+		final GlyphInfo glyph = glyph1;
+		RenderUtilV2.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
+		RenderUtilV2.setTextureId(texture.getID());
+
+		RenderUtilV2.quadTexture(matrixStack,
+				x + glyph.x() * scale,
+				y + glyph.y() * scale,
+				x + glyph.w() * scale,
+				y + glyph.h() * scale,
+				glyph.u0(),
+				glyph.v0(),
+				glyph.u1(),
+				glyph.v1(),
+				vertexColours[0] == null ? defaultColour : vertexColours[0],
+				vertexColours[1] == null ? defaultColour : vertexColours[1],
+				vertexColours[2] == null ? defaultColour : vertexColours[2],
+				vertexColours[3] == null ? defaultColour : vertexColours[3]);
+		x += glyph.xAdvance() * scale;
+		return x;
 	}
 
 
+	public GlyphInfo getGlyph(int location)
+	{
+		return this.glyphs[location];
+	}
+
+	public float getAscent()
+	{
+		return this.ascent;
+	}
+
+	public Texture2D getTexture()
+	{
+		return this.texture;
+	}
+
+	public float getScale()
+	{
+		return this.scale;
+	}
 }

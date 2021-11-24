@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "BufferBuilderStorageAccessor",
+    "GameRendererMixin",
     "InGameHudMixin",
     "KeyboardMixin",
     "LivingEntityRendererMixin",

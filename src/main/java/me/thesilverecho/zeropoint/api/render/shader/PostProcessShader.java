@@ -69,9 +69,9 @@ public class PostProcessShader extends Shader
 		RenderSystem.depthFunc(519);
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
 		bufferBuilder.vertex(0.0D, 0.0D, 500.0D).next();
-		bufferBuilder.vertex((double) f, 0.0D, 500.0D).next();
-		bufferBuilder.vertex((double) f, (double) g, 500.0D).next();
-		bufferBuilder.vertex(0.0D, (double) g, 500.0D).next();
+		bufferBuilder.vertex(f, 0.0D, 500.0D).next();
+		bufferBuilder.vertex(f, g, 500.0D).next();
+		bufferBuilder.vertex(0.0D, g, 500.0D).next();
 		bufferBuilder.end();
 		this.unBind();
 	}

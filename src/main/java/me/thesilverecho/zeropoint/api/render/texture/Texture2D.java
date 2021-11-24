@@ -13,10 +13,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11C.*;
-import static org.lwjgl.opengl.GL12C.GL_UNPACK_IMAGE_HEIGHT;
-import static org.lwjgl.opengl.GL12C.GL_UNPACK_SKIP_IMAGES;
-import static org.lwjgl.opengl.GL45.glTextureParameteri;
+import static org.lwjgl.opengl.GL45.*;
 
 
 public class Texture2D implements AutoCloseable
@@ -27,6 +24,7 @@ public class Texture2D implements AutoCloseable
 
 	private void bindTexture()
 	{
+		GlStateManager._activeTexture(GL_TEXTURE0);
 		if (!RenderSystem.isOnRenderThreadOrInit())
 			RenderSystem.recordRenderCall(() -> GlStateManager._bindTexture(this.getID()));
 		else
@@ -36,7 +34,19 @@ public class Texture2D implements AutoCloseable
 	public Texture2D(int width, int height, Format format)
 	{
 		bindTexture();
-		glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), GL_UNSIGNED_BYTE, 0);
+		GlStateManager._pixelStore(GL_UNPACK_SWAP_BYTES, GL_FALSE);
+		GlStateManager._pixelStore(GL_UNPACK_LSB_FIRST, GL_FALSE);
+		GlStateManager._pixelStore(GL_UNPACK_ROW_LENGTH, 0);
+		GlStateManager._pixelStore(GL_UNPACK_IMAGE_HEIGHT, 0);
+		GlStateManager._pixelStore(GL_UNPACK_SKIP_ROWS, 0);
+		GlStateManager._pixelStore(GL_UNPACK_SKIP_PIXELS, 0);
+		GlStateManager._pixelStore(GL_UNPACK_SKIP_IMAGES, 0);
+		GlStateManager._pixelStore(GL_UNPACK_ALIGNMENT, 4);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), GL_UNSIGNED_BYTE, (ByteBuffer) null);
 	}
 
 	public Texture2D(int width, int height, ByteBuffer buffer, Format format)
@@ -53,7 +63,6 @@ public class Texture2D implements AutoCloseable
 		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 		glPixelStorei(GL_UNPACK_SKIP_IMAGES, 0);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

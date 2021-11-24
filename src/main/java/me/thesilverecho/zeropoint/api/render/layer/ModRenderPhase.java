@@ -7,8 +7,6 @@ import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL43;
 
 import java.util.Optional;
 import java.util.function.Consumer;

@@ -48,7 +48,7 @@ public class DynamicClassUtil
 			Files.walk(locationPath).parallel().filter(path -> path.toString().endsWith(".class")).forEach(path ->
 			{
 				final String a = packageName.replace('/', '.');
-				final String pathName = path.toString().replace('/', '.').replace('\\','.');
+				final String pathName = path.toString().replace('/', '.').replace('\\', '.');
 				final String clazz = pathName.substring(pathName.indexOf(a), pathName.length() - 6);
 				files.add(clazz);
 			});

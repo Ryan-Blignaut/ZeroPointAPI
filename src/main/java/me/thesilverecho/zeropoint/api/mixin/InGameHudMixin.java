@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.api.mixin;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
-import me.thesilverecho.zeropoint.api.event.events.*;
+import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -28,28 +28,35 @@ public abstract class InGameHudMixin
 	@Inject(method = "renderCrosshair", at = @At(value = "HEAD"), cancellable = true)
 	private void customCrossHair(MatrixStack matrixStack, CallbackInfo ci)
 	{
-		EventManager.call(new RenderCrosshairEvent(matrixStack, ci));
+		EventManager.call(new Render2dEvent.RenderCrosshair(matrixStack, scaledWidth, scaledHeight, ci));
 	}
 
 	@Inject(method = "renderScoreboardSidebar", at = @At(value = "HEAD"), cancellable = true)
 	private void renderScoreboardSidebar(MatrixStack matrixStack, ScoreboardObjective scoreboardObjective, CallbackInfo ci)
 	{
-		EventManager.call(new RenderUIEvent.ScoreBoard(matrixStack, scoreboardObjective, ci));
+		EventManager.call(new Render2dEvent.ScoreBoard(matrixStack, scoreboardObjective, ci));
 	}
 
 	@Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
-	private void renderScreen(MatrixStack matrixStack, float tickDelta, CallbackInfo ci)
+	private void preRenderScreen(MatrixStack matrixStack, float tickDelta, CallbackInfo ci)
 	{
 		if (MinecraftClient.getInstance().options.debugEnabled)
 			return;
+		EventManager.call(new Render2dEvent.Pre(matrixStack, tickDelta, scaledWidth, scaledHeight, ci));
+	}
 
-		EventManager.call(new Render2dEvent(matrixStack, tickDelta, scaledWidth, scaledHeight, ci));
+	@Inject(method = "render", at = @At(value = "RETURN"), cancellable = true)
+	private void postRenderScreen(MatrixStack matrixStack, float tickDelta, CallbackInfo ci)
+	{
+		if (MinecraftClient.getInstance().options.debugEnabled)
+			return;
+		EventManager.call(new Render2dEvent.Post(matrixStack, tickDelta, scaledWidth, scaledHeight, ci));
 	}
 
 	@Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)
 	private void renderHotbar(float tickDelta, MatrixStack matrixStack, CallbackInfo ci)
 	{
-		EventManager.call(new RenderHotbarEvent(matrixStack, tickDelta, this.getCameraPlayer(), scaledWidth, scaledHeight, itemRenderer, ci));
+		EventManager.call(new Render2dEvent.RenderHotbar(matrixStack, tickDelta, this.getCameraPlayer(), scaledWidth, scaledHeight, itemRenderer, ci));
 	}
 
 }

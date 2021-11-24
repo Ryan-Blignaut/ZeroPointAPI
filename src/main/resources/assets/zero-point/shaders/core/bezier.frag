@@ -2,11 +2,11 @@
 
 precision highp float;
 
-uniform vec2 point1;
-uniform vec2 point2;
-uniform vec2 point3;
-uniform float thickness;
-uniform float smoothR;
+uniform vec2 Point1;
+uniform vec2 Point2;
+uniform vec2 Point3;
+uniform float Thickness;
+uniform float SmoothR;
 
 smooth in vec2 position;
 smooth in vec4 vertexColor;
@@ -47,8 +47,11 @@ float approx_distance(vec2 p, vec2 b0, vec2 b1, vec2 b2) {
 
 void main()
 {
-    float d = approx_distance(position, point1, point2, point3);
-    float a = 1.0 - smoothstep(thickness - smoothR, thickness, d);
+    if (vertexColor.a == 0.0) {
+        discard;
+    }
+    float d = approx_distance(position, Point1, Point2, Point3);
+    float a = 1.0 - smoothstep(Thickness - SmoothR, Thickness, d);
     fragColor = vertexColor * vec4(1.0, 1.0, 1.0, a);
 }
 

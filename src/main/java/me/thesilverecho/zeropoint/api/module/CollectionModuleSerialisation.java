@@ -21,7 +21,7 @@ public class CollectionModuleSerialisation extends TypeAdapter<ArrayList<BaseMod
 			out.name("enabled");
 			out.value(baseModule.isEnabled());
 			out.name("key");
-			out.value(baseModule.getKeybind().code());
+			out.value(baseModule.getKeybind().getKeyCode());
 			out.endObject();
 		}
 		out.endObject();

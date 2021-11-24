@@ -10,7 +10,7 @@ public class PaneComponent extends Component2D
 {
 	private final static ArrayList<IntractableComponent> COMPONENTS = new ArrayList<>();
 	private IntractableComponent selected;
-	private boolean dragging = false;
+	private final boolean dragging = false;
 
 	public PaneComponent()
 	{

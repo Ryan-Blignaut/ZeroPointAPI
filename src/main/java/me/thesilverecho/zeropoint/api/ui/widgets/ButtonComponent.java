@@ -6,6 +6,7 @@ import me.thesilverecho.zeropoint.api.event.events.MouseEvent;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
+import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
@@ -47,7 +48,7 @@ public class ButtonComponent extends IntractableComponent
 	public void renderComp(MatrixStack matrices, float mouseX, float mouseY, double delta)
 	{
 		RenderUtilV2.roundRect(matrices, x, y, x + w, y + w, 3, colourHolder);
-		font.render(matrices, text, x + padding, y + padding);
+		FontRenderer.renderText(font, matrices, text, false, x + padding, y + padding);
 	}
 
 	public ButtonComponent setResizeFromText(boolean resizeFromText)

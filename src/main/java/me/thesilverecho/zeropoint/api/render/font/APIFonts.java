@@ -1,7 +1,6 @@
 package me.thesilverecho.zeropoint.api.render.font;
 
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
-import net.minecraft.util.Identifier;
 
 public enum APIFonts
 {
@@ -14,13 +13,13 @@ public enum APIFonts
 	private final CustomFont font;
 	private static final String BASE_FONT_PATH = "fonts/";
 
-	APIFonts(String loc)
+	APIFonts(String name)
 	{
-		this.font = new CustomFont(new Identifier(ZeroPointClient.MOD_ID, BASE_FONT_PATH + loc));
+		this.font = new CustomFont(ZeroPointClient.MOD_ID, BASE_FONT_PATH + name);
 	}
 
 	public CustomFont getFont()
 	{
-		return this.font.getFontLazy();
+		return this.font.get();
 	}
 }

@@ -1,4 +1,3 @@
-
 package me.thesilverecho.zeropoint.api.util;
 
 /**

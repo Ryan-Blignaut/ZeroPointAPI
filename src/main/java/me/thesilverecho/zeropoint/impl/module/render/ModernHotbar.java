@@ -4,12 +4,14 @@ package me.thesilverecho.zeropoint.impl.module.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.event.EventListener;
-import me.thesilverecho.zeropoint.api.event.events.RenderHotbarEvent;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
+import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
+import me.thesilverecho.zeropoint.api.render.font.CustomFont;
+import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.mixin.MinecraftClientAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -32,22 +34,24 @@ public class ModernHotbar extends BaseModule
 	private float animationX = 0;
 
 	@ConfigSetting
-	private String hudCol = "#323232", fpsCol = "";
+	private final String hudCol = "#323232";
+	@ConfigSetting
+	private final String fpsCol = "rainbow";
 
 	@EventListener
-	public void render(RenderHotbarEvent event)
+	public void render(Render2dEvent.RenderHotbar event)
 	{
 		event.ci().cancel();
 		final int height = event.scaledHeight();
 		final int width = event.scaledWidth();
 		final MatrixStack matrixStack = event.matrixStack();
 
-		RenderUtilV2.rectangle(matrixStack, 0, height - 23, width, 23, 0, ColourHolder.decode(hudCol).setAlpha(180));
+		final int codeHeight = 24;
+		RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180));
 		PlayerEntity playerEntity = event.player();
 		final PlayerInventory inventory = playerEntity.getInventory();
+		final ItemStack offHandStack = playerEntity.getOffHandStack();
 
-
-//		RenderUtilV2.quadTexture(matrixStack, 0, 0, 32, 32, new ColourHolder(255, 255, 255, 255));
 
 		final float tempZIndex = RenderUtilV2.getZIndex();
 		RenderUtilV2.setZIndex(-90);
@@ -55,26 +59,39 @@ public class ModernHotbar extends BaseModule
 		final float x = halfWidth - 93 + inventory.selectedSlot * 20 + 2;
 
 		this.animationX = (float) RenderUtilV2.getAnimationState(this.animationX, x, Math.max(50.0F, Math.abs(this.animationX - x) * 10.0F));
-		RenderUtilV2.roundRect(matrixStack, x, height - 23, -x + halfWidth - 71 + inventory.selectedSlot * 20 + 2, 23, 2, new ColourHolder(255, 255, 255, 80));
+		RenderUtilV2.roundRect(matrixStack, x, height - codeHeight, -x + halfWidth - 71 + inventory.selectedSlot * 20 + 2, codeHeight, 2, new ColourHolder(255, 255, 255, 80));
+		if (!offHandStack.isEmpty())
+			RenderUtilV2.roundRect(matrixStack, halfWidth - 90 - 29, height - codeHeight, 22, codeHeight, 2, new ColourHolder(255, 255, 255, 80));
 
 
 		RenderUtilV2.setZIndex(tempZIndex);
 		int m = 1;
+		final CustomFont font = APIFonts.REGULAR.getFont();
 		for (int slot = 0; slot < 9; slot++)
 		{
-			int r = (int) (halfWidth - 90 + slot * 20 + 2);
-			int s = height - 16 - 3;
-			APIFonts.REGULAR.getFont().setFontScale(0.3f).render(matrixStack, "${#DE6E1F}" + (slot + 1), r + 15, s - 3);
-			this.renderHotbarItem(event, r, s, inventory.main.get(slot), m++);
+			int wPos = (int) (halfWidth - 90 + slot * 20 + 2);
+			int hPos = height - 16 - 3;
+			FontRenderer.renderText(font, 0.3f, matrixStack, "${#DE6E1F}" + (slot + 1), wPos + 15, hPos - 5);
+			this.renderHotbarItem(event, wPos, hPos, inventory.main.get(slot), m++);
+		}
+
+		if (!offHandStack.isEmpty())
+		{
+			final int wPos = (int) (halfWidth - 90 - 26);
+			final int hPos = height - 16 - 3;
+			this.renderHotbarItem(event, wPos, hPos, offHandStack, m);
+			FontRenderer.renderText(font, 0.3f, matrixStack, "${#DE6E1F}Offhand", wPos, hPos - 5);
 		}
 
 
-		APIFonts.REGULAR.getFont().setFontScale(0.4f).render(matrixStack, time, width - 25, height - 11.5f - 7.2f);
-		APIFonts.REGULAR.getFont().render(matrixStack, date, width - 35, height - 11.5f);
+		FontRenderer.renderText(font, 0.4f, matrixStack, time, width - 25, height - 11.5f - 7.2f);
+		FontRenderer.renderText(font, 0.4f, matrixStack, date, width - 35, height - 11.5f);
 
-		final float size = APIFonts.REGULAR.getFont().render(matrixStack, fps, 10, height - 11.5f - 7.2f);
-		APIFonts.REGULAR.getFont().render(matrixStack, ping, size + 2, height - 11.5f - 7.2f);
-		APIFonts.REGULAR.getFont().render(matrixStack, pos, 10, height - 10f);
+		final float size = FontRenderer.renderText(font, 0.4f, matrixStack, fps, 10, height - 11.5f - 7.2f);
+
+		FontRenderer.renderText(font, 0.4f, matrixStack, ping, size + 2, height - 11.5f - 7.2f);
+
+		FontRenderer.renderText(font, 0.4f, matrixStack, pos, 10, height - 10f);
 	}
 
 
@@ -92,7 +109,7 @@ public class ModernHotbar extends BaseModule
 				final PlayerListEntry playerListEntry = client.getNetworkHandler().getPlayerListEntry(player.getUuid());
 				ping = "Ping: ${#388E3C} " + (playerListEntry != null ? Integer.toString(playerListEntry.getLatency()) : "0");
 			}
-			fps = "FPS: " + ((MinecraftClientAccessor) client).getCurrentFps();
+			fps = "FPS: ${" + fpsCol + "}" + ((MinecraftClientAccessor) client).getCurrentFps();
 			final Vec3d playerPos = player.getPos();
 			pos = "X: " + (int) playerPos.getX() + " Y: " + (int) playerPos.getY() + " Z: " + (int) playerPos.getZ();
 			final LocalDateTime now = LocalDateTime.now();
@@ -101,7 +118,7 @@ public class ModernHotbar extends BaseModule
 		}
 	}
 
-	private void renderHotbarItem(RenderHotbarEvent event, int x, int y, ItemStack stack, int seed)
+	private void renderHotbarItem(Render2dEvent.RenderHotbar event, int x, int y, ItemStack stack, int seed)
 	{
 		if (!stack.isEmpty())
 		{
