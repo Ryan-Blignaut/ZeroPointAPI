@@ -133,26 +133,6 @@ public class RenderUtil
 
 	}
 
-
-	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
-	{
-		enableGL2D();
-		final Matrix4f matrix4f = matrixStack.peek().getModel();
-		final BufferBuilder builder = Tessellator.getInstance().getBuffer();
-		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		builder.vertex(matrix4f, x, y, zIndex).color(cTopLeft.red(), cTopLeft.green(), cTopLeft.blue(), cTopLeft.alpha()).next();
-		builder.vertex(matrix4f, x, y + height, zIndex).color(cBottomLeft.red(), cBottomLeft.green(), cBottomLeft.blue(), cBottomLeft.alpha()).next();
-		builder.vertex(matrix4f, x + width, y + height, zIndex).color(cBottomRight.red(), cBottomRight.green(), cBottomRight.blue(), cBottomRight.alpha()).next();
-		builder.vertex(matrix4f, x + width, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).next();
-		builder.end();
-		shader.bind();
-		postShaderBind.accept(shader);
-		BufferRenderer.postDraw(builder);
-		shader.unBind();
-		disableGL2D();
-	}
-
-
 	*/
 /*-----------------------3D DRAW---------------------*//*
 

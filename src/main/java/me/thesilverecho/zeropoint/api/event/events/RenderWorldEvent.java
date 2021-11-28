@@ -8,4 +8,14 @@ public class RenderWorldEvent
 	public static record Post(MatrixStack matrix) implements BaseEvent
 	{
 	}
+	public static record Pre(MatrixStack matrix) implements BaseEvent
+	{
+	}
+	public static record RenderEntity(MatrixStack matrix) implements BaseEvent
+	{
+	}
+	public static record Resize() implements BaseEvent
+	{
+	}
+
 }

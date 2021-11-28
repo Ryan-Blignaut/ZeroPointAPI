@@ -160,7 +160,7 @@ public class CustomFont
 
 	public float getHeight()
 	{
-		return height * fontScale;
+		return height;
 	}
 
 	public CustomFont setFontScale(float fontScale)

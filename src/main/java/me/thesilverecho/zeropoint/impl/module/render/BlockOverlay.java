@@ -17,7 +17,6 @@ public class BlockOverlay extends BaseModule
 	@EventListener
 	public void renderBlockOutline(BlockOutlineEvent event)
 	{
-		System.out.println("test");
 		final CallbackInfo callbackInfo = event.ci();
 //		if (renderOutline)
 //			callbackInfo.cancel();

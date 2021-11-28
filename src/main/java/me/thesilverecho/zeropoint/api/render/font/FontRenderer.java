@@ -15,6 +15,40 @@ public class FontRenderer
 		return font.getHeight() * size;
 	}
 
+	public static float getHeight(CustomFont font, float wrapWidth, float size)
+	{
+		return font.getHeight() * size;
+	}
+
+	public static float getWrapHeight(CustomFont font, float size, String string, float wrapWidth)
+	{
+		float x = 0;
+		float y = 0;
+		for (int i = 0; i < string.length(); i++)
+		{
+			int character = string.charAt(i);
+
+			if (character < 32 || character > 256) character = 32;
+			if (character == 36 && i + 1 < string.length() && string.charAt(i + 1) == 123)
+			{
+				final int i1 = string.indexOf("${", i);
+				final int i2 = string.indexOf("}", i);
+				if (i1 != -1 && i2 != -1)
+					i += i2 - i1;
+			} else
+			{
+				x += font.getGlyph(character - 32).xAdvance() * size;
+				if (x >= (0 + wrapWidth))
+				{
+					x = 0;
+					y += getHeight(font, size);
+				}
+			}
+		}
+		return y;
+	}
+
+
 	public static float getWidth(CustomFont font, float size, String string)
 	{
 		float x = 0;
@@ -57,11 +91,13 @@ public class FontRenderer
 	}
 
 
-	public static float renderRainbowText(CustomFont font, float size, String text, boolean background, MatrixStack matrixStack, float x, float y)
+	public static float renderTextWrapped(CustomFont font, float size, String text, ColourHolder baseColour, boolean background, MatrixStack matrixStack, float x, float y, float wrapWidth)
 	{
+		float originalX = x;
 		y += font.getAscent() * font.getScale() * size;
 //      Loop for each letter of the text.
 		final ColourHolder[] colours = new ColourHolder[4];
+		Arrays.fill(colours, baseColour);
 		for (int index = 0; index < text.length(); index++)
 		{
 //          Get the integer representation each letter of the text at given index.
@@ -70,20 +106,22 @@ public class FontRenderer
 			if (character < 32 || character > 256) character = 32;
 //			Look for custom formatting from the string ${format type}.
 			if (character == '$' && index + 1 < text.length() && text.charAt(index + 1) == '{')
-				index = countFormatting(character, index, text);
+				index = applyFormatting(character, index, text, baseColour, colours, x, y);
 			else
 			{
 				if (background)
 					renderChar(font, size, character, new ColourHolder(43, 43, 43, 255), matrixStack, x + 0.5f, y + 0.5f);
-				final float delay = 5000;
-				final long timePos = System.currentTimeMillis() - (int) (x * 10 - y * 10);
-				final int colour = Color.HSBtoRGB((timePos % (long) delay) / delay, 0.8f, 0.8f);
-				Arrays.fill(colours, new ColourHolder(colour));
 				x += renderChar(font, size, character, colours, matrixStack, x, y);
+				if (x >= (originalX + wrapWidth))
+				{
+					x = originalX;
+					y += getHeight(font, size);
+				}
 			}
 		}
 		return x;
 	}
+
 
 	public static float renderText(CustomFont font, float size, String text, ColourHolder baseColour, boolean background, MatrixStack matrixStack, float x, float y)
 	{
@@ -207,4 +245,8 @@ public class FontRenderer
 
 	}
 
+	public static void renderTextWrapped(CustomFont font, float v, MatrixStack matrixStack, String text, float v1, float v2, float width)
+	{
+		renderTextWrapped(font, v, text, ColourHolder.FULL, false, matrixStack, v1, v2, width);
+	}
 }

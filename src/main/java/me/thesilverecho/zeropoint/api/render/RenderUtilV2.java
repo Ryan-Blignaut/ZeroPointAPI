@@ -1,6 +1,5 @@
 package me.thesilverecho.zeropoint.api.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
@@ -17,8 +16,6 @@ import net.minecraft.util.math.Vector4f;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
-import static org.lwjgl.opengl.GL13C.GL_TEXTURE0;
 
 
 public class RenderUtilV2
@@ -71,10 +68,7 @@ public class RenderUtilV2
 
 	public static void applyTextureToShader(Shader shader)
 	{
-		GlStateManager._activeTexture(GL_TEXTURE0);
-		GlStateManager._bindTexture(textureId);
-//		RenderSystem.activeTexture(GL43.GL_TEXTURE0);
-//		GlStateManager._bindTexture(textureId);
+		GLWrapper.activateTexture(0, textureId);
 		shader.setArgument("Sampler0", 0);
 	}
 
@@ -261,6 +255,11 @@ public class RenderUtilV2
 		quadTexture(matrixStack, x, y, x + width, y + height, 0, 0, 1, 1, colourHolder, colourHolder, colourHolder, colourHolder);
 	}
 
+	public static void quadTexture(MatrixStack matrixStack, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder colour)
+	{
+		quadTexture(matrixStack, x, y, width, height, u0, v0, u1, v1, colour, colour, colour, colour);
+	}
+
 	public static void quadTexture(MatrixStack matrixStack, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
 	{
 		quadTexture(matrixStack.peek().getModel(), x, y, width, height, u0, v0, u1, v1, cTopLeft, cTopRight, cBottomRight, cBottomLeft);
@@ -277,6 +276,14 @@ public class RenderUtilV2
 		setTextureId(textureLoc);
 		setAfterBindTasks(shader -> shader.setArgument("Radius", new Vec2f(radius, 0)));
 		quadTexture(matrixStack, x, y, width, height, colourHolder);
+	}
+
+	public static void rectangleTexture(MatrixStack matrixStack, float x, float y, float width, float height, float u0, float v0, float u1, float v1, int textureLoc, ColourHolder colourHolder)
+	{
+		setShader(APIShaders.RECTANGLE_TEXTURE_SHADER.getShader());
+		setTextureId(textureLoc);
+		setAfterBindTasks(shader -> shader.setArgument("Radius", new Vec2f(0, 0)));
+		quadTexture(matrixStack, x, y, x + width, y + height, u0, v0, u1, v1, colourHolder);
 	}
 
 	public static void rectangleBokeh(MatrixStack matrixStack, float x, float y, float width, float height, float size, int textureLoc, ColourHolder colourHolder)
@@ -332,7 +339,7 @@ public class RenderUtilV2
 		RenderUtilV2.setTextureId(textureLoc);
 		RenderUtilV2.setAfterBindTasks(shader ->
 		{
-			shader.setArgument("Radius", new Vec2f(radius, Math.min(radius, 0f)));
+			shader.setArgument("Radius", new Vec2f(radius, Math.min(radius, 1f)));
 			shader.setArgument("CenterPosition", new Vec2f(x + height / 2, y + width / 2));
 		});
 
@@ -342,6 +349,8 @@ public class RenderUtilV2
 
 	public static void postProcessRect(float width, float height, float u0, float v0, float u1, float v1)
 	{
+		RenderSystem.setProjectionMatrix(Matrix4f.projectionMatrix(width, -height, 1000.0F, 3000.0F));
+
 		final BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(0.0D, height, 0.0D).texture(u0, v0).next();
@@ -349,7 +358,9 @@ public class RenderUtilV2
 		bufferBuilder.vertex(width, 0.0D, 0.0D).texture(u1, v1).next();
 		bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(u0, v1).next();
 		bufferBuilder.end();
+		//Set the projection matrix.
 		shader.bind();
+		shader.setArgument("TextureSize", new Vec2f(width, height));
 		afterBindTasks.andThen(RenderUtilV2::applyTextureToShader).accept(shader);
 		BufferRenderer.postDraw(bufferBuilder);
 		shader.unBind();

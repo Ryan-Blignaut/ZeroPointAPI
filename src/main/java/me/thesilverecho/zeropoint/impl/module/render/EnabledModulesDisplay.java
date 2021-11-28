@@ -4,7 +4,7 @@ import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.Framebuffer;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.atomic.AtomicInteger;

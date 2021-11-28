@@ -1,52 +1,36 @@
 #version 450 core
 
 uniform sampler2D Sampler0;
-uniform vec2 InSize;
-
-uniform vec2 BlurDir;
-uniform float Radius;
 
 in vec2 texCoord;
 in vec2 oneTexel;
 
-out vec4 fragColor;
+uniform vec2 BlurDir;
+uniform float Radius;
 
-float normpdf(float x, float sigma)
-{
-    return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
-}
+out vec4 fragColor;
 
 
 void main() {
-    //declare stuff
-    const int mSize = 11;
-    const int kSize = (mSize-1)/2;
-    float kernel[mSize];
-    vec3 final_colour = vec3(0.0);
 
-    //create the 1-D kernel
-    float sigma = 7.0;
-    float Z = 0.0;
-    for (int j = 0; j <= kSize; ++j)
-    {
-        kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
-    }
+    vec4 blurred = vec4(0.0);
+    float totalStrength = 0.0;
+    float totalAlpha = 0.0;
+    float totalSamples = 0.0;
+    float progRadius = floor(Radius);
+    for (float r = -progRadius; r <= progRadius; r += 1.0) {
+        vec4 sample1 = texture(Sampler0, texCoord + oneTexel * r * BlurDir);
 
-    //get the normalization factor (as the gaussian has been clamped)
-    for (int j = 0; j < mSize; ++j)
-    {
-        Z += kernel[j];
-    }
+        // Accumulate average alpha
+        totalAlpha = totalAlpha + sample1.a;
+        totalSamples = totalSamples + 1.0;
 
-    //read out the texels
-    for (int i=-kSize; i <= kSize; ++i)
-    {
-        for (int j=-kSize; j <= kSize; ++j)
-        {
-            final_colour += kernel[kSize+j]*kernel[kSize+i]*texture(Sampler0, (texCoord.xy+vec2(float(i), float(j)))).rgb;
-        }
+        // Accumulate smoothed blur
+        float strength = 1.0 - abs(r / progRadius);
+        totalStrength = totalStrength + strength;
+        blurred = blurred + sample1;
     }
-    fragColor = texture(Sampler0, texCoord);//vec4(final_colour/(Z*Z), 1.0);
+    fragColor = vec4(blurred.rgb / (progRadius * 2.0 + 1.0), totalAlpha);
 }
 
 

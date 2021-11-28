@@ -2,12 +2,9 @@ package me.thesilverecho.zeropoint.impl.module.render;
 
 
 import me.thesilverecho.zeropoint.api.event.EventListener;
-import me.thesilverecho.zeropoint.api.event.events.TickEvent;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import org.lwjgl.glfw.GLFW;
 
 @ClientModule(name = "speed graph", active = true, keyBinding = GLFW.GLFW_KEY_M)
@@ -24,7 +21,7 @@ public class SpeedGraph extends BaseModule
 
 	}
 
-	@EventListener
+	/*@EventListener
 	public void onTick(TickEvent.StartTickEvent event)
 	{
 		final ClientPlayerEntity player = event.client().player;
@@ -33,6 +30,6 @@ public class SpeedGraph extends BaseModule
 		final double xDiff = player.getX() - player.prevX;
 		final double zDiff = player.getZ() - player.prevZ;
 		speed = Math.hypot(xDiff, zDiff) * tickDelta;
-	}
+	}*/
 
 }

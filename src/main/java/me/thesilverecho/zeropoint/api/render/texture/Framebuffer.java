@@ -1,40 +1,29 @@
-package me.thesilverecho.zeropoint.api.render;
+package me.thesilverecho.zeropoint.api.render.texture;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.thesilverecho.zeropoint.api.render.texture.Texture2D;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 
-import static org.lwjgl.opengl.GL32C.*;
+import java.util.ArrayList;
 
-public class Framebuffer2
+import static org.lwjgl.opengl.GL30.*;
+
+public class Framebuffer
 {
-	private int id = -1;
+	private static final ArrayList<Framebuffer> LOADED_FRAME_BUFFERS = new ArrayList<>();
+	private int id;
 	public int texture;
 
-	public Framebuffer2(int width, int height)
+	public Framebuffer()
 	{
-		id = glGenFramebuffers();
-//		glBindFramebuffer(GL_FRAMEBUFFER, id);
-		bind();
-		Texture2D texture2D = new Texture2D(width, height, Texture2D.Format.RGB);
-		this.texture = texture2D.getID();
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.texture, 0);
-		final int renderbuffer = glGenRenderbuffers();
-		glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		{
-			ZeroPointApiLogger.error("Frame buffer ran into issue");
-		}
-//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		unbind();
+		init();
+		LOADED_FRAME_BUFFERS.add(this);
 	}
 
 	private void init()
 	{
+		id = glGenFramebuffers();
 		bind();
 		final Window window = MinecraftClient.getInstance().getWindow();
 		final int framebufferWidth = window.getFramebufferWidth();
@@ -46,28 +35,45 @@ public class Framebuffer2
 		glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, framebufferWidth, framebufferHeight);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			ZeroPointApiLogger.error("Frame buffer ran into issue");
+		}
 		unbind();
 	}
 
 	public void bind()
 	{
-		MinecraftClient.getInstance().getFramebuffer().endWrite();
-//		glBindFramebuffer(GL_FRAMEBUFFER, id);
+//		MinecraftClient.getInstance().getFramebuffer().endWrite();
 		GlStateManager._glBindFramebuffer(36160, id);
-
+//		glBindFramebuffer(GL_FRAMEBUFFER, id);
 	}
 
 	public void unbind()
 	{
-		GlStateManager._glBindFramebuffer(36160, id);
-//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 	}
 
-	public void resize()
+	private void resize()
 	{
 		glDeleteFramebuffers(id);
 		glDeleteTextures(texture);
 		init();
 	}
+
+	public void clear()
+	{
+		this.bind();
+		GlStateManager._clearColor(1, 1, 1, 1);
+		int i = 16384;
+		GlStateManager._clear(i, false);
+		this.unbind();
+	}
+
+
+	public static void resizeAllFBOs()
+	{
+		LOADED_FRAME_BUFFERS.forEach(Framebuffer::resize);
+	}
+
 }

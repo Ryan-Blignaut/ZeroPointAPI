@@ -5,7 +5,7 @@ import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.Framebuffer;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
@@ -18,6 +18,7 @@ import org.lwjgl.glfw.GLFW;
 public class BlurModule extends BaseModule
 {
 	private Framebuffer fbo1, fbo2;
+	public static Framebuffer fbo3;
 
 	@EventListener
 	public void renderEvent(RenderWorldEvent.Post event)
@@ -28,12 +29,16 @@ public class BlurModule extends BaseModule
 		{
 			fbo1 = new Framebuffer();
 			fbo2 = new Framebuffer();
+
 		}
 
 		final int width = framebuffer.textureWidth;
 		final int height = framebuffer.textureHeight;
+
+		final Shader shader = APIShaders.BLUR_RECTANGLE_SHADER.getShader();
+		RenderUtilV2.setShader(shader);
 		fbo1.bind();
-		final Shader shader = APIShaders.GAUSSIAN_BLUR_SHADER.getShader();
+//		final Shader shader = APIShaders.BLUR_RECTANGLE_SHADER.getShader();
 		RenderUtilV2.setShader(shader);
 		RenderUtilV2.setTextureId(colorAttachment);
 		Matrix4f matrix4f = Matrix4f.projectionMatrix(width, -height, 1000.0F, 3000.0F);
@@ -56,6 +61,8 @@ public class BlurModule extends BaseModule
 		});
 		RenderUtilV2.setTextureId(fbo1.texture);
 		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
+
+
 
 
 	}

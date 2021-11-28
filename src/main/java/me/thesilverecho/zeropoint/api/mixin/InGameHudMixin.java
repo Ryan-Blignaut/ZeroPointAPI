@@ -2,6 +2,7 @@ package me.thesilverecho.zeropoint.api.mixin;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
+import me.thesilverecho.zeropoint.api.notification.NotificationManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -40,6 +41,7 @@ public abstract class InGameHudMixin
 	@Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
 	private void preRenderScreen(MatrixStack matrixStack, float tickDelta, CallbackInfo ci)
 	{
+		NotificationManager.INSTANCE.onRender(matrixStack);
 		if (MinecraftClient.getInstance().options.debugEnabled)
 			return;
 		EventManager.call(new Render2dEvent.Pre(matrixStack, tickDelta, scaledWidth, scaledHeight, ci));

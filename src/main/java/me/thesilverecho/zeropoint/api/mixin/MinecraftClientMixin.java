@@ -2,6 +2,7 @@ package me.thesilverecho.zeropoint.api.mixin;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
+import me.thesilverecho.zeropoint.api.notification.NotificationManager;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,6 +16,7 @@ public abstract class MinecraftClientMixin
 	private void onStartTick(CallbackInfo info)
 	{
 		EventManager.call(new TickEvent.StartTickEvent((MinecraftClient) (Object) this));
+		NotificationManager.INSTANCE.onTick();
 	}
 
 	@Inject(at = @At("RETURN"), method = "tick")

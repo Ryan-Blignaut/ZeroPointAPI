@@ -38,8 +38,8 @@ public class StartScreen
 		RenderUtilV2.roundRect(matrixStack, width / 2 - 150 / 2f, 120, 280, 220, 4, new ColourHolder(255, 255, 255, 120));
 		final CustomFont font = APIFonts.REGULAR.getFont();
 //		font.setFontScale(0.7f).render(matrixStack, "${#2B2B2B}Change ${#2B2B2B}log", width / 2 - 150 / 2f + 5 + 0.5f, 125 + 0.5f);
-		final float v = FontRenderer.renderRainbowText(font, 0.7f, "${#9FA6CE}Change log", true, matrixStack, width / 2 - 150 / 2f + 5, 125);
-		FontRenderer.renderText(font, 0.7f, "Change log", ColourHolder.FULL, true, matrixStack, v + 10, 125);
+		FontRenderer.renderText(font, 0.7f, "${#9FA6CE}Change log", ColourHolder.FULL, true, matrixStack, width / 2 - 150 / 2f + 5, 125);
+//		FontRenderer.renderText(font, 0.7f, "Change log", ColourHolder.FULL, true, matrixStack, v + 10, 125);
 
 //		font.setFontScale(0.7f).render(matrixStack, "${#9FA6CE}Change log", width / 2 - 150 / 2f + 5, 125);
 //		final Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
