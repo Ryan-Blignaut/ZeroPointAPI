@@ -3,7 +3,6 @@ package me.thesilverecho.zeropoint.api.render.texture;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import org.apache.commons.io.IOUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -101,7 +100,7 @@ public class Texture2D implements AutoCloseable
 		} finally
 		{
 			MemoryUtil.memFree(byteBuffer);
-			IOUtils.closeQuietly(inputStream);
+//			IOUtils.closeQuietly(inputStream);
 		}
 		return texture2D;
 	}

@@ -87,7 +87,7 @@ public class Notification
 		private NotificationType type = NotificationType.INFO;
 		private boolean outlined = false, blurBackground = false, hasIcon = false;
 		private String icon = null;
-		private float timeInSeconds = 0.3f;
+		private float timeInSeconds = 3f;
 		private boolean showing = true;
 
 		public Builder(String title, String text)

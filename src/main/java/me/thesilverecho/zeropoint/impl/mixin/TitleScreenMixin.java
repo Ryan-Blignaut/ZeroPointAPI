@@ -1,5 +1,6 @@
 package me.thesilverecho.zeropoint.impl.mixin;
 
+import me.thesilverecho.zeropoint.api.music.MusicPlayer;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.ui.widgets.ButtonComponent;
 import me.thesilverecho.zeropoint.api.ui.widgets.PaneComponent;
@@ -32,7 +33,11 @@ public abstract class TitleScreenMixin extends Screen
 	{
 		StartScreen.init();
 		paneComponent.addComponent(new ButtonComponent(0, 0, 100, 100, ColourHolder.FULL, "test", paneComponent));
-		this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, (button) -> Shader.resetShaderHashMap(), new TranslatableText("reset")));
+		this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, (button) ->
+		{
+			MusicPlayer.getPlayer().play();
+			Shader.resetShaderHashMap();
+		}, new TranslatableText("reset")));
 //		ci.cancel();
 
 	}

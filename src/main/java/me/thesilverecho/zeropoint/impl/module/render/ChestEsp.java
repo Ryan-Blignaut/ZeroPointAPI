@@ -26,7 +26,7 @@ public class ChestEsp extends BaseModule
 		if (!(entity instanceof ChestBlockEntity))
 			return;
 		event.ci().cancel();
-
+		if (fbo1 == null) fbo1 = new Framebuffer();
 		fbo1.bind();
 		glEnable(GL_DEPTH_TEST);
 		event.renderer().render(entity, event.tickDelta(), event.matrices(), event.vertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV);
@@ -38,7 +38,6 @@ public class ChestEsp extends BaseModule
 	public void renderEvent(RenderWorldEvent.Pre event)
 	{
 
-		fbo1.clear();
 
 	/*	final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
 		final int colorAttachment = framebuffer.getColorAttachment();

@@ -8,9 +8,9 @@ import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.notification.Notification;
 import me.thesilverecho.zeropoint.api.notification.NotificationManager;
 import me.thesilverecho.zeropoint.api.notification.NotificationType;
-import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.Vec2f;
@@ -72,7 +72,7 @@ public class BlurBackground extends BaseModule
 	}
 
 	@EventListener
-	public void renderEvent(TickEvent.StartTickEvent event)
+	public void onTick(TickEvent.StartTickEvent event)
 	{
 		final ClientPlayerEntity player = event.client().player;
 		if (player != null)

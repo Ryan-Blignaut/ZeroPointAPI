@@ -1,7 +1,9 @@
 package me.thesilverecho.zeropoint.impl.render;
 
+import me.thesilverecho.zeropoint.api.music.MusicPlayer;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.ui.APIScreen;
+import me.thesilverecho.zeropoint.api.ui.widgets.ButtonComponent;
 import me.thesilverecho.zeropoint.api.ui.widgets.TextBoxComponent;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.Window;
@@ -18,6 +20,7 @@ public class ConfigScreen extends APIScreen
 	}
 
 	private TextBoxComponent textBoxComponent;
+	private ButtonComponent buttonComponent;
 
 	private void initComps()
 	{
@@ -32,6 +35,12 @@ public class ConfigScreen extends APIScreen
 		final float topOfFrame = halfScaledHeight - winHeight / 2f;
 		final float sizeOfColumn = 80;
 		textBoxComponent = new TextBoxComponent(leftOfFrame + sizeOfColumn + 5 + 2, topOfFrame + 8, 120, 120, null, 2);
+		buttonComponent = new ButtonComponent(32, 32, 32, 32, ColourHolder.FULL, "test", null).setClickTask(() ->
+		{
+			MusicPlayer.getPlayer().skipSong();
+
+
+		});
 	}
 
 	@Override
@@ -52,6 +61,7 @@ public class ConfigScreen extends APIScreen
 		RenderUtilV2.roundRect(matrixStack, leftOfFrame, topOfFrame, halfScaledWidth + winWidth / 2f, halfScaledHeight + winHeight / 2f, 10, ColourHolder.decode("#272537"));
 //		APIFonts.FREE_SANS.getFont().setFontScale((float) ((1 / scaleFactor) / 18 * 22)).render(matrixStack, "${#f8f8ff}ZERO-POINT", leftOfFrame + 10, topOfFrame + 8);
 		textBoxComponent.render(matrixStack, mouseX, mouseY, delta);
+		buttonComponent.render(matrixStack, mouseX, mouseY, delta);
 		super.render(matrixStack, mouseX, mouseY, delta);
 //		//search button
 //		final float scale = (float) ((1 / scaleFactor) / 18 * 20);

@@ -6,7 +6,9 @@ plugins {
 
 repositories {
     jcenter()
-
+    maven {
+        url 'https://m2.dv8tion.net/releases'
+    }
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_16
@@ -30,6 +32,9 @@ dependencies {
     implementation 'club.minnced:java-discord-rpc:2.0.1'
     shadow 'club.minnced:java-discord-rpc:2.0.1'
 
+    implementation 'com.sedmelluq:lavaplayer:1.3.77'
+    shadow 'com.sedmelluq:lavaplayer:1.3.77'
+
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
 }
@@ -39,7 +44,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 shadowJar {
-    configurations = [ project.configurations.shadow ]
+    configurations = [project.configurations.shadow]
 }
 
 processResources {
@@ -84,25 +89,4 @@ jar {
 remapJar {
     dependsOn shadowJar
     input.set(shadowJar.archiveFile)
-}
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // select the repositories you want to publish to
-    repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
-    }
 }
