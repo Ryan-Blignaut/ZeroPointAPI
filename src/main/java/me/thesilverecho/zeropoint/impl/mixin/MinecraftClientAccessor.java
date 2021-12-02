@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface MinecraftClientAccessor
 {
 	@Accessor("currentFps")
-	int getCurrentFps();
+	static int getCurrentFps() {
+		throw new AssertionError();
+	}
 
 }

@@ -63,8 +63,8 @@ public class ModRenderLayer extends RenderLayer
 			new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false).getId().ifPresent(identifier ->
 			{
 //				RenderUtilV2.setTextureFromLocation(identifier);
-				shader.setArgument("u_Radius", new Vec2f(0, 0));
-				RenderUtilV2.applyTextureToShader(shader);
+				shader.setShaderUniform("u_Radius", new Vec2f(0, 0));
+				RenderUtilV2.applyTextureToShader();
 			}))).texture(new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false)).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).build(false));
 
 	public static ModRenderLayer.ModMultiPhase basic(String name, ModMultiPhaseParameters parameters)

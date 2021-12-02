@@ -4,17 +4,15 @@ package me.thesilverecho.zeropoint.impl.module.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.event.EventListener;
-import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.mixin.MinecraftClientAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -25,7 +23,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
@@ -51,8 +48,8 @@ public class ModernHotbar extends BaseModule
 		final MatrixStack matrixStack = event.matrixStack();
 
 		final int codeHeight = 24;
-//		RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180));
-		RenderUtilV2.rectangleTexture(matrixStack, 0, height - codeHeight, width, codeHeight, 0, 1 - (float) (codeHeight ) / MinecraftClient.getInstance().getFramebuffer().textureWidth, 1, 1, barFBO.texture, ColourHolder.decode(hudCol).setAlpha(180));
+		RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180));
+//		RenderUtilV2.rectangleTexture(matrixStack, 0, height - codeHeight, width, codeHeight, 0, 1 - (float) (codeHeight) / MinecraftClient.getInstance().getFramebuffer().textureWidth, 1, 1, barFBO.texture, ColourHolder.decode(hudCol).setAlpha(180));
 
 		PlayerEntity playerEntity = event.player();
 		final PlayerInventory inventory = playerEntity.getInventory();
@@ -115,7 +112,7 @@ public class ModernHotbar extends BaseModule
 				final PlayerListEntry playerListEntry = client.getNetworkHandler().getPlayerListEntry(player.getUuid());
 				ping = "Ping: ${#388E3C} " + (playerListEntry != null ? Integer.toString(playerListEntry.getLatency()) : "0");
 			}
-			fps = "FPS: ${" + fpsCol + "}" + ((MinecraftClientAccessor) client).getCurrentFps();
+			fps = "FPS: ${" + fpsCol + "}" + MinecraftClientAccessor.getCurrentFps();
 			final Vec3d playerPos = player.getPos();
 			pos = "X: " + (int) playerPos.getX() + " Y: " + (int) playerPos.getY() + " Z: " + (int) playerPos.getZ();
 			final LocalDateTime now = LocalDateTime.now();
@@ -125,27 +122,6 @@ public class ModernHotbar extends BaseModule
 	}
 
 	Framebuffer barFBO;
-
-	@EventListener
-	public void onRenderWorldLast(RenderWorldEvent.Post event)
-	{
-		if (barFBO == null) barFBO = new Framebuffer();
-		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
-		final int colorAttachment = framebuffer.getColorAttachment();
-		final int width = framebuffer.textureWidth;
-		final int height = framebuffer.textureHeight;
-
-		barFBO.bind();
-		RenderUtilV2.setShader(APIShaders.BLUR_RECTANGLE_SHADER.getShader());
-		RenderUtilV2.setTextureId(colorAttachment);
-		RenderUtilV2.setAfterBindTasks(shader ->
-		{
-			shader.setArgument("Radius", 90f);
-			shader.setArgument("BlurDir", new Vec2f(1f, 0f));
-		});
-		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
-		barFBO.unbind();
-	}
 
 
 	private void renderHotbarItem(Render2dEvent.RenderHotbar event, int x, int y, ItemStack stack, int seed)

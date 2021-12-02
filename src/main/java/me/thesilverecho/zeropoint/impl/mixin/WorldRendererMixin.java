@@ -1,7 +1,6 @@
 package me.thesilverecho.zeropoint.impl.mixin;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -19,26 +18,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class WorldRendererMixin
 {
 	@Shadow @Final private MinecraftClient client;
+
+
 //	@ModifyVariable(method = "getLightmapCoordinates(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", at = @At(value = "STORE", ordinal = 0))
 //	private static int getLightmapCoordinatesModifySkyLight(int sky)
 //	{
 //		return Math.max(15, sky);
 //	}
 
-	me.thesilverecho.zeropoint.api.render.texture.Framebuffer framebuffer;
-
-	@Shadow private Framebuffer entityOutlinesFramebuffer;
-
 	@Inject(method = "render", at = @At("HEAD"))
 	private void onRender(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)
 	{
 
 	}
+
 	@Inject(method = "render", at = @At("TAIL"))
 	private void onRenderEnd(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)
 	{
-
-
 	}
 
 

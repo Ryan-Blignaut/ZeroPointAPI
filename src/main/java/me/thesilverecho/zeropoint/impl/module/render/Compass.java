@@ -13,13 +13,13 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
 import org.lwjgl.glfw.GLFW;
 
 @ClientModule(name = "Direction hud", keyBinding = GLFW.GLFW_KEY_H, active = true)
 public class Compass extends BaseModule
 {
 	private int direction;
+
 	@EventListener
 	public void renderEvent(Render2dEvent.Post e)
 	{
@@ -30,7 +30,7 @@ public class Compass extends BaseModule
 		final int textureFromLocation = RenderUtilV2.getTextureFromLocation(new Identifier(ZeroPointClient.MOD_ID, "textures/zero-point_background_start.png"));
 		RenderUtilV2.setShader(APIShaders.RECTANGLE_TEXTURE_SHADER.getShader());
 		RenderUtilV2.setTextureId(textureFromLocation);
-		RenderUtilV2.setAfterBindTasks(shader -> shader.setArgument("u_Radius", new Vec2f(0, 0)));
+//		shader.setShaderUniform("u_Radius", new Vec2f(0, 0));
 		final ColourHolder x = ColourHolder.FULL;
 
 		RenderUtilV2.quadTexture(matrixStack.peek().getPositionMatrix(), 3, 3, 100, 100, direction / 300f, 0, 1, 1, x, x, x, x);
@@ -38,7 +38,6 @@ public class Compass extends BaseModule
 //		RenderUtilV2.rectangleTexture(matrixStack,0,0,100,100,0,textureFromLocation,x);
 
 	}
-
 
 
 	@EventListener

@@ -5,7 +5,6 @@ precision highp float;
 uniform vec2 Radius;
 uniform vec4 Rectangle;
 
-smooth in vec2 position;
 smooth in vec4 vertexColor;
 
 out vec4 fragColor;

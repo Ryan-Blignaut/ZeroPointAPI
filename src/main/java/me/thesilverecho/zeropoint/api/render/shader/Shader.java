@@ -1,20 +1,17 @@
 package me.thesilverecho.zeropoint.api.render.shader;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vector4f;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -24,9 +21,10 @@ import static org.lwjgl.opengl.GL20.*;
 public class Shader
 {
 	protected int programId;
-	private final Identifier fragLocation;
-	private final Identifier vertLocation;
-	private static final FloatBuffer FLOAT_BUFFER = MemoryUtil.memAllocFloat(16);
+	private final Identifier fragLocation, vertLocation;
+
+	private final List<ShaderUniform> uniforms = Lists.newArrayList();
+	private int activeShaderId = -1;
 
 	public Shader(Identifier fragLocation, Identifier vertLocation)
 	{
@@ -97,16 +95,23 @@ public class Shader
 
 	public Shader bind()
 	{
-		getShader();
-		glUseProgram(programId);
-		setArgument("ModelViewMat", RenderSystem.getModelViewStack().peek().getPositionMatrix());
-		setArgument("ProjMat", RenderSystem.getProjectionMatrix());
+		setShaderUniform("ProjMat", RenderSystem.getProjectionMatrix());
+		setShaderUniform("ModelViewMat", RenderSystem.getModelViewMatrix());
+		if (this.activeShaderId != this.programId)
+		{
+			getShader();
+			glUseProgram(programId);
+			this.activeShaderId = programId;
+		}
+		this.uniforms.forEach(ShaderUniform::bind);
 		return this;
 	}
 
 	public void unBind()
 	{
 		glUseProgram(0);
+		this.activeShaderId = -1;
+		this.uniforms.clear();
 	}
 
 	public void destroy()
@@ -132,24 +137,9 @@ public class Shader
 		shaderHashMap.clear();
 	}
 
-	public void setArgument(String var, Object value)
+	public void setShaderUniform(String var, Object value)
 	{
-		int location = GL20.glGetUniformLocation(this.programId, var);
-		if (value instanceof final Float floatNum)
-			glUniform1f(location, floatNum);
-		else if (value instanceof final Integer intNum)
-			glUniform1i(location, intNum);
-		else if (value instanceof final Vec2f vec2f)
-			glUniform2f(location, vec2f.x, vec2f.y);
-		else if (value instanceof final Vector4f vec)
-			GL20.glUniform4f(location, vec.getX(), vec.getY(), vec.getZ(), vec.getW());
-		else if (value instanceof final Matrix4f matrix4f)
-		{
-			FLOAT_BUFFER.position(0);
-			matrix4f.writeColumnMajor(FLOAT_BUFFER);
-			GL20.glUniformMatrix4fv(location, false, FLOAT_BUFFER);
-		} else
-			throw new UnsupportedOperationException("Failed to load data into shader: Unsupported data type.");
-
+		this.uniforms.add(new ShaderUniform(this, var, value));
 	}
+
 }

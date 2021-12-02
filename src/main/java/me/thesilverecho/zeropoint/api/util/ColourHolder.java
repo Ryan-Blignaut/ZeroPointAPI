@@ -58,4 +58,67 @@ public final class ColourHolder
 
 	public int alpha() {return alpha;}
 
+	public static class Quad
+	{
+		private ColourHolder TopLeft, TopRight, BottomRight, BottomLeft;
+
+		public Quad(ColourHolder TopLeft, ColourHolder TopRight, ColourHolder BottomRight,
+				ColourHolder BottomLeft)
+		{
+			this.TopLeft = TopLeft;
+			this.TopRight = TopRight;
+			this.BottomRight = BottomRight;
+			this.BottomLeft = BottomLeft;
+		}
+
+		public Quad setTopLeft(ColourHolder topLeft)
+		{
+			TopLeft = topLeft;
+			return this;
+		}
+
+		public Quad setTopRight(ColourHolder topRight)
+		{
+			TopRight = topRight;
+			return this;
+		}
+
+		public Quad setBottomRight(ColourHolder bottomRight)
+		{
+			BottomRight = bottomRight;
+			return this;
+		}
+
+		public Quad setBottomLeft(ColourHolder bottomLeft)
+		{
+			BottomLeft = bottomLeft;
+			return this;
+		}
+
+		public Quad(ColourHolder allColours)
+		{
+			this(allColours, allColours, allColours, allColours);
+		}
+
+		public ColourHolder getTopLeft()
+		{
+			return TopLeft;
+		}
+
+		public ColourHolder getTopRight()
+		{
+			return TopRight;
+		}
+
+		public ColourHolder getBottomRight()
+		{
+			return BottomRight;
+		}
+
+		public ColourHolder getBottomLeft()
+		{
+			return BottomLeft;
+		}
+	}
+
 }

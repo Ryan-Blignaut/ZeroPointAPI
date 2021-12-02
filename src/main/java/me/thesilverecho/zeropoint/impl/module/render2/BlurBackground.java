@@ -10,6 +10,7 @@ import me.thesilverecho.zeropoint.api.notification.NotificationManager;
 import me.thesilverecho.zeropoint.api.notification.NotificationType;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
+import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -40,25 +41,19 @@ public class BlurBackground extends BaseModule
 		final int height = framebuffer.textureHeight;
 
 		fbo1.bind();
-		RenderUtilV2.setShader(APIShaders.GAUSSIAN_BLUR_SHADER.getShader());
+		final Shader shader = APIShaders.GAUSSIAN_BLUR_SHADER.getShader();
+		RenderUtilV2.setShader(shader);
 		RenderUtilV2.setTextureId(colorAttachment);
-		RenderUtilV2.setAfterBindTasks(shader ->
-		{
-			shader.setArgument("Radius", 10f);
-			shader.setArgument("BlurDir", new Vec2f(0f, 1f));
-		});
+		shader.setShaderUniform("Radius", 10f);
+		shader.setShaderUniform("BlurDir", new Vec2f(0f, 1f));
 		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
 		fbo1.unbind();
-		RenderUtilV2.setShader(APIShaders.GAUSSIAN_BLUR_SHADER.getShader());
 		//Blur shader is still bound so no need to change shaders.
 		//Set the texture to the fbo texture.
 		RenderUtilV2.setTextureId(fbo1.texture);
 		//Set the after bounds of the shader again to change the direction.
-		RenderUtilV2.setAfterBindTasks(shader ->
-		{
-			shader.setArgument("Radius", 10f);
-			shader.setArgument("BlurDir", new Vec2f(1f, 0f));
-		});
+		shader.setShaderUniform("Radius", 10f);
+		shader.setShaderUniform("BlurDir", new Vec2f(1f, 0f));
 		//Render the final product to the screen.
 		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
 	}
