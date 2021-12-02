@@ -93,7 +93,7 @@ public class RenderUtilV2
 	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
 	{
 		GLWrapper.enableGL2D();
-		final Matrix4f matrix4f = matrixStack.peek().getModel();
+		final Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 		final BufferBuilder builder = Tessellator.getInstance().getBuffer();
 		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		builder.vertex(matrix4f, x, y, zIndex).color(cTopLeft.red(), cTopLeft.green(), cTopLeft.blue(), cTopLeft.alpha()).next();
@@ -262,7 +262,7 @@ public class RenderUtilV2
 
 	public static void quadTexture(MatrixStack matrixStack, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
 	{
-		quadTexture(matrixStack.peek().getModel(), x, y, width, height, u0, v0, u1, v1, cTopLeft, cTopRight, cBottomRight, cBottomLeft);
+		quadTexture(matrixStack.peek().getPositionMatrix(), x, y, width, height, u0, v0, u1, v1, cTopLeft, cTopRight, cBottomRight, cBottomLeft);
 	}
 
 	public static void quadTexture1(Matrix4f m, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)

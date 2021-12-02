@@ -153,7 +153,7 @@ public class ModernHotbar extends BaseModule
 		if (!stack.isEmpty())
 		{
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			float f = (float) stack.getCooldown() - event.tickDelta();
+			float f = (float) stack.getBobbingAnimationTime() - event.tickDelta();
 			if (f > 0.0F)
 			{
 				float g = 1.0F + f / 5.0F;

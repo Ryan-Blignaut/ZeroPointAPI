@@ -39,7 +39,7 @@ public class BlockOverlay extends BaseModule
 	{
 
 
-		Matrix4f matrix4f = matrixStack.peek().getModel();
+		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 		buffer.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 		drawBox1(matrix4f, buffer, (float) x1, (float) y1, (float) z1, (float) x2, (float) y2, (float) z2, new ColourHolder(200, 0, 0, 100), new ColourHolder(0, 110, 0, 100));
 		buffer.end();

@@ -130,7 +130,7 @@ public class Config
 		try (final FileInputStream inputStream = new FileInputStream(this.configFile))
 		{
 			final String json = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-			return new JsonParser().parse(json.equals("") ? "{}" : json).getAsJsonObject();
+			return JsonParser.parseString(json.equals("") ? "{}" : json).getAsJsonObject();
 		} catch (IOException e)
 		{
 			ZeroPointApiLogger.error("Error reading settings file", e);

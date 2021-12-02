@@ -33,7 +33,7 @@ public class Compass extends BaseModule
 		RenderUtilV2.setAfterBindTasks(shader -> shader.setArgument("u_Radius", new Vec2f(0, 0)));
 		final ColourHolder x = ColourHolder.FULL;
 
-		RenderUtilV2.quadTexture(matrixStack.peek().getModel(), 3, 3, 100, 100, direction / 300f, 0, 1, 1, x, x, x, x);
+		RenderUtilV2.quadTexture(matrixStack.peek().getPositionMatrix(), 3, 3, 100, 100, direction / 300f, 0, 1, 1, x, x, x, x);
 
 //		RenderUtilV2.rectangleTexture(matrixStack,0,0,100,100,0,textureFromLocation,x);
 

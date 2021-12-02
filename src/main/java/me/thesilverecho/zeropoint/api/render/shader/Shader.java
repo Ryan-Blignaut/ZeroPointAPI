@@ -99,15 +99,7 @@ public class Shader
 	{
 		getShader();
 		glUseProgram(programId);
-		setArgument("ModelViewMat", RenderSystem.getModelViewStack().peek().getModel());
-		setArgument("ProjMat", RenderSystem.getProjectionMatrix());
-		return this;
-	}
-	public Shader bind(boolean t)
-	{
-		getShader();
-		glUseProgram(programId);
-		setArgument("ModelViewMat", RenderSystem.getModelViewStack().peek().getModel());
+		setArgument("ModelViewMat", RenderSystem.getModelViewStack().peek().getPositionMatrix());
 		setArgument("ProjMat", RenderSystem.getProjectionMatrix());
 		return this;
 	}
