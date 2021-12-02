@@ -1,20 +1,45 @@
 package me.thesilverecho.zeropoint.impl.mixin;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
-public interface WorldRendererMixin
+public class WorldRendererMixin
 {
-	@Accessor
-	Framebuffer getEntityOutlinesFramebuffer();
-
+	@Shadow @Final private MinecraftClient client;
 //	@ModifyVariable(method = "getLightmapCoordinates(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", at = @At(value = "STORE", ordinal = 0))
 //	private static int getLightmapCoordinatesModifySkyLight(int sky)
 //	{
 //		return Math.max(15, sky);
 //	}
+
+	me.thesilverecho.zeropoint.api.render.texture.Framebuffer framebuffer;
+
+	@Shadow private Framebuffer entityOutlinesFramebuffer;
+
+	@Inject(method = "render", at = @At("HEAD"))
+	private void onRender(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)
+	{
+
+	}
+	@Inject(method = "render", at = @At("TAIL"))
+	private void onRenderEnd(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)
+	{
+
+
+	}
+
 
 }

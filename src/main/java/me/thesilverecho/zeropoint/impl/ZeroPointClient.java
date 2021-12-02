@@ -2,7 +2,6 @@ package me.thesilverecho.zeropoint.impl;
 
 import me.thesilverecho.zeropoint.api.config.Config;
 import me.thesilverecho.zeropoint.api.config.ConfigSetting;
-import me.thesilverecho.zeropoint.api.music.MusicPlayer;
 import me.thesilverecho.zeropoint.api.util.DiscordPresence;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import me.thesilverecho.zeropoint.impl.module.ModuleManager;
@@ -27,7 +26,7 @@ public class ZeroPointClient implements ClientModInitializer
 		ModuleManager.registerAllModules();
 		DEFAULT_CONFIG.save();
 		DiscordPresence.startRPC();
-		MusicPlayer.load();
+//		MusicPlayer.load();
 //		ModelLoadingRegistry.INSTANCE.registerResourceProvider(ObjFileLoader.INSTANCE);
 //		ModelLoadingRegistry.INSTANCE.registerVariantProvider(ItemObjectFileLoader.INSTANCE);
 
