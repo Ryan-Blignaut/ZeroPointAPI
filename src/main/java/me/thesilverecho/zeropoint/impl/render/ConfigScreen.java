@@ -1,6 +1,5 @@
 package me.thesilverecho.zeropoint.impl.render;
 
-import me.thesilverecho.zeropoint.api.music.MusicPlayer;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.ui.APIScreen;
 import me.thesilverecho.zeropoint.api.ui.widgets.ButtonComponent;
@@ -34,12 +33,13 @@ public class ConfigScreen extends APIScreen
 		final float leftOfFrame = halfScaledWidth - winWidth / 2f;
 		final float topOfFrame = halfScaledHeight - winHeight / 2f;
 		final float sizeOfColumn = 80;
+
+//		ModuleManager.baseModules.forEach(simpleModuleHolder -> {simpleModuleHolder.});
+
 		textBoxComponent = new TextBoxComponent(leftOfFrame + sizeOfColumn + 5 + 2, topOfFrame + 8, 120, 120, null, 2);
 		buttonComponent = new ButtonComponent(32, 32, 32, 32, ColourHolder.FULL, "test", null).setClickTask(() ->
 		{
-			MusicPlayer.getPlayer().skipSong();
-
-
+//			MusicPlayer.getPlayer().skipSong();
 		});
 	}
 
@@ -71,7 +71,7 @@ public class ConfigScreen extends APIScreen
 //		APIFonts.FREE_SANS.getFont().setFontScale(scale).render(matrixStack, searchSting, leftOfFrame + sizeOfColumn + 5 + 2, topOfFrame + 8);
 	}
 
-	@Override
+	/*@Override
 	public boolean isPauseScreen()
 	{
 		return false;
@@ -81,5 +81,5 @@ public class ConfigScreen extends APIScreen
 	public void onClose()
 	{
 		super.onClose();
-	}
+	}*/
 }

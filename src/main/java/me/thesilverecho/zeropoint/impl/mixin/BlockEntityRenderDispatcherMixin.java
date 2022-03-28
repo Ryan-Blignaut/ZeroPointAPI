@@ -30,11 +30,13 @@ public abstract class BlockEntityRenderDispatcherMixin
 	@Inject(method = "render(Lnet/minecraft/block/entity/BlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V", at = @At(value = "HEAD", ordinal = 0), cancellable = true)
 	private <E extends BlockEntity> void injectRenderEvent(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, CallbackInfo ci)
 	{
+		EventManager.call(new RenderTileEntityEvent.startRenderTile());
 		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer != null && blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState()))
 			if (blockEntityRenderer.isInRenderDistance(blockEntity, this.camera.getPos()))
 				runReported(blockEntity, () ->
-						EventManager.call(new RenderTileEntityEvent(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider, ci)));
+						EventManager.call(new RenderTileEntityEvent.renderTile(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider, ci)));
+		EventManager.call(new RenderTileEntityEvent.endRenderTile());
 	}
 
 }

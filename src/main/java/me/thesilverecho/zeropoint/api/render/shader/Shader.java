@@ -1,29 +1,32 @@
 package me.thesilverecho.zeropoint.api.render.shader;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.thesilverecho.zeropoint.api.render.GLWrapper;
 import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Matrix4f;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL20;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL20.*;
 
+
 public class Shader
 {
 	protected int programId;
 	private final Identifier fragLocation, vertLocation;
 
-	private final List<ShaderUniform> uniforms = Lists.newArrayList();
+	private final HashMap<String, ShaderUniform> uniformMap = new HashMap<>();
+
+	//	private final List<ShaderUniform> uniforms = Lists.newArrayList();
 	private int activeShaderId = -1;
 
 	public Shader(Identifier fragLocation, Identifier vertLocation)
@@ -52,15 +55,7 @@ public class Shader
 	private int genShader(int glFragmentShader, Identifier loc)
 	{
 		final int[] programId = {-1};
-		getShaderString(loc).ifPresent(shaderSource ->
-		{
-			programId[0] = glCreateShader(glFragmentShader);
-			glShaderSource(programId[0], shaderSource);
-			glCompileShader(programId[0]);
-
-			if (glGetShaderi(programId[0], GL_COMPILE_STATUS) == GL_FALSE)
-				ZeroPointApiLogger.error(glGetShaderInfoLog(programId[0], 100));
-		});
+		getShaderString(loc).ifPresent(shaderSource -> programId[0] = GLWrapper.compileShader(glFragmentShader, shaderSource));
 		return programId[0];
 	}
 
@@ -95,34 +90,43 @@ public class Shader
 
 	public Shader bind()
 	{
-		setShaderUniform("ProjMat", RenderSystem.getProjectionMatrix());
-		setShaderUniform("ModelViewMat", RenderSystem.getModelViewMatrix());
+		final Matrix4f projectionMatrix = RenderSystem.getProjectionMatrix();
+		final Matrix4f modelViewMatrix = RenderSystem.getModelViewMatrix();
+		return bind(projectionMatrix, modelViewMatrix);
+	}
+
+
+	public Shader bind(Matrix4f projectionMatrix, Matrix4f modelViewMatrix)
+	{
+		setShaderUniform("ProjMat", projectionMatrix);
+		setShaderUniform("ModelViewMat", modelViewMatrix);
 		if (this.activeShaderId != this.programId)
 		{
 			getShader();
-			glUseProgram(programId);
+			GLWrapper.useShader(programId);
 			this.activeShaderId = programId;
 		}
-		this.uniforms.forEach(ShaderUniform::bind);
+		this.uniformMap.forEach((s, shaderUniform) -> shaderUniform.bind());
 		return this;
 	}
 
 	public void unBind()
 	{
-		glUseProgram(0);
+		GLWrapper.useShader(0);
 		this.activeShaderId = -1;
-		this.uniforms.clear();
 	}
 
 	public void destroy()
 	{
 		glDeleteProgram(programId);
+//		this.uniformMap.clear();
 	}
 
 	private static final HashMap<Identifier, Shader> shaderHashMap = new HashMap<>();
 
 	public Shader getShader()
 	{
+
 		shaderHashMap.computeIfAbsent(fragLocation, identifier ->
 		{
 			this.create();
@@ -134,12 +138,17 @@ public class Shader
 	public static void resetShaderHashMap()
 	{
 		System.out.println("shader map cleared ");
+		shaderHashMap.forEach((identifier, shader) ->
+		{
+			shader.uniformMap.clear();
+		});
 		shaderHashMap.clear();
 	}
 
 	public void setShaderUniform(String var, Object value)
 	{
-		this.uniforms.add(new ShaderUniform(this, var, value));
+		if (!this.uniformMap.containsKey(var)) this.uniformMap.put(var, new ShaderUniform(this, var, value));
+		else this.uniformMap.get(var).setValue(value);
 	}
 
 }

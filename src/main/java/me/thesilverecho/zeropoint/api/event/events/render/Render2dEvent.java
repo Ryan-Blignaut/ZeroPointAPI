@@ -10,7 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class Render2dEvent
 {
 
-	public static record RenderCrosshair(MatrixStack matrixStack, int scaledWidth, int scaledHeight, CallbackInfo ci) implements BaseEvent
+	public static record RenderCrosshair(MatrixStack matrixStack, int scaledWidth, int scaledHeight,
+	                                     CallbackInfo ci) implements BaseEvent
 	{
 	}
 
@@ -33,4 +34,10 @@ public class Render2dEvent
 	                          CallbackInfo ci) implements BaseEvent
 	{
 	}
+
+
+	public static record World() implements BaseEvent
+	{
+	}
+
 }

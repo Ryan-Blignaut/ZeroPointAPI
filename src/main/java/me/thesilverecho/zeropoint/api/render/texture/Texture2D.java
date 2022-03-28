@@ -3,6 +3,7 @@ package me.thesilverecho.zeropoint.api.render.texture;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import org.lwjgl.opengl.GL45;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -20,6 +21,7 @@ public class Texture2D implements AutoCloseable
 	private int textureId = -1;
 	private int width = -1, height = -1;
 	private ByteBuffer imageBuffer;
+	private boolean mipmap;
 
 	private void bindTexture()
 	{
@@ -28,6 +30,18 @@ public class Texture2D implements AutoCloseable
 			RenderSystem.recordRenderCall(() -> GlStateManager._bindTexture(this.getID()));
 		else
 			GlStateManager._bindTexture(this.getID());
+	}
+
+	public void setMipmap(boolean enabled)
+	{
+		this.mipmap = enabled;
+		if (enabled)
+			this.setFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST);
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
 	}
 
 	public Texture2D(int width, int height, Format format)
@@ -45,6 +59,8 @@ public class Texture2D implements AutoCloseable
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), GL_UNSIGNED_BYTE, (ByteBuffer) null);
 	}
 
@@ -115,14 +131,15 @@ public class Texture2D implements AutoCloseable
 	public void setFilter(int minFilter, int magFilter)
 	{
 		final int texture = getID();
-		glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, minFilter);
-		glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, magFilter);
+		GL45.glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, minFilter);
+		GL45.glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, magFilter);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 	public int getID()
 	{
 		if (this.textureId == -1)
-			this.textureId = TextureUtil.generateTextureId();
+			this.textureId = glGenTextures();//TextureUtil.generateTextureId();
 
 		return this.textureId;
 	}

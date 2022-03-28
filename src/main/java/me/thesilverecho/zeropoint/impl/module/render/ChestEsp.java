@@ -1,20 +1,25 @@
+/*
 package me.thesilverecho.zeropoint.impl.module.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.RenderTileEntityEvent;
-import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
+import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
+import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
+import me.thesilverecho.zeropoint.impl.module.SimpleBlockRenderer;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.Window;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
 
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glEnable;
-
-@ClientModule(name = "Enabled modules", active = true, keyBinding = GLFW.GLFW_KEY_M)
+@ClientModule(name = "Chest ESP", active = true, keyBinding = GLFW.GLFW_KEY_J)
 public class ChestEsp extends BaseModule
 {
 	private Framebuffer fbo1;
@@ -28,41 +33,31 @@ public class ChestEsp extends BaseModule
 		event.ci().cancel();
 		if (fbo1 == null) fbo1 = new Framebuffer();
 		fbo1.bind();
-		glEnable(GL_DEPTH_TEST);
-		event.renderer().render(entity, event.tickDelta(), event.matrices(), event.vertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV);
+		final World world = entity.getWorld();
+		final BlockPos pos = entity.getPos();
+	*/
+/*	world.getBlockState(pos).getOutlineShape(world, pos).forEachBox((minX, minY, minZ, maxX, maxY, maxZ) ->
+		{
+
+		});*//*
+
+		SimpleBlockRenderer.renderWithBlockEntity(entity, (float) event.tickDelta(), event.vertexConsumers(), event.matrices());
 		fbo1.unbind();
 	}
 
-
 	@EventListener
-	public void renderEvent(RenderWorldEvent.Pre event)
+	public void renderBlockOutline(Render2dEvent.Pre event)
 	{
-
-
-	/*	final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
-		final int colorAttachment = framebuffer.getColorAttachment();
+		final Window window = MinecraftClient.getInstance().getWindow();
 		if (fbo1 == null)
-		{
 			fbo1 = new Framebuffer();
-		}*/
 
-	/*	final int width = framebuffer.textureWidth;
-		final int height = framebuffer.textureHeight;
+		RenderUtilV2.setShader(APIShaders.BLUR_RECTANGLE_SHADER.getShader());
+		RenderUtilV2.setTextureId(fbo1.texture.getID());
+		RenderUtilV2.postProcessRect(32, 32, 0, 0, 1, 1);
+		RenderSystem.disableDepthTest();
 
-		final Shader shader = APIShaders.BLUR_RECTANGLE_SHADER.getShader();
-		RenderUtilV2.setShader(shader);
-		RenderUtilV2.setShader(shader);
-		RenderUtilV2.setTextureId(fbo1.texture);
-		Matrix4f matrix4f = Matrix4f.projectionMatrix(width, -height, 1000.0F, 3000.0F);
-		RenderSystem.setProjectionMatrix(matrix4f);
-		RenderUtilV2.setAfterBindTasks(shader1 ->
-		{
-			shader.setArgument("InSize", new Vec2f(width, height));
-			shader.setArgument("OutSize", new Vec2f(width, height));
-			shader.setArgument("Radius", 100f);
-			shader.setArgument("BlurDir", new Vec2f(1f, 0f));
-		});
-		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);*/
+		fbo1.clear();
 	}
-
 }
+*/

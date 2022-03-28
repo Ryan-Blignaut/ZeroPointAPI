@@ -5,6 +5,7 @@ precision highp float;
 uniform vec2 CenterPosition;
 uniform vec2 Radius;
 uniform sampler2D sampler0;
+uniform float T;
 
 
 smooth in vec2 position;
@@ -24,5 +25,5 @@ void main() {
     //1 - interpelated value from u_Radius - feather to u_Radius where v is source
     float alpha = 1.0 - smoothstep(Radius.x - Radius.y, Radius.x, dist);
 
-    fragColor = texture(sampler0, textureCoord) * vertexColor * vec4(1.0, 1.0, 1.0, alpha);
+    fragColor = vec4(dist);//texture(sampler0, textureCoord) * vertexColor * vec4(1.0, 1.0, 1.0, alpha);
 }

@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
 public class ModRenderLayer extends RenderLayer
 {
 
-	public static RenderLayer POT_OVERLAY;
+		public static RenderLayer POT_OVERLAY;
 
 	*/
 /*

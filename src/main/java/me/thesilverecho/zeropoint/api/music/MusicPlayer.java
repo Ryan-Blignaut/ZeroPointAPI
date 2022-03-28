@@ -2,7 +2,6 @@ package me.thesilverecho.zeropoint.api.music;
 
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.format.AudioPlayerInputStream;
-import com.sedmelluq.discord.lavaplayer.format.Pcm16AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -14,18 +13,23 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import me.thesilverecho.zeropoint.api.notification.Notification;
 import me.thesilverecho.zeropoint.api.notification.NotificationManager;
 import me.thesilverecho.zeropoint.api.notification.NotificationType;
+import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
 
-public class MusicPlayer
+public enum MusicPlayer
 {
+	INSTANCE;
+
 	private static MusicPlayer player;
 	private final AudioPlayer audioPlayer;
 	private final TrackManager trackManager;
+	private float[] samples;
 
-	public MusicPlayer()
+	MusicPlayer()
 	{
+
 		DefaultAudioPlayerManager defaultAudioPlayerManager = new DefaultAudioPlayerManager();
 		defaultAudioPlayerManager.getConfiguration().setOutputFormat(StandardAudioDataFormats.COMMON_PCM_S16_BE);
 		AudioSourceManagers.registerRemoteSources(defaultAudioPlayerManager);
@@ -33,8 +37,7 @@ public class MusicPlayer
 		this.trackManager = new TrackManager();
 		this.audioPlayer.addListener(trackManager);
 
-
-		final String identifier = "https://music.youtube.com/playlist?list=PL63ZO-jXFTasqvj7WdEFQ6QtG6UBrl9CR";//https://music.youtube.com/watch?v=NZ_zGP9xE5M&list=RDAMVMZ0eX4gzCGm8";
+		final String identifier = "https://www.youtube.com/watch?v=XR1kx-_mXg4&list=RDXR1kx-_mXg4&start_radio=1";/*"https://music.youtube.com/playlist?list=PL63ZO-jXFTasqvj7WdEFQ6QtG6UBrl9CR";*///https://music.youtube.com/watch?v=NZ_zGP9xE5M&list=RDAMVMZ0eX4gzCGm8";
 		defaultAudioPlayerManager.loadItem(identifier, new AudioLoadResultHandler()
 		{
 			@Override
@@ -59,50 +62,43 @@ public class MusicPlayer
 			public void loadFailed(FriendlyException exception)
 			{
 				NotificationManager.INSTANCE.addNotification(Notification.Builder.builder("Music", "Load failed. " + exception).setType(NotificationType.WARNING).build());
-
 			}
 		});
 
 
 		final Thread thread = new Thread(() ->
 		{
-			AudioDataFormat format = new Pcm16AudioDataFormat(2, 44100, StandardAudioDataFormats.COMMON_PCM_S16_BE.chunkSampleCount, false);
-			AudioInputStream stream = AudioPlayerInputStream.createStream(audioPlayer, format, 100L, true);
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat());
+
+			final AudioDataFormat format = StandardAudioDataFormats.COMMON_PCM_S16_LE;
+			final long frameDuration = format.frameDuration();
+
+			final AudioInputStream stream = AudioPlayerInputStream.createStream(audioPlayer, format, frameDuration, false);
+
+
+			final DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat());
+			samples = new float[format.totalSampleCount()];
 			try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info))
 			{
 				line.open(stream.getFormat());
 				line.start();
+				final byte[] buffer = new byte[format.chunkSampleCount * format.channelCount * 2];
 
-				byte[] buffer = new byte[StandardAudioDataFormats.COMMON_PCM_S16_BE.maximumChunkSize() + 1024];
-				int chunkSize;
-
-				while ((chunkSize = stream.read(buffer)) > 0)
+				for (int chunkSize; (chunkSize = stream.read(buffer)) > -1; )
 				{
-				/*	while (audioPlayer.isPaused())
-					{
-						try
-						{
-							Thread.sleep(10);
-						} catch (InterruptedException e)
-						{
-							e.printStackTrace();
-						}
-					}*/
-
+					while (audioPlayer.isPaused()) Thread.sleep(100);
+					SimpleAudioConversion.decode(buffer, samples, chunkSize, stream.getFormat());
 					line.write(buffer, 0, chunkSize);
 				}
-				System.out.println(line.getLevel());
+
 				audioPlayer.destroy();
 				line.drain();
 				line.stop();
-			} catch (LineUnavailableException | IOException e)
+			} catch (LineUnavailableException | IOException | InterruptedException e)
 			{
-				e.printStackTrace();
+				ZeroPointApiLogger.error("There was an error in the music player.", e);
 			}
 
 		}, "Music Thread");
-		thread.setPriority(2);
 		thread.start();
 
 
@@ -113,9 +109,14 @@ public class MusicPlayer
 		return audioPlayer.getPlayingTrack();
 	}
 
+	public void togglePause()
+	{
+		audioPlayer.setPaused(!audioPlayer.isPaused());
+	}
+
 	public void skipSong()
 	{
-//		trackManager.skipTrackForward(audioPlayer);
+		trackManager.skipTrackForward(audioPlayer);
 		trackManager.testDisplay();
 	}
 
@@ -125,13 +126,9 @@ public class MusicPlayer
 		trackManager.skipToTrack(audioPlayer, 0);
 	}
 
-	public static void load()
-	{
-		player = new MusicPlayer();
-	}
 
-	public static MusicPlayer getPlayer()
+	public float[] getSamples()
 	{
-		return player;
+		return samples;
 	}
 }

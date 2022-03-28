@@ -19,13 +19,12 @@ public class WorldRendererMixin
 {
 	@Shadow @Final private MinecraftClient client;
 
-
-//	@ModifyVariable(method = "getLightmapCoordinates(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", at = @At(value = "STORE", ordinal = 0))
-//	private static int getLightmapCoordinatesModifySkyLight(int sky)
-//	{
-//		return Math.max(15, sky);
-//	}
-
+	/*@Inject(method = "getLightmapCoordinates(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", at = @At("HEAD"))
+	private static void getLightmapCoordinatesModifySkyLight(BlockRenderView world, BlockState state, BlockPos pos, CallbackInfoReturnable<Integer> cir)
+	{
+		cir.setReturnValue(16);
+	}
+*/
 	@Inject(method = "render", at = @At("HEAD"))
 	private void onRender(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)
 	{

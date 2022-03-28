@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
+import me.thesilverecho.zeropoint.impl.module.display.ScoreBoardHud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -24,8 +26,35 @@ import java.util.function.BiFunction;
 
 public class ModRenderLayer extends RenderLayer
 {
-	public static final ArrayList<ModRenderLayer> ALL_LAYERS = new ArrayList<>();
+	public static final ArrayList<RenderLayer> ALL_LAYERS = new ArrayList<>();
 	public static final RenderLayer POT_OVERLAY;
+
+
+	public static final RenderLayer DG = of(ZeroPointClient.MOD_ID + ":blur",
+			VertexFormats.POSITION_TEXTURE,
+			VertexFormat.DrawMode.QUADS,
+			256,
+			ModMultiPhaseParameters.builder()
+			                       .modShader(new ModRenderPhase.ModShader(
+					                       APIShaders.OUT.getShader(), shader ->
+			                       {
+				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
+				                       if (blurFBO != null && blurFBO.isBoundTest())
+					                       blurFBO.bind();
+
+			                       }, () ->
+			                       {
+				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
+//				                       if (blurFBO != null)
+//					                       blurFBO.unbind();
+			                       }
+			                       ))
+			                       .writeMaskState(COLOR_MASK)
+			                       .cull(DISABLE_CULLING)
+			                       .depthTest(EQUAL_DEPTH_TEST)
+			                       .transparency(GLINT_TRANSPARENCY)
+			                       .build(false));
+
 
 	public static final RenderLayer COSMIC_RENDER_TYPE = of(ZeroPointClient.MOD_ID + ":cosmic",
 			VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
@@ -42,6 +71,23 @@ public class ModRenderLayer extends RenderLayer
                                    .lightmap(ENABLE_LIGHTMAP)
                                    .build(false));
 
+
+	public static final RenderLayer TEST = of(ZeroPointClient.MOD_ID + ":test",
+			VertexFormats.POSITION_COLOR,
+			VertexFormat.DrawMode.QUADS,
+			256,
+			true,
+			false,
+			ModMultiPhaseParameters.builder()
+			                       .layering(VIEW_OFFSET_Z_LAYERING)
+			                       .transparency(TRANSLUCENT_TRANSPARENCY)
+			                       .cull(DISABLE_CULLING)
+			                       .depthTest(LEQUAL_DEPTH_TEST)
+			                       .lightmap(DISABLE_LIGHTMAP)
+			                       .writeMaskState(RenderPhase.ALL_MASK)
+			                       .build(false));
+
+
 	static
 	{
 		final Texturing glintTexturing = new RenderPhase.Texturing("glint_texturing", () ->
@@ -56,6 +102,9 @@ public class ModRenderLayer extends RenderLayer
 			RenderSystem.setTextureMatrix(matrix4f);
 		}, RenderSystem::resetTextureMatrix);
 		POT_OVERLAY = basic("glint_direct", ModMultiPhaseParameters.builder().shader(DIRECT_GLINT_SHADER).texture(new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false)).writeMaskState(COLOR_MASK).cull(ENABLE_CULLING).depthTest(LEQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(glintTexturing).build(false));
+
+	ALL_LAYERS.add(DG);
+
 	}
 
 	public static final RenderLayer RENDER_LAYER = of("sword_test", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 256, ModMultiPhaseParameters.builder().shader(POSITION_TEXTURE_SHADER).texture(new ModRenderPhase.Texture(new Identifier(ZeroPointClient.MOD_ID, "textures/bg.png"), true, false)).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).build(false));
@@ -99,7 +148,9 @@ public class ModRenderLayer extends RenderLayer
 		//		TODO: add support for api shaders
 		public final ModRenderPhase.TextureBase texture;
 		public final ModRenderPhase.Shader shader;
+
 		public final ModRenderPhase.ModShader modShader;
+
 		public final ModRenderPhase.Transparency transparency;
 		public final ModRenderPhase.DepthTest depthTest;
 		public final ModRenderPhase.Cull cull;

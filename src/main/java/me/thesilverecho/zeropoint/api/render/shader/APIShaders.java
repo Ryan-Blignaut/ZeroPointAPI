@@ -14,6 +14,7 @@ public enum APIShaders
 	COLOUR_PICKER("colour_picker.frag"),
 	RECTANGLE_SHADER("rectangle.frag"),
 	ROUND_RECTANGLE_SHADER("round_rectangle.frag"),
+	LOADING("loading_screen.frag"),
 
 	//  TEXTURE SHADERS
 	RECTANGLE_TEXTURE_SHADER("rectangle_texture.frag", false),
@@ -23,10 +24,19 @@ public enum APIShaders
 	FONT_MASK_TEXTURE("text_mask_texture.frag", false),
 
 	BOKEH_TEXTURE_SHADER("bokeh_disc.frag", false),
+	WATER_RIPPLE("water_ripple.frag", "water_ripple.vert"),
+	OUTLINE("outline.frag", "colour_texture.vert"),
+	OUT("ol1.frag", "colour_texture.vert"),
+	ITEM("item.frag", "colour_texture.vert"),
+	BLURV3("blur.frag", "post_process_texture.vert"),
+	COMPOSITE("composite.frag", "post_process_texture.vert"),
 
 
 	//	POST SHADERS
 	BLUR_RECTANGLE_SHADER("blur.frag", true),
+	BLUR_MIP_SHADER("blur_mip.frag", true),
+
+	MASK_RECTANGLE_SHADER("mask.frag", true),
 	GAUSSIAN_BLUR_SHADER("gaussian_blur.frag", true);
 
 

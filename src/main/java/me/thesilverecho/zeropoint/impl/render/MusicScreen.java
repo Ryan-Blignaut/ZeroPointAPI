@@ -51,7 +51,7 @@ public class MusicScreen extends APIScreen
 		});
 	}
 
-	@Override
+	/*@Override
 	public boolean isPauseScreen()
 	{
 		return false;
@@ -61,5 +61,5 @@ public class MusicScreen extends APIScreen
 	public void onClose()
 	{
 		super.onClose();
-	}
+	}*/
 }

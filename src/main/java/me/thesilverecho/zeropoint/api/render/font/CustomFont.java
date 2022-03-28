@@ -87,6 +87,7 @@ public class CustomFont
 	{
 		this.height = height;
 		final STBTTFontinfo fontInfo = STBTTFontinfo.create();
+
 		stbtt_InitFont(fontInfo, buffer);
 		glyphs = new GlyphInfo[256];
 		final STBTTPackedchar.Buffer packedChars = STBTTPackedchar.create(glyphs.length);

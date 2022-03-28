@@ -99,6 +99,19 @@ public class ModRenderPhase extends RenderLayer
 			}, shader::unBind);
 		}
 
+		public ModShader(me.thesilverecho.zeropoint.api.render.shader.Shader shader, Consumer<me.thesilverecho.zeropoint.api.render.shader.Shader> extraTasks, Runnable afterTasks)
+		{
+			super("zero-point_shader", () ->
+			{
+				shader.bind();
+				extraTasks.accept(shader);
+			}, () ->
+			{
+				afterTasks.run();
+				shader.unBind();
+			});
+		}
+
 		public ModShader()
 		{
 			super("zero-point_shader", () ->

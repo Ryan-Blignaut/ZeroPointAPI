@@ -11,24 +11,20 @@ smooth in vec4 vertexColor;
 out vec4 fragColor;
 
 void main() {
+	/* vec2 tl = u_InnerRect.xy - position;
+	 vec2 br = position - u_InnerRect.zw;
 
-    if (vertexColor.a == 0.0) {
-        discard;
-    }
+	 vec2 dis = max(br, tl);
 
+	 float v = length(max(vec2(0.0), dis)) - u_Radius.x;
 
-   /* vec2 tl = u_InnerRect.xy - position;
-    vec2 br = position - u_InnerRect.zw;
+	 float a = 1.0 - smoothstep(-u_Radius.y, 0.0, v);
 
-    vec2 dis = max(br, tl);
+	 fragColor = VertexColor * vec4(1.0, 1.0, 1.0, a);*/
 
-    float v = length(max(vec2(0.0), dis)) - u_Radius.x;
+	float sdf = length(max(vec2(0.0), max(Rectangle.xy - position, position - Rectangle.zw))) - Radius.x;
+	float alpha = 1.0 - smoothstep(-Radius.y, 0.0, sdf);
+	if (alpha == 0.0) discard;
 
-    float a = 1.0 - smoothstep(-u_Radius.y, 0.0, v);
-
-    fragColor = VertexColor * vec4(1.0, 1.0, 1.0, a);*/
-
-    float sdf = length(max(vec2(0.0),max(Rectangle.xy - position, position - Rectangle.zw))) - Radius.x;
-    float alpha = 1.0 - smoothstep(-Radius.y, 0.0, sdf);
-    fragColor = vertexColor * vec4(1.0, 1.0, 1.0, alpha);
+	fragColor = vertexColor * vec4(1.0, 1.0, 1.0, alpha);
 }

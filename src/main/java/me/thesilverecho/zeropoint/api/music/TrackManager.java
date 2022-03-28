@@ -41,7 +41,7 @@ public class TrackManager extends AudioEventAdapter
 		if (ALL_AUDIO_TRACKS.size() > index)
 		{
 			final AudioTrack track = ALL_AUDIO_TRACKS.get(index);
-			if (track != null && !track.equals(player.getPlayingTrack()))
+			if (track != null && !track.equals(player.getPlayingTrack()) && track != player.getPlayingTrack())
 			{
 				player.playTrack(track);
 				currentTrack = index;

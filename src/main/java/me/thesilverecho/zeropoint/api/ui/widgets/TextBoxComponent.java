@@ -98,7 +98,6 @@ public class TextBoxComponent extends IntractableComponent
 	@EventListener
 	public boolean keyPressed(ScreenKeyboardEvent event)
 	{
-//		System.out.println(event);
 		if (!focus) return false;
 		if (event.keyCode() == GLFW.GLFW_KEY_BACKSPACE)
 		{
@@ -111,7 +110,6 @@ public class TextBoxComponent extends IntractableComponent
 				caretPos = beginIndex;
 			} else
 			{
-
 				if (caretPos - 1 >= 0)
 				{
 					text = text.substring(0, caretPos - 1) + text.substring(caretPos);

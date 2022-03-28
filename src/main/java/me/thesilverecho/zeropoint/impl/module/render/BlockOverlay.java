@@ -3,14 +3,18 @@ package me.thesilverecho.zeropoint.impl.module.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.BlockOutlineEvent;
+import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.render.font.APIFonts;
-import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV3;
+import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
+import me.thesilverecho.zeropoint.api.render.shader.Shader;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
-import net.minecraft.client.render.*;
+import me.thesilverecho.zeropoint.impl.module.display.ScoreBoardHud;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
@@ -20,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @ClientModule(name = "Block overlay", active = true, keyBinding = GLFW.GLFW_KEY_N)
 public class BlockOverlay extends BaseModule
 {
+
 	@EventListener
 	public void renderBlockOutline(BlockOutlineEvent event)
 	{
@@ -40,101 +45,82 @@ public class BlockOverlay extends BaseModule
 		}
 	}
 
+	private Framebuffer framebuffer;
 
-	public static void renderBoundingBox(MatrixStack matrixStack, BufferBuilder buffer, double x1, double y1, double z1, double x2, double y2, double z2)
+	@EventListener
+	public void renderBlockOutline(Render2dEvent.Pre event)
 	{
-		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-//		buffer.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
-//		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+	/*	if (framebuffer == null)
+		{
+			framebuffer = new Framebuffer();
+		}
+		final Window window = MinecraftClient.getInstance().getWindow();
+		RenderUtilV2.setShader(APIShaders.BLUR_RECTANGLE_SHADER.getShader());
+		RenderUtilV2.setTextureId(framebuffer.texture.getID());
+		RenderUtilV2.postProcessRect(window.getWidth(), window.getHeight(), 0, 0, 1, 1);
 
-		drawBox1(matrixStack, buffer, (float) x1, (float) y1, (float) z1, (float) x2, (float) y2, (float) z2, new ColourHolder(200, 0, 0, 100), new ColourHolder(0, 110, 0, 100));
-//		buffer.end();
-//		BufferRenderer.draw(buffer);
+		framebuffer.clear();*/
 	}
 
-	public static void drawBox1(MatrixStack matrixStack, BufferBuilder buffer, float x1, float y1, float z1, float x2, float y2, float z2, ColourHolder colour, ColourHolder colour1)
+	public void renderBoundingBox(MatrixStack matrixStack, BufferBuilder buffer, double x1, double y1, double z1, double x2, double y2, double z2)
 	{
+		drawBox1(matrixStack, (float) x1, (float) y1, (float) z1, (float) x2, (float) y2, (float) z2);
+	}
+
+	private MatrixStack mat;
+
+	public void drawBox1(MatrixStack matrixStack, float x1, float y1, float z1, float x2, float y2, float z2)
+	{
+
+		if (framebuffer == null)
+		{
+			framebuffer = new Framebuffer();
+		}
+		mat = matrixStack;
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
-		final float zIndex = RenderUtilV2.getZIndex();
-		final int i = RenderUtilV2.getTextureFromLocation(new Identifier(ZeroPointClient.MOD_ID, "/textures/bg.png"));
-		RenderUtilV2.setZIndex(z1);
-		RenderUtilV2.rectangleTexture(matrixStack, x2, y2, x1 - x2, y1 - y2, i, ColourHolder.FULL);
-		RenderUtilV2.setZIndex(z2);
-		RenderUtilV2.rectangleTexture(matrixStack, x1, y2, x2 - x1, y1 - y2, i, ColourHolder.FULL);
-
-		FontRenderer.renderText(APIFonts.REGULAR.getFont(), 0.1f, matrixStack, "TEST", x1, y1);
 
 
-		RenderUtilV2.setZIndex(zIndex);
-		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		buffer.vertex(matrix4f, x1, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y1, z1).color(colour1.red(), colour1.green(), colour1.blue(), colour1.alpha()).next();
-		buffer.end();
-		BufferRenderer.draw(buffer);
-
-		RenderUtilV2.setZIndex(zIndex);
-		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		buffer.vertex(matrix4f, x2, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z2).color(colour1.red(), colour1.green(), colour1.blue(), colour1.alpha()).next();
-		buffer.end();
-		BufferRenderer.draw(buffer);
+		RenderUtilV3.setQuadColourHolder(ColourHolder.FULL/*("#2b2b2b")*/);
+	/*	framebuffer.bind();
+		final net.minecraft.client.gl.Framebuffer framebuffer1 = MinecraftClient.getInstance().getFramebuffer();
+		final int textureWidth = framebuffer1.textureWidth;
+		final int textureHeight = framebuffer1.textureHeight;
+		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
+		RenderUtilV2.setShaderUniform("TextureSize", new Vec2f(textureWidth, textureHeight));
+		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1, 0));
+		RenderUtilV2.setShaderUniform("Radius", 30f);
+		final int colorAttachment = framebuffer1.getColorAttachment();
+		RenderUtilV2.setTextureId(colorAttachment);
+		RenderUtilV2.postProcessRect(framebuffer1.viewportWidth, framebuffer1.viewportHeight, 0, 0, 1, 1);
+		framebuffer.unbind();
+*/
+		final Shader shader = APIShaders.BOKEH_TEXTURE_SHADER.getShader();
 
 
-/*		RenderUtilV2.setZIndex(zIndex);
-		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		buffer.vertex(matrix4f, x1, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z1).color(colour1.red(), colour1.green(), colour1.blue(), colour1.alpha()).next();
-		buffer.end();
-		BufferRenderer.draw(buffer);*/
+		RenderUtilV3.setTextureId(RenderUtilV3.getTextureFromLocation(new Identifier(ZeroPointClient.MOD_ID, "/textures/bg.png")));
+		RenderUtilV3.setShader(shader);
+		shader.setShaderUniform("Size", 1f);
 
-//		buffer.vertex(matrix4f, x1, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-//		buffer.vertex(matrix4f, x2, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-//		buffer.vertex(matrix4f, x2, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-//		buffer.vertex(matrix4f, x1, y2, z2).color(colour1.red(), colour1.green(), colour1.blue(), colour1.alpha()).next();
+		//TODO: find out why framebuffer cant be drawn to when depth test is enabled.(It seems that the glDepth function, GL_LESS is not passing)
+		ScoreBoardHud.blurFBO.bind();
+		RenderSystem.disableDepthTest();
+		RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z1, x1, y1, z2);
+		RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z2, x2, y1, z1);
+		RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z1, x1, y1, z1);
+		RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z2, x2, y1, z2);
+		RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y1, z1, x1, y1, z2);
+		RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y2, z2, x1, y2, z1);
+		ScoreBoardHud.blurFBO.unbind();
+		RenderSystem.enableDepthTest();
 
-
-
-		/*buffer.vertex(matrix4f, x1, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z2).color(colour1.red(), colour1.green(), colour1.blue(), colour1.alpha()).next();
-
-		buffer.vertex(matrix4f, x1, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-
-		buffer.vertex(matrix4f, x2, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-
-		buffer.vertex(matrix4f, x1, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y1, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-
-		buffer.vertex(matrix4f, x1, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x1, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z1).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();
-		buffer.vertex(matrix4f, x2, y2, z2).color(colour.red(), colour.green(), colour.blue(), colour.alpha()).next();*/
+//		RenderSystem.enableDepthTest();
+//		RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z1, x1, y1, z2);
+//		RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z2, x2, y1, z1);
+//		RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z1, x1, y1, z1);
+//		RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z2, x2, y1, z2);
+//		RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y1, z1, x1, y1, z2);
+//		RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y2, z2, x1, y2, z1);
+//		RenderSystem.disableDepthTest();
 	}
 
 

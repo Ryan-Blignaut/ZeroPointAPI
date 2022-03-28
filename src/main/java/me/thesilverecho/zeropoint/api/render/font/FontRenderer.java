@@ -4,6 +4,7 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -75,6 +76,97 @@ public class FontRenderer
 		return renderText(font, 1, matrixStack, text, false, x, y);
 	}
 
+	public static float renderText(CustomFont font, Matrix4f matrix4f, String text, float x, float y)
+	{
+		return renderText(font, 0.5f, matrix4f, text, false, x, y);
+	}
+
+	public static float renderText(CustomFont font, float size, Matrix4f matrix4f, String text, boolean background, float x, float y)
+	{
+		return renderText(font, size, text, ColourHolder.FULL, background, matrix4f, x, y);
+	}
+
+	public static float renderText(CustomFont font, float size, String text, ColourHolder baseColour, boolean background, Matrix4f matrix4f, float x, float y)
+	{
+		if (text == null) text = "Error text String is empty.";
+		y += font.getAscent() * font.getScale() * size;
+//      Loop for each letter of the text.
+		final ColourHolder[] colours = new ColourHolder[4];
+		Arrays.fill(colours, baseColour);
+		for (int index = 0; index < text.length(); index++)
+		{
+//          Get the integer representation each letter of the text at given index.
+			int character = text.charAt(index);
+//			If the character is out of bounds replace it with default.
+			if (character < 32 || character > 256) character = 32;
+//			Look for custom formatting from the string ${format type}.
+			if (character == '$' && index + 1 < text.length() && text.charAt(index + 1) == '{')
+				index = applyFormatting(character, index, text, baseColour, colours, x, y);
+			else
+			{
+//				if (background)
+//					renderChar(font, size, character, new ColourHolder(43, 43, 43, 255), matrix4f, x + 0.5f, y + 0.5f);
+				x += renderChar(font, size, character, colours, matrix4f, x, y);
+			}
+		}
+//      Reset size and colours;
+//		System.out.println(x);
+		return x;
+	}
+
+	public static float renderText(CustomFont font, float size, CharSequence text, ColourHolder baseColour, boolean background, Matrix4f matrix4f, float x, float y)
+	{
+		if (text == null) text = "Error text String is empty.";
+		y += font.getAscent() * font.getScale() * size;
+//      Loop for each letter of the text.
+		final ColourHolder[] colours = new ColourHolder[4];
+		Arrays.fill(colours, baseColour);
+		for (int index = 0; index < text.length(); index++)
+		{
+//          Get the integer representation each letter of the text at given index.
+			int character = text.charAt(index);
+//			If the character is out of bounds replace it with default.
+			if (character < 32 || character > 256) character = 32;
+//			Look for custom formatting from the string ${format type}.
+		/*	if (character == '$' && index + 1 < text.length() && text.charAt(index + 1) == '{')
+				index = applyFormatting(character, index, text, baseColour, colours, x, y);*/
+//			else
+			{
+//				if (background)
+//					renderChar(font, size, character, new ColourHolder(43, 43, 43, 255), matrix4f, x + 0.5f, y + 0.5f);
+				x += renderChar(font, size, character, colours, matrix4f, x, y);
+			}
+		}
+//      Reset size and colours;
+//		System.out.println(x);
+		return x;
+	}
+
+	private static float renderChar(CustomFont font, float size, int characterLoc, ColourHolder[] vertexColours, Matrix4f matrixStack, float x, float y)
+	{
+		final GlyphInfo glyph = font.getGlyph(characterLoc - 32);
+		RenderUtilV2.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
+		RenderUtilV2.setTextureId(font.getTexture().getID());
+		RenderUtilV2.setQuadColourHolder(vertexColours[0]);
+
+		RenderUtilV2.quadTexture(matrixStack,
+				x + glyph.x() * size,
+				y + glyph.y() * size,
+				x + glyph.w() * size,
+				y + glyph.h() * size,
+				glyph.u0(),
+				glyph.v0(),
+				glyph.u1(),
+				glyph.v1(),
+				vertexColours[0],
+				vertexColours[1],
+				vertexColours[2],
+				vertexColours[3]);
+		return glyph.xAdvance() * size;
+
+	}
+
+
 	public static float renderText(CustomFont font, float size, MatrixStack matrixStack, String text, float x, float y)
 	{
 		return renderText(font, size, matrixStack, text, false, x, y);
@@ -125,6 +217,7 @@ public class FontRenderer
 
 	public static float renderText(CustomFont font, float size, String text, ColourHolder baseColour, boolean background, MatrixStack matrixStack, float x, float y)
 	{
+		if (text == null) text = "Error text String is empty.";
 		y += font.getAscent() * font.getScale() * size;
 //      Loop for each letter of the text.
 		final ColourHolder[] colours = new ColourHolder[4];
@@ -227,6 +320,7 @@ public class FontRenderer
 		final GlyphInfo glyph = font.getGlyph(characterLoc - 32);
 		RenderUtilV2.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
 		RenderUtilV2.setTextureId(font.getTexture().getID());
+		RenderUtilV2.setQuadColourHolder(vertexColours[0]);
 
 		RenderUtilV2.quadTexture(matrixStack,
 				x + glyph.x() * size,

@@ -17,6 +17,7 @@ public class ZeroPointClient implements ClientModInitializer
 	@ConfigSetting
 	private final int version = 1;
 
+	public static final boolean BLUR = true;
 
 	@Override
 	public void onInitializeClient()
@@ -26,6 +27,7 @@ public class ZeroPointClient implements ClientModInitializer
 		ModuleManager.registerAllModules();
 		DEFAULT_CONFIG.save();
 		DiscordPresence.startRPC();
+//		MusicPlayer.INSTANCE.togglePause();
 //		MusicPlayer.load();
 //		ModelLoadingRegistry.INSTANCE.registerResourceProvider(ObjFileLoader.INSTANCE);
 //		ModelLoadingRegistry.INSTANCE.registerVariantProvider(ItemObjectFileLoader.INSTANCE);

@@ -22,40 +22,43 @@ public class BlurBackground extends BaseModule
 {
 	private static Framebuffer fbo1, fbo2;
 	private boolean shouldRender;
+	public static Framebuffer testFbo;
+
 
 	@EventListener
 	public void renderEvent(RenderWorldEvent.Post event)
 	{
-
-
-		if (!shouldRender) return;
 		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
-		final int colorAttachment = framebuffer.getColorAttachment();
 		if (fbo1 == null || fbo2 == null)
 		{
 			fbo1 = new Framebuffer();
 			fbo2 = new Framebuffer();
 		}
 
+		if (!shouldRender) return;
+		fbo1.clear();
+		fbo2.clear();
+
 		final int width = framebuffer.textureWidth;
 		final int height = framebuffer.textureHeight;
-
+		final int colorAttachment = framebuffer.getColorAttachment();
 		fbo1.bind();
 		final Shader shader = APIShaders.GAUSSIAN_BLUR_SHADER.getShader();
 		RenderUtilV2.setShader(shader);
 		RenderUtilV2.setTextureId(colorAttachment);
-		shader.setShaderUniform("Radius", 10f);
-		shader.setShaderUniform("BlurDir", new Vec2f(0f, 1f));
+		RenderUtilV2.setShaderUniform("Radius", 10f);
+		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(0f, 1f));
 		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
 		fbo1.unbind();
 		//Blur shader is still bound so no need to change shaders.
 		//Set the texture to the fbo texture.
-		RenderUtilV2.setTextureId(fbo1.texture);
+		RenderUtilV2.setTextureId(fbo1.texture.getID());
 		//Set the after bounds of the shader again to change the direction.
-		shader.setShaderUniform("Radius", 10f);
-		shader.setShaderUniform("BlurDir", new Vec2f(1f, 0f));
+		RenderUtilV2.setShaderUniform("Radius", 10f);
+		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1f, 0f));
 		//Render the final product to the screen.
 		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
+
 	}
 
 	@Override
@@ -74,9 +77,5 @@ public class BlurBackground extends BaseModule
 			shouldRender = event.client().currentScreen != null;
 	}
 
-	public static Framebuffer getFrameBuffer()
-	{
-		return fbo1;
-	}
 
 }

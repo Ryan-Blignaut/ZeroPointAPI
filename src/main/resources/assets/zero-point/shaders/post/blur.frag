@@ -1,7 +1,6 @@
 #version 450 core
 
 uniform sampler2D Sampler0;
-uniform vec2 TextureSize;
 uniform vec2 BlurDir;
 uniform float Radius;
 
@@ -11,6 +10,9 @@ in vec2 oneTexel;
 out vec4 fragColor;
 
 void main() {
+    float t = texture(Sampler0,texCoord).a;
+    if(t ==0)
+     discard;
 
     vec3 final = vec3(0.0);
 

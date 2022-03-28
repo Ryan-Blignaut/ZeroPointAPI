@@ -12,10 +12,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
@@ -26,7 +28,6 @@ public class WorldRendererMixin
 	{
 		return true || entityRenderDispatcher.shouldRender(entity, frustum, x, y, z);
 	}*/
-
 	@Shadow
 	@Nullable
 	private Frustum capturedFrustum;
@@ -52,5 +53,16 @@ public class WorldRendererMixin
 	{
 		EventManager.call(new BlockOutlineEvent(matrices, blockState.getOutlineShape(this.world, blockPos, ShapeContext.of(entity)), (float) (blockPos.getX() - d), (float) (blockPos.getY() - e), (float) (blockPos.getZ() - f), ci));
 	}
+	@Inject(
+			method = "render",
+			slice = @Slice(from = @At(value = "FIELD:LAST", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/WorldRenderer;transparencyShader:Lnet/minecraft/client/gl/ShaderEffect;")),
+			at = {
+					@At(value = "INVOKE", target = "Lnet/minecraft/client/gl/ShaderEffect;render(F)V"),
+					@At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;depthMask(Z)V", ordinal = 1, shift = At.Shift.AFTER)
+			}
+	)
+	private void hookPostWorldRender(MatrixStack matrices, float tickDelta, long nanoTime, boolean renderBlockOutline, Camera camera, GameRenderer renderer, LightmapTextureManager lmTexManager, Matrix4f matrix4f, CallbackInfo ci) {
+//		EventManager.call(new RenderWorldEvent.Post(matrices));
 
+	}
 }

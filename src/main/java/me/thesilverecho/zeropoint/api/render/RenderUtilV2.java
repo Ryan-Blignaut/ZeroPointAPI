@@ -3,7 +3,9 @@ package me.thesilverecho.zeropoint.api.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -25,10 +27,14 @@ public class RenderUtilV2
 	public static float zIndex;
 	public static Shader shader;
 	private static int textureId = -1;
-	private static ColourHolder colourHolder = ColourHolder.FULL;
 
 	private static final ColourHolder.Quad QUAD_COLOUR_HOLDER = new ColourHolder.Quad(ColourHolder.FULL);
 
+
+	static
+	{
+		BlurBackground.testFbo = new Framebuffer();
+	}
 
 	public static int getTextureFromLocation(Identifier identifier)
 	{
@@ -65,10 +71,12 @@ public class RenderUtilV2
 		RenderUtilV2.zIndex = zIndex;
 	}
 
-	public static void setColourHolder(ColourHolder colourHolder)
+
+	public static void setShaderUniform(String var, Object value)
 	{
-		RenderUtilV2.colourHolder = colourHolder;
+		shader.setShaderUniform(var, value);
 	}
+
 
 	public static void applyTextureToShader()
 	{
@@ -97,6 +105,20 @@ public class RenderUtilV2
 	public static void quad(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
 	{
 		GLWrapper.enableGL2D();
+
+		if (x > width)
+		{
+			float temp = x;
+			x = width;
+			width = temp;
+
+		}
+		if (y > height)
+		{
+			float temp = height;
+			height = y;
+			y = temp;
+		}
 		final Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 		final BufferBuilder builder = RenderSystem.renderThreadTesselator().getBuffer();
 		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -104,6 +126,12 @@ public class RenderUtilV2
 		builder.vertex(matrix4f, x, height, zIndex).color(cBottomLeft.red(), cBottomLeft.green(), cBottomLeft.blue(), cBottomLeft.alpha()).next();
 		builder.vertex(matrix4f, width, height, zIndex).color(cBottomRight.red(), cBottomRight.green(), cBottomRight.blue(), cBottomRight.alpha()).next();
 		builder.vertex(matrix4f, width, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).next();
+
+	/*	builder.vertex(matrix4f, x, height, zIndex).color(cTopLeft.red(), cTopLeft.green(), cTopLeft.blue(), cTopLeft.alpha()).next();
+		builder.vertex(matrix4f, width, height, zIndex).color(cBottomLeft.red(), cBottomLeft.green(), cBottomLeft.blue(), cBottomLeft.alpha()).next();
+		builder.vertex(matrix4f, width, y, zIndex).color(cBottomRight.red(), cBottomRight.green(), cBottomRight.blue(), cBottomRight.alpha()).next();
+		builder.vertex(matrix4f, x, y, zIndex).color(cTopRight.red(), cTopRight.green(), cTopRight.blue(), cTopRight.alpha()).next();*/
+
 		builder.end();
 		shader.bind();
 		BufferRenderer.postDraw(builder);
@@ -118,6 +146,16 @@ public class RenderUtilV2
 		quad(matrixStack, x, y, width, height, colourHolder);
 	}
 
+	public static void trail(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder colourHolder)
+	{
+//		setShader(APIShaders.TRAIL_SHADER.getShader());
+		//TODO: add time control unit(Game time only works when in world).
+		shader.setShaderUniform("Time", RenderSystem.getShaderGameTime());
+		quadTexture(matrixStack, x, y, width, height, colourHolder);
+//		FontRenderer.renderText(APIFonts.REGULAR.getFont(), 0.5f, matrixStack, RenderSystem.getShaderGameTime() + "", x, y);
+	}
+
+
 	public static void rectangle(MatrixStack matrixStack, float x, float y, float width, float height, ColourHolder colourHolder)
 	{
 		RenderUtilV2.rectangle(matrixStack, x, y, width, height, 0, colourHolder);
@@ -125,6 +163,7 @@ public class RenderUtilV2
 
 	public static void roundRect(MatrixStack matrixStack, float x, float y, float width, float height, float radius, ColourHolder colourHolder)
 	{
+
 		RenderUtilV2.roundRect(matrixStack, x, y, width, height, x + radius, y + radius, x + width - radius, y + height - radius, radius, colourHolder);
 	}
 
@@ -133,7 +172,12 @@ public class RenderUtilV2
 		RenderUtilV2.setShader(APIShaders.ROUND_RECTANGLE_SHADER.getShader());
 		shader.setShaderUniform("Radius", new Vec2f(radius, 1));
 		shader.setShaderUniform("Rectangle", new Vector4f(innerX, innerY, innerWidth, innerHeight));
+//		BlurBackground.testFbo.bind();
 		RenderUtilV2.quad(matrixStack, x, y, width, height, colourHolder);
+//		BlurBackground.testFbo.unbind();
+//		RenderUtilV2.quad(matrixStack, x, y, width, height, colourHolder);
+
+
 	}
 
 	public static void circle(MatrixStack matrixStack, float x, float y, float width, float height, float radius, ColourHolder colourHolder)
@@ -154,14 +198,16 @@ public class RenderUtilV2
 		RenderUtilV2.setShader(APIShaders.COLOUR_PICKER.getShader());
 		shader.setShaderUniform("Hue", hue);
 		RenderUtilV2.quad(matrixStack, x, y, width, height, colourHolder);
+//		Font font = new Font();
+//		font.createGlyphVector()
 	}
 
 
 	public static void quadTexture(Matrix4f matrix4f, float x, float y, float width, float height, float u0, float v0, float u1, float v1, ColourHolder cTopLeft, ColourHolder cTopRight, ColourHolder cBottomRight, ColourHolder cBottomLeft)
 	{
 		GLWrapper.enableGL2D();
-		if (textureId == -1)
-			return;
+	/*	if (textureId == -1)
+			return;*/
 		final BufferBuilder builder = RenderSystem.renderThreadTesselator().getBuffer();
 		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
 		final ColourHolder tL = QUAD_COLOUR_HOLDER.getTopLeft();
@@ -173,8 +219,8 @@ public class RenderUtilV2
 		builder.vertex(matrix4f, width, height, zIndex).color(bR.red(), bR.green(), bR.blue(), bR.alpha()).texture(u1, v1).next();
 		builder.vertex(matrix4f, width, y, zIndex).color(tR.red(), tR.green(), tR.blue(), tR.alpha()).texture(u1, v0).next();
 		builder.end();
-		shader.bind();
 		applyTextureToShader();
+		shader.bind();
 		BufferRenderer.postDraw(builder);
 		GLWrapper.activateTexture(0, 0);
 		shader.unBind();
@@ -284,6 +330,16 @@ public class RenderUtilV2
 		RenderUtilV2.quadTexture(matrixStack, x, y, width, height, colourHolder);
 	}
 
+	public static void roundRectTexture(MatrixStack matrixStack, float x, float y, float width, float height, float u0, float v0, float u1, float v1, float innerX, float innerY, float innerWidth, float innerHeight, float radius, int textureLoc, ColourHolder colourHolder)
+	{
+		RenderUtilV2.setShader(APIShaders.ROUND_RECTANGLE_TEXTURE_SHADER.getShader());
+		RenderUtilV2.setTextureId(textureLoc);
+		shader.setShaderUniform("Radius", new Vec2f(radius, 1));
+		shader.setShaderUniform("Rectangle", new Vector4f(innerX, innerY, innerWidth, innerHeight));
+		RenderUtilV2.quadTexture(matrixStack, x, y, width, height, u0, v0, u1, v1, colourHolder);
+	}
+
+
 	public static void circleTexture(MatrixStack matrixStack, float x, float y, float width, float height, float radius, int textureLoc, ColourHolder colourHolder)
 	{
 		circleTexture(matrixStack, x, y, width, height, radius, 1, textureLoc, colourHolder);
@@ -310,6 +366,9 @@ public class RenderUtilV2
 
 	public static void postProcessRect(float width, float height, float u0, float v0, float u1, float v1)
 	{
+//		GLWrapper.enableGL2D();
+		final Matrix4f matrix = RenderSystem.getProjectionMatrix();
+
 		RenderSystem.setProjectionMatrix(Matrix4f.projectionMatrix(width, -height, 1000.0F, 3000.0F));
 
 		final BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().getBuffer();
@@ -319,18 +378,20 @@ public class RenderUtilV2
 		bufferBuilder.vertex(width, 0.0D, 0.0D).texture(u1, v1).next();
 		bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(u0, v1).next();
 		bufferBuilder.end();
-		//Set the projection matrix.
-		shader.bind();
 		shader.setShaderUniform("TextureSize", new Vec2f(width, height));
 		applyTextureToShader();
+
+		shader.bind();
 		BufferRenderer.postDraw(bufferBuilder);
 		shader.unBind();
+//		GLWrapper.disableGL2D();
+		RenderSystem.setProjectionMatrix(matrix);
 	}
 
 
 	public static double getAnimationState(double animation, double finalState, double speed)
 	{
-		float add = (float) (0.055 * speed);
+		float add = (float) (/*0.055*/speed);
 		return animation < finalState ? (Math.min(animation + (double) add, finalState)) : (Math.max(animation - (double) add, finalState));
 	}
 
@@ -340,6 +401,5 @@ public class RenderUtilV2
 		shader.setShaderUniform("Radius", new Vec2f(0, 0));
 		setTextureId(textureLoc);
 		quadTexture(matrixStack, x, y, width, height, 1, 0.5f, 0, 1, ColourHolder.FULL, ColourHolder.FULL, ColourHolder.FULL, ColourHolder.FULL);
-
 	}
 }

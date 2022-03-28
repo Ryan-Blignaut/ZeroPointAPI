@@ -1,6 +1,7 @@
 package me.thesilverecho.zeropoint.api.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vector4f;
@@ -19,7 +20,10 @@ public class GLWrapper
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDepthMask(true);
+//		GL45.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA);
+//		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+//		glBlendFunc(GL_ONE, GL_ZERO);
+//		glDepthMask(true);
 //		glEnable(GL_LINE_SMOOTH);
 //		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 //		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
@@ -67,5 +71,26 @@ public class GLWrapper
 		FLOAT_BUFFER.position(0);
 		value.writeColumnMajor(FLOAT_BUFFER);
 		glUniformMatrix4fv(location, false, FLOAT_BUFFER);
+	}
+
+	public static void useShader(int programId)
+	{
+		glUseProgram(programId);
+	}
+
+	public static int compileShader(int glFragmentShader, String shaderSource)
+	{
+		int programId = glCreateShader(glFragmentShader);
+		glShaderSource(programId, shaderSource);
+		glCompileShader(programId);
+
+		if (glGetShaderi(programId, GL_COMPILE_STATUS) == GL_FALSE)
+			ZeroPointApiLogger.error(glGetShaderInfoLog(programId, 100));
+		return programId;
+	}
+
+	public static void generateShader(int programId)
+	{
+		glUseProgram(programId);
 	}
 }

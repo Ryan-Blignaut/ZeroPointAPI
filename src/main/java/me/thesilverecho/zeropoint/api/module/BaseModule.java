@@ -1,6 +1,9 @@
 package me.thesilverecho.zeropoint.api.module;
 
 import me.thesilverecho.zeropoint.api.event.EventManager;
+import me.thesilverecho.zeropoint.api.notification.Notification;
+import me.thesilverecho.zeropoint.api.notification.NotificationManager;
+import me.thesilverecho.zeropoint.api.notification.NotificationType;
 import me.thesilverecho.zeropoint.api.util.Keybind;
 import net.minecraft.client.MinecraftClient;
 
@@ -65,13 +68,20 @@ public class BaseModule implements IModule
 	 */
 	protected void runToggleActions()
 	{
-		if (!enabled) register();
-		else deregister();
+		if (!enabled)
+		{
+			register();
+			onEnable();
+		} else
+		{
+			onDisable();
+			deregister();
+		}
 	}
 
 	private void register()
 	{
-		onEnable();
+//		onEnable();
 		EventManager.register(this);
 		ENABLE_MODULES.put(this.getName(), this);
 	}
@@ -80,7 +90,7 @@ public class BaseModule implements IModule
 	{
 		ENABLE_MODULES.remove(this.getName());
 		EventManager.deregister(this);
-		onDisable();
+//		onDisable();
 	}
 
 
@@ -110,8 +120,16 @@ public class BaseModule implements IModule
 	}
 
 	@Override
-	public void onEnable() {}
+	public void onEnable()
+	{
+		if (shouldDraw)
+			NotificationManager.INSTANCE.addNotification(Notification.Builder.builder("Module Enabled", this.name + " has been enabled.").setType(NotificationType.INFO).setTimeInSeconds(0.5f).build());
+	}
 
 	@Override
-	public void onDisable() {}
+	public void onDisable()
+	{
+		if (shouldDraw)
+			NotificationManager.INSTANCE.addNotification(Notification.Builder.builder("Module Disabled", this.name + " has been enabled.").setType(NotificationType.INFO).setTimeInSeconds(0.5f).build());
+	}
 }

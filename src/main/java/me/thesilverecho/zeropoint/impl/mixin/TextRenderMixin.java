@@ -6,6 +6,34 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(TextRenderer.class)
 public abstract class TextRenderMixin
 {
+
+/*
+	*//**
+	 * @author
+	 *//*
+	@Overwrite
+	public int draw(String text, float x, float y, int color, boolean dropShadow,
+			Matrix4f matrix, VertexConsumerProvider source, boolean seeThrough,
+			int colorBackground, int packedLight, boolean bidiFlag)
+	{
+		return Math.round(FontRenderer.renderText(APIFonts.REGULAR.getFont(), matrix, text, x, y));
+	}*/
+
+/*	*//**
+	 * @author
+	 *//*
+	@Overwrite
+	public int draw(OrderedText text, float x, float y, int color, Matrix4f matrix, boolean shadow)
+	{
+		final int[] round = {0};
+
+		text.accept((index, style, codePoint) ->
+		{
+			round[0] += Math.round(FontRenderer.renderText(APIFonts.REGULAR.getFont(), matrix, Character.toString(codePoint), x + index * FontRenderer.getWidth(APIFonts.REGULAR.getFont(), 1, Character.toString(codePoint)), y));
+			return true;
+		});
+		return round[0];
+	}*/
 /*
 	@Shadow
 	public abstract String mirror(String text);
