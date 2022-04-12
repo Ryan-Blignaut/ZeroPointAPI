@@ -23,8 +23,8 @@ void main() {
     fragColor = vec4(final / (Radius + 1.0), 1.0);
 
 /*    vec3 finVar = vec3(0.0);
-    for (float i = -3; i <= 3; i += 2.0) {
-        finVar += texture(Sampler0, texCoord + oneTexel * (i + 0.5) * vec2(1.0, 0.0)).rgb;
+    for (float light = -3; light <= 3; light += 2.0) {
+        finVar += texture(Sampler0, texCoord + oneTexel * (light + 0.5) * vec2(1.0, 0.0)).rgb;
     }
     fragColor = vec4(finVar, 1.0);//texture(Sampler0, texCoord);/*//* vec4(1.0, texCoord, 1.0);//vec4(finVar / (3 + 1.0), 1.0);*/
 }

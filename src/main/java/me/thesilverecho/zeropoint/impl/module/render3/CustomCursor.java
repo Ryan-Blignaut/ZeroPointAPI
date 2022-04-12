@@ -76,7 +76,7 @@ public class CustomCursor extends BaseModule
 				for (int i = 0; i < r.nextInt(5) + 1; i++)
 				{
 					//Spawn particles
-//					PARTICLES.add(new APIParticle(r.nextInt(1), (float) e.x() + i * 20, (float) e.y() + i * 20, (float) r.nextInt(10) + 5, new ColourHolder(r.nextInt(255), r.nextInt(255), r.nextInt(255), 255)));
+//					PARTICLES.add(new APIParticle(r.nextInt(1), (float) e.x() + light * 20, (float) e.y() + light * 20, (float) r.nextInt(10) + 5, new ColourHolder(r.nextInt(255), r.nextInt(255), r.nextInt(255), 255)));
 				}
 			}
 		}

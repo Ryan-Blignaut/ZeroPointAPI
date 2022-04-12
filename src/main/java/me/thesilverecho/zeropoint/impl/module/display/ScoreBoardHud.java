@@ -76,8 +76,8 @@ public class ScoreBoardHud extends BaseModule
 
 		List<Pair<ScoreboardPlayerScore, Text>> list2 = Lists.newArrayListWithCapacity(((Collection)collection).size());
 		Text text = objective.getDisplayName();
-		int i = this.getTextRenderer().getWidth((StringVisitable)text);
-		int j = i;
+		int light = this.getTextRenderer().getWidth((StringVisitable)text);
+		int j = light;
 		int k = this.getTextRenderer().getWidth(": ");
 
 		ScoreboardPlayerScore scoreboardPlayerScore;
@@ -121,7 +121,7 @@ public class ScoreBoardHud extends BaseModule
 				fill(matrices, var10001, q - 9 - 1, r, q - 1, o);
 				fill(matrices, text2 - 2, q - 1, r, q, n);
 				TextRenderer var32 = this.getTextRenderer();
-				float var10003 = (float)(text2 + j / 2 - i / 2);
+				float var10003 = (float)(text2 + j / 2 - light / 2);
 				Objects.requireNonNull(this.getTextRenderer());
 				var32.draw(matrices, (Text)text, var10003, (float)(q - 9), -1);
 			}
@@ -332,7 +332,7 @@ public class ScoreBoardHud extends BaseModule
 		RenderUtilV2.setShaderUniform("Direction", new Vec2f(4, 0));
 		RenderUtilV2.setShaderUniform("Radius", 6f);
 		final FloatBuffer buffer = BufferUtils.createFloatBuffer(256);
-		for (int i = 1; i <= 6; i++) buffer.put(calculateGaussianValue(i, 6f));
+		for (int light = 1; light <= 6; light++) buffer.put(calculateGaussianValue(light, 6f));
 		buffer.rewind();
 		RenderUtilV2.setShaderUniform("Weights", buffer);
 		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);*/

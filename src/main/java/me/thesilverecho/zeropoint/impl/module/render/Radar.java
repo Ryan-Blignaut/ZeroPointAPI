@@ -68,10 +68,10 @@ public class Radar extends BaseModule
 //		RenderUtilV2.circle(matrixStack, midX - size / 2f, midY - size / 2f, size, size, size / 2f, ColourHolder.decode("#FFFF"));
 //		for (int j = 1; j < 10; j++)
 //		{
-//			for (int i = 0; i < 4; i++)
+//			for (int light = 0; light < 4; light++)
 //			{
-//				float x = (float) Math.cos(Math.toRadians(direction + i * 90)) * 5 * j + midX;
-//				float y = (float) Math.sin(Math.toRadians(direction + i * 90)) * 5 * j + midY;
+//				float x = (float) Math.cos(Math.toRadians(direction + light * 90)) * 5 * j + midX;
+//				float y = (float) Math.sin(Math.toRadians(direction + light * 90)) * 5 * j + midY;
 //				RenderUtilV2.circle(matrixStack, x - size / 2f, y - size / 2f, size, size, size / 2f, ColourHolder.decode("#5fFF2dFF"));
 //			}
 //		}

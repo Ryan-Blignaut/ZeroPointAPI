@@ -8,6 +8,7 @@
     "ChatHudMixin",
     "ClientPlayNetworkHandlerMixin",
     "HandledScreenMixin",
+    "ItemEntityRenderMixin",
     "ItemRendererMixin",
     "MinecraftClientAccessor",
     "MinecraftClientMixin",

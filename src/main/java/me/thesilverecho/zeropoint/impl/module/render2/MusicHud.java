@@ -57,13 +57,13 @@ public class MusicHud extends BaseModule
 		{
 			if (j == 0)
 				continue;
-	/*		for (int i = 0; i < 180; i++)
+	/*		for (int light = 0; light < 180; light++)
 			{
-				final int index = (int) MathUtils.map(i, 0, 180, 0, samples.length);
+				final int index = (int) MathUtils.map(light, 0, 180, 0, samples.length);
 				final float rad = MathUtils.map(samples[index], -1, 1, 110, 300);
-				float x = (float) (rad * Math.sin(Math.toRadians(i))) * j;
-				float y = (float) (rad * Math.cos(Math.toRadians(i)));
-				RenderUtilV2.circle(matrixStack, event.scaledWidth() / 2 + x, event.scaledHeight() / 2 + y, 10, 10, 5, new ColourHolder(Color.HSBtoRGB(i, 0.8f, 0.8f)));
+				float x = (float) (rad * Math.sin(Math.toRadians(light))) * j;
+				float y = (float) (rad * Math.cos(Math.toRadians(light)));
+				RenderUtilV2.circle(matrixStack, event.scaledWidth() / 2 + x, event.scaledHeight() / 2 + y, 10, 10, 5, new ColourHolder(Color.HSBtoRGB(light, 0.8f, 0.8f)));
 
 			}*/
 		}

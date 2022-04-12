@@ -10,6 +10,7 @@ import me.thesilverecho.zeropoint.api.render.*;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
+import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -30,6 +31,12 @@ public class BlockEntityESP extends BaseModule
 	private Framebuffer framebuffer, outlineHorizontal, outlineVertical, glowFramebuffer;
 	private MeshVertexConsumerProvider provider;
 
+	private boolean renderSolidBehindWalls = false;
+	private boolean renderSolid = false;
+	private ColourHolder renderSolidBehindWallsColour = ColourHolder.decode("#0f111a").setAlpha(100);
+
+//	TODO: Add option to filter block entities and add way to change there colours.
+
 	@EventListener
 	public void renderTileStart(RenderTileEntityEvent.startRenderTile event)
 	{
@@ -49,18 +56,24 @@ public class BlockEntityESP extends BaseModule
 	public void renderTileEnd(RenderTileEntityEvent.endRenderTile event)
 	{
 		final Shader shader = APIShaders.RECTANGLE_SHADER.getShader();
+		shader.bind();
+		if (renderSolidBehindWalls)
+		{
+			provider.setColor(renderSolidBehindWallsColour);
+			mesh.render();
+		}
 		RenderSystem.disableDepthTest();
 		framebuffer.bind();
-		shader.bind();
 		mesh.render();
-		shader.unBind();
 		framebuffer.unbind();
+		shader.unBind();
 
 	}
 
 	@EventListener
 	public void renderTile(RenderTileEntityEvent.renderTile event)
 	{
+//		event.ci().cancel();
 		final BlockEntity be = event.blockEntity();
 		final MatrixStack ms = event.matrices();
 		event.renderer().render(be, event.tickDelta(), ms, provider, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
@@ -70,7 +83,6 @@ public class BlockEntityESP extends BaseModule
 	@EventListener(priority = 1)
 	public void renderTest(RenderWorldEvent.Post event)
 	{
-
 		if (this.framebuffer == null) return;
 		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
 
@@ -131,7 +143,6 @@ public class BlockEntityESP extends BaseModule
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		RenderSystem.disableBlend();
-
 		this.outlineHorizontal.clear();
 		this.outlineVertical.clear();
 		this.framebuffer.clear();

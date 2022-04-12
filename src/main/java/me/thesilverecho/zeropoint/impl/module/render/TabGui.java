@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ClientModule(name = "Tab Gui", active = true, keyBinding = GLFW.GLFW_KEY_SEMICOLON)
 public class TabGui extends BaseModule
 {
+	private static final Comparator<String> COMPARATOR = Comparator.comparingDouble(value -> FontRenderer.getWidth(APIFonts.THIN.getFont(), 0.35f, value));
 
 	@EventListener
 	public void renderEvent(Render2dEvent.Pre event)
@@ -29,7 +30,7 @@ public class TabGui extends BaseModule
 		AtomicDouble yCord = new AtomicDouble(3);
 		AtomicInteger index = new AtomicInteger(0);
 //		FIXME: modules are not sorted properly
-		BaseModule.ENABLE_MODULES.keySet().stream().sorted(Comparator.comparingDouble(value -> FontRenderer.getWidth(APIFonts.THIN.getFont(), 0.35f, value))).
+		BaseModule.ENABLE_MODULES.keySet().stream().sorted(COMPARATOR.reversed()).
 		                         forEach((s) ->
 		                         {
 			                         final CustomFont font = APIFonts.THIN.getFont().setFontScale(0.5f);
@@ -40,7 +41,7 @@ public class TabGui extends BaseModule
 
 			                         RenderUtilV2.rectangle(matrixStack, 2, (float) v, FontRenderer.getWidth(font, 0.35f, s) + 3, height, 0, new ColourHolder(50, 50, 50, 80));
 			                         Color analogous = getAnalogousColor(ColourHolder.decode("#a43bcb"))[0];
-			                         Color textcolor = interpolateColorsBackAndForth(15, index.get() * 20, new Color(55 * 2, 2, 88 * 2, 255), analogous, false);
+			                         Color textcolor = interpolateColorsBackAndForth(35, index.get() * 20, new Color(55 * 2, 2, 88 * 2, 255), analogous, false);
 //			                         font.render(matrixStack, s, 3, andAdd + 1);
 //			                         public static float renderText(CustomFont font, float size, String text, ColourHolder baseColour, boolean background, MatrixStack matrixStack, float x, float y)
 

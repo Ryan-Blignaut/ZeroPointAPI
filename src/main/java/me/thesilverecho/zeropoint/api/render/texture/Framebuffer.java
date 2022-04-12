@@ -30,13 +30,20 @@ public class Framebuffer
 		this.texture = new Texture2D(width, height, Texture2D.Format.RGBA);
 		this.texture.setMipmap(useMipMaps);
 		this.texture.setFilter(GL_NEAREST, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + location, GL_TEXTURE_2D, this.texture.getID(), 0);
+
 		final int renderbuffer = glGenRenderbuffers();
 		glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + location, GL_TEXTURE_2D, this.texture.getID(), 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+
+
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
 			System.err.println("Frame buffer ran into issue");
+		}
 		unbind();
 	}
 

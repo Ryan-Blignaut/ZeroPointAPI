@@ -62,7 +62,7 @@ public abstract class TextRenderMixin
 		});
 		final CustomFont font = APIFonts.THIN.getFont();
 		cir.setReturnValue(font.render(matrix, s[0], new ColourHolder(255, 255, 255, 255), x, y - (font.getHeight() * 0.74f) / 2f, 0.74f, false));
-//		cir.setReturnValue(i.get());
+//		cir.setReturnValue(light.get());
 //		cir.setReturnValue(APIFonts.THIN.getFont().render(matrix, text, new ColourHolder(255, 255, 255, 255), x, y, 1, false));
 	}
 */

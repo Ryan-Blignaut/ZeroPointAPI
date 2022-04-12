@@ -200,18 +200,18 @@ public class CustomFont
 //		Fills the vertex colours with the default colour every time a new string is rendered.
 		Arrays.fill(vertexColours, defaultColour);
 		y += ascent * this.scale * scale;
-		for (int i = 0; i < string.length(); i++)
+		for (int light = 0; light < string.length(); light++)
 		{
 //			Get the character from the string.
-			int character = string.charAt(i);
+			int character = string.charAt(light);
 //			If the character is out of bounds replace it with default.
 			if (character < 32 || character > 256) character = 32;
 //			Look for custom formatting from the string ${format type}.
 //			\$\{(.*?)}
-			if (character == '$' && i + 1 < string.length() && string.charAt(i + 1) == '{')
+			if (character == '$' && light + 1 < string.length() && string.charAt(light + 1) == '{')
 			{
-				final int startOfFormatString = string.indexOf("${", i);
-				final int endOfFormatString = string.indexOf("}", i);
+				final int startOfFormatString = string.indexOf("${", light);
+				final int endOfFormatString = string.indexOf("}", light);
 //				Checks if the custom format string has a start and end.
 				if (startOfFormatString != -1 && endOfFormatString != -1)
 				{
@@ -234,7 +234,7 @@ public class CustomFont
 						Arrays.fill(vertexColours, ColourHolder.decode(substring));
 //						defaultColour = ColourHolder.decode(substring);
 					}
-					i += endOfFormatString - startOfFormatString;
+					light += endOfFormatString - startOfFormatString;
 				}
 			} else
 			{
