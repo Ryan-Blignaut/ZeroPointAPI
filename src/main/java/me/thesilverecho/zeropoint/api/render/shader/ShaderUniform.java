@@ -6,6 +6,8 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vector4f;
 import org.lwjgl.opengl.GL20;
 
+import java.nio.FloatBuffer;
+
 public final class ShaderUniform
 {
 	/*	private final Shader shaderId;
@@ -64,6 +66,9 @@ public final class ShaderUniform
 			GLWrapper.setShaderBoundVec4(cachedLocation, vec4f);
 		else if (value instanceof final Matrix4f matrix4f)
 			GLWrapper.setShaderBoundMatrix4f(cachedLocation, matrix4f);
+		else if (value instanceof final FloatBuffer floatBuffer)
+			GL20.glUniform1fv(cachedLocation, floatBuffer);
+//			GLWrapper.setShaderBoundMatrix4f(cachedLocation, matrix4f);
 		else
 			throw new UnsupportedOperationException("Failed to load data into shader: Unsupported data type.");
 	}

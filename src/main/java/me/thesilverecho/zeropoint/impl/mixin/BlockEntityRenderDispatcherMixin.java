@@ -34,8 +34,7 @@ public abstract class BlockEntityRenderDispatcherMixin
 		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer != null && blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState()))
 			if (blockEntityRenderer.isInRenderDistance(blockEntity, this.camera.getPos()))
-				runReported(blockEntity, () ->
-						EventManager.call(new RenderTileEntityEvent.renderTile(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider, ci)));
+				runReported(blockEntity, () -> EventManager.call(new RenderTileEntityEvent.renderTile(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider, ci)));
 		EventManager.call(new RenderTileEntityEvent.endRenderTile());
 	}
 

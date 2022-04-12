@@ -2,7 +2,14 @@ package me.thesilverecho.zeropoint.api.uiv2;
 
 public class VerticalPane extends Pane
 {
-	private float current = 0;
+
+	private boolean grow = true;
+
+	public VerticalPane()
+	{
+		this(0, 0, 0, 0);
+		this.grow = true;
+	}
 
 	public VerticalPane(float x, float y, float w, float h)
 	{
@@ -15,9 +22,23 @@ public class VerticalPane extends Pane
 	@Override
 	public void addComponent(Component c)
 	{
-		c.x = hPadding + x;
-		c.y = y + current;
-		current += c.h + 1;
 		super.addComponent(c);
+		repaint();
+	}
+
+	@Override
+	public void repaint()
+	{
+		float previousHeight = 0;
+		if (grow) this.h = 0;
+
+		for (Component c : this.components)
+		{
+			c.x = hPadding + x;
+			c.y = y + previousHeight;
+			previousHeight = c.h + c.y;
+			if (grow) this.h += previousHeight;
+			c.repaint();
+		}
 	}
 }

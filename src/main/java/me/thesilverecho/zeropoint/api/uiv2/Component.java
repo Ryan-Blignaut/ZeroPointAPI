@@ -45,4 +45,6 @@ public abstract class Component
 		return this;
 	}
 
+	public void repaint() {}
+
 }

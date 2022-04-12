@@ -4,12 +4,7 @@ import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.font.APIFonts;
-import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.impl.event.PickupEvent;
-import me.thesilverecho.zeropoint.impl.module.display.ScoreBoardHud;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -44,7 +39,7 @@ public class PickupHud extends BaseModule
 	public void render(Render2dEvent.Pre event)
 	{
 
-		if (test != null)
+	/*	if (test != null)
 		{
 			{
 				final ItemStack stack = test;
@@ -68,7 +63,7 @@ public class PickupHud extends BaseModule
 				ScoreBoardHud.blurFBO.unbind();
 
 			}
-		}
+		}*/
 	}
 
 }

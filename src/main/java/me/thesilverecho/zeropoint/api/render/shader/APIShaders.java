@@ -14,6 +14,7 @@ public enum APIShaders
 	COLOUR_PICKER("colour_picker.frag"),
 	RECTANGLE_SHADER("rectangle.frag"),
 	ROUND_RECTANGLE_SHADER("round_rectangle.frag"),
+	ROUND_RECTANGLE_LINE_SHADER("round_rectangle_line.frag"),
 	LOADING("loading_screen.frag"),
 
 	//  TEXTURE SHADERS
@@ -30,6 +31,12 @@ public enum APIShaders
 	ITEM("item.frag", "colour_texture.vert"),
 	BLURV3("blur.frag", "post_process_texture.vert"),
 	COMPOSITE("composite.frag", "post_process_texture.vert"),
+
+
+	OUTLINE0("ol.frag", "post_process_texture.vert"),
+	GLOW("glow.frag", "post_process_texture.vert"),
+	BLOOM("bloom.frag", true),
+	ADD_EFFECTS("add.frag", true),
 
 
 	//	POST SHADERS

@@ -6,10 +6,10 @@ import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.ArrayList;
 
-public class Pane extends Component
+public class Pane extends IntractableComponent
 {
 	//list of components that will be used.
-	private final ArrayList<Component> components = new ArrayList<>();
+	protected final ArrayList<Component> components = new ArrayList<>();
 
 	public Pane(float x, float y, float w, float h)
 	{
@@ -46,5 +46,18 @@ public class Pane extends Component
 	{
 		this.imageBackground = imageBackground;
 		return this;
+	}
+
+	@Override
+	public void repaint()
+	{
+		components.forEach(Component::repaint);
+	}
+
+	@Override
+	public boolean onClick(double mouseX, double mouseY, int button)
+	{
+		components.stream().filter(component -> component instanceof IntractableComponent).forEach(component -> ((IntractableComponent) component).onClick(mouseX, mouseY, button));
+		return true;
 	}
 }

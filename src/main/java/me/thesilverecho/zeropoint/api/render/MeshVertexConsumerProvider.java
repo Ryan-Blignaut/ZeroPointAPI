@@ -61,7 +61,6 @@ public class MeshVertexConsumerProvider implements VertexConsumerProvider
 			xs[i] = offsetX + x;
 			ys[i] = offsetY + y;
 			zs[i] = offsetZ + z;
-
 			return this;
 		}
 

@@ -12,12 +12,12 @@ public abstract class IntractableComponent extends Component
 		return false;
 	}
 
-	public boolean mouseClicked(double mouseX, double mouseY, int button)
+	public boolean onClick(double mouseX, double mouseY, int button)
 	{
 		return false;
 	}
 
-	public void mouseReleased(double mouseX, double mouseY, int button)
+	public void onRelease(double mouseX, double mouseY, int button)
 	{
 	}
 

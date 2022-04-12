@@ -50,7 +50,6 @@ public class SplashScreen
 		final long totalRam = Runtime.getRuntime().totalMemory();
 		final long freeRam = Runtime.getRuntime().freeMemory();
 		final long usedRam = totalRam - freeRam;
-
 		final String amountString = "Ram used: %03d/%03d MB".formatted((int) (usedRam / 1024L / 1024L), (int) (maxRam / 1024L / 1024L));
 		FontRenderer.renderText(font, 0.75f, matrices, amountString, true, scaledWidth / 2f - FontRenderer.getWidth(font, 0.75f, amountString) / 2, x - 20);
 

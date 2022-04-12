@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(net.minecraft.client.gui.screen.TitleScreen.class)
 public abstract class TitleScreenMixin extends Screen
@@ -44,9 +45,7 @@ public abstract class TitleScreenMixin extends Screen
 			MusicPlayer.INSTANCE.play();
 		}, new TranslatableText("w")));
 
-		framebuffer = new Framebuffer();
-
-//		ci.cancel();
+		ci.cancel();
 
 	}
 
@@ -56,6 +55,13 @@ public abstract class TitleScreenMixin extends Screen
 		ci.cancel();
 		TitleScreen.render(matrixStack, this.width, this.height, mouseX, mouseY, delta);
 		super.render(matrixStack, mouseX, mouseY, delta);
+	}
+
+	@Inject(method = "mouseClicked", at = @At(value = "HEAD"), cancellable = true)
+	public void mouseClickCustom(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir)
+	{
+		TitleScreen.mouseClick(mouseX, mouseY, button);
+		super.mouseClicked(mouseX, mouseY, button);
 	}
 
 }

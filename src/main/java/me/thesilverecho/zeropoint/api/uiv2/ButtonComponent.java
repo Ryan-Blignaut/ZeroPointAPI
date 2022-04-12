@@ -6,9 +6,13 @@ import net.minecraft.client.util.math.MatrixStack;
 
 public class ButtonComponent extends IntractableComponent
 {
-	private Runnable onClickEvent;
-
+	private final Runnable onClickEvent;
 	private LabelComponent text;
+
+	public LabelComponent getText()
+	{
+		return text;
+	}
 
 	public ButtonComponent(float x, float y, float w, float h, String text, Runnable onClickEvent)
 	{
@@ -20,33 +24,32 @@ public class ButtonComponent extends IntractableComponent
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta)
 	{
-		this.text.x = x;
-		this.text.y = y;
-		this.text.w = w;
-		this.text.h = h;
-
-//		RenderUtilV2.roundRect(matrixStack, x, y, w, h, 2, getBackground());
-
-//		if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h)
-//			RenderUtilV2.roundRect(matrixStack, x, h - 3, w, 3, 2, ColourHolder.FULL);
+		RenderUtilV2.roundRect(matrixStack, x, y, w, h, 2, getBackground());
 		if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h)
-						RenderUtilV2.roundRect(matrixStack, x, h - 3, w, 3, 2, ColourHolder.FULL);
-
-			RenderUtilV2.roundRect(matrixStack, x, y, w, h, 2, getBackground());
-
-
+			RenderUtilV2.roundRect(matrixStack, x, y, w, h, 2, new ColourHolder(255, 255, 255, 95));
 		text.render(matrixStack, mouseX, mouseY, delta);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button)
+	public boolean onClick(double mouseX, double mouseY, int button)
 	{
-		return super.mouseClicked(mouseX, mouseY, button);
+		if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h)
+			onClickEvent.run();
+		return super.onClick(mouseX, mouseY, button);
 	}
 
 	public ButtonComponent setText(LabelComponent text)
 	{
 		this.text = text;
 		return this;
+	}
+
+	@Override
+	public void repaint()
+	{
+		this.text.x = x;
+		this.text.y = y;
+		this.text.w = w;
+		this.text.h = h;
 	}
 }

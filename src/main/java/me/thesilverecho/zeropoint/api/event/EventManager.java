@@ -78,10 +78,12 @@ public class EventManager
 	{
 		if (EVENTS.containsKey(event.getClass()))
 		{
+
 			EVENTS.get(event.getClass())
 			      .stream()
 			      .sorted(Comparator.comparingInt(MethodData::priority))
-			      .forEach(methodData -> ReflectionUtil.invokeMethodSafe(methodData.source(), methodData.target(), event));
+			      .forEach(methodData ->
+					      ReflectionUtil.invokeMethodSafe(methodData.source(), methodData.target(), event));
 		}
 	}
 }

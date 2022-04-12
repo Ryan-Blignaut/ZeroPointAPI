@@ -26,7 +26,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Vec2f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL45;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,10 +133,9 @@ public class ScoreBoardHud extends BaseModule
 
 	public static Framebuffer blurFBO;
 
-	@EventListener
+	@EventListener(priority = 2)
 	public void render(Render2dEvent.ScoreBoard event)
 	{
-		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
 		final CustomFont font = this.font.getFont();
 
 		event.ci().cancel();
@@ -230,8 +229,7 @@ public class ScoreBoardHud extends BaseModule
 
 //		blurFBO.clear();
 
-		if (blurFBO == null)
-			blurFBO = new Framebuffer();
+		if (blurFBO == null) blurFBO = new Framebuffer();
 		blurFBO.bind();
 		RenderUtilV2.roundRect(matrixStack, rectX, rectY, rectW, fontHeight, rectX + r, rectY + r, rectX + rectW - r, rectY + fontHeight, r, ColourHolder.decode("#ff5159").setAlpha(120));
 		rectY += fontHeight;
@@ -279,21 +277,30 @@ public class ScoreBoardHud extends BaseModule
 	@EventListener
 	public void render(RenderWorldEvent.Post event)
 	{
+
+//		RenderSystem.enableBlend();
+//		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+//		RenderSystem.disableDepthTest();
+		GL11.glDisable(GL11.GL_BLEND);
+
+//		GL11.glEnable(GL11.GL_BLEND);
+		glDisable(GL11.GL_DEPTH_TEST);
+//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		if (fbo == null)
 		{
 			fbo = new Framebuffer();
 			fbo2 = new Framebuffer();
-		}
+			blurFBO = new Framebuffer();
 
+		}
 		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
 
 		final int textureWidth = framebuffer.textureWidth;
 		final int textureHeight = framebuffer.textureHeight;
 
 
-		GL45.glDisable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
-
 		fbo.bind();
 		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
 		RenderUtilV2.setShaderUniform("TextureSize", new Vec2f(textureWidth, textureHeight));
@@ -309,24 +316,41 @@ public class ScoreBoardHud extends BaseModule
 		RenderUtilV2.setTextureId(fbo.texture.getID());
 		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
 		fbo2.unbind();
-		if (blurFBO == null)
-			blurFBO = new Framebuffer();
+		fbo.clear();
 
-		//TODO: find out how to "layer" levels of textures in a shader
 		RenderUtilV2.setShader(APIShaders.COMPOSITE.getShader());
 		GLWrapper.activateTexture(1, blurFBO.texture.getID());
 		RenderUtilV2.setShaderUniform("Sampler1", 1);
 		RenderUtilV2.setTextureId(fbo2.texture.getID());
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
-		glDisable(GL_BLEND);
+
+//		fbo.bind();
+	/*	RenderUtilV2.setShader(APIShaders.BLOOM.getShader());
+		GLWrapper.activateTexture(1, blurFBO.texture.getID());
+		RenderUtilV2.setShaderUniform("Sampler1", 1);
+		RenderUtilV2.setTextureId(blurFBO.texture.getID());
+		RenderUtilV2.setShaderUniform("Direction", new Vec2f(4, 0));
+		RenderUtilV2.setShaderUniform("Radius", 6f);
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(256);
+		for (int i = 1; i <= 6; i++) buffer.put(calculateGaussianValue(i, 6f));
+		buffer.rewind();
+		RenderUtilV2.setShaderUniform("Weights", buffer);
+		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);*/
+//		fbo.unbind();
+
+	/*	GLWrapper.activateTexture(1, blurFBO.texture.getID());
+		RenderUtilV2.setShaderUniform("Sampler1", 1);
+		RenderUtilV2.setTextureId(fbo.texture.getID());
+		RenderUtilV2.setShaderUniform("Direction", new Vec2f(11, 0));
+		RenderUtilV2.setShaderUniform("Radius", 16f);
+		RenderUtilV2.setShaderUniform("Weights", buffer);
+		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);*/
+//		glDisable(GL_BLEND);
 
 		fbo.clear();
 		fbo2.clear();
 		blurFBO.clear();
 
-		GL45.glEnable(GL_DEPTH_TEST);
 	}
 
 

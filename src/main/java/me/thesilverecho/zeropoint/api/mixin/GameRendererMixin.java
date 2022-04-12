@@ -47,7 +47,7 @@ public abstract class GameRendererMixin
 	}*/
 
 
-	@Inject(method = "renderWorld", at = @At(/*"TAIL"*/"RETURN"))
+	@Inject(method = "renderWorld", at = @At("TAIL"/*"RETURN"*/))
 	private void onRenderWorldPost(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo ci)
 	{
 		EventManager.call(new RenderWorldEvent.Post(matrix));

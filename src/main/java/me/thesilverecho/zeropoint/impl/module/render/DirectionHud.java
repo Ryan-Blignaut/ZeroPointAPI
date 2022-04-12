@@ -83,7 +83,7 @@ public class DirectionHud extends BaseModule
 				final PlayerListEntry playerListEntry = client.getNetworkHandler().getPlayerListEntry(player.getUuid());
 				ping = "Ping: ${#388E3C} " + (playerListEntry != null ? Integer.toString(playerListEntry.getLatency()) : "0");
 			}
-			fps = "FPS: ${" + fpsCol + "}" + ((MinecraftClientAccessor) client).getCurrentFps();
+			fps = "FPS: ${" + fpsCol + "}" + MinecraftClientAccessor.getCurrentFps();
 			final Vec3d playerPos = player.getPos();
 			pos = "X: " + (int) playerPos.getX() + " Y: " + (int) playerPos.getY() + " Z: " + (int) playerPos.getZ();
 			final LocalDateTime now = LocalDateTime.now();

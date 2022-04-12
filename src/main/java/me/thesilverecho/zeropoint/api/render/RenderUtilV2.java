@@ -170,15 +170,39 @@ public class RenderUtilV2
 	public static void roundRect(MatrixStack matrixStack, float x, float y, float width, float height, float innerX, float innerY, float innerWidth, float innerHeight, float radius, ColourHolder colourHolder)
 	{
 		RenderUtilV2.setShader(APIShaders.ROUND_RECTANGLE_SHADER.getShader());
+		roundRectanglePass(matrixStack, x, y, width, height, innerX, innerY, innerWidth, innerHeight, radius, colourHolder);
+	}
+
+	public static void roundRectLine(MatrixStack matrixStack, float x, float y, float width, float height, float radius, float thickness, ColourHolder colourHolder)
+	{
+		RenderUtilV2.roundRectLine(matrixStack, x, y, width, height, x + radius + thickness, y + radius + thickness, x + width - radius - thickness, y + height - radius - thickness, radius, thickness, colourHolder);
+	}
+
+	public static void roundRectLineAdjust(MatrixStack matrixStack, float x, float y, float width, float height, float innerX, float innerY, float innerWidth, float innerHeight, float radius, float thickness, ColourHolder colourHolder)
+	{
+		roundRectLine(matrixStack, x, y, width, height, x + innerX, y + innerY, x + width + innerWidth, y + height + innerHeight, radius, thickness, colourHolder);
+	}
+
+	public static void roundRectLine(MatrixStack matrixStack, float x, float y, float width, float height, float innerX, float innerY, float innerWidth, float innerHeight, float radius, float thickness, ColourHolder colourHolder)
+	{
+		RenderUtilV2.setShader(APIShaders.ROUND_RECTANGLE_LINE_SHADER.getShader());
+		shader.setShaderUniform("Thickness", thickness);
+		roundRectanglePass(matrixStack, x, y, width, height, innerX, innerY, innerWidth, innerHeight, radius, colourHolder);
+	}
+
+	public static void roundRectAdjust(MatrixStack matrixStack, float x, float y, float width, float height, float innerX, float innerY, float innerWidth, float innerHeight, float radius, ColourHolder colourHolder)
+	{
+		RenderUtilV2.setShader(APIShaders.ROUND_RECTANGLE_SHADER.getShader());
+		roundRectanglePass(matrixStack, x, y, width, height, x + innerX, y + innerY, x + width + innerWidth, y + height + innerHeight, radius, colourHolder);
+	}
+
+	public static void roundRectanglePass(MatrixStack matrixStack, float x, float y, float width, float height, float innerX, float innerY, float innerWidth, float innerHeight, float radius, ColourHolder colourHolder)
+	{
 		shader.setShaderUniform("Radius", new Vec2f(radius, 1));
 		shader.setShaderUniform("Rectangle", new Vector4f(innerX, innerY, innerWidth, innerHeight));
-//		BlurBackground.testFbo.bind();
 		RenderUtilV2.quad(matrixStack, x, y, width, height, colourHolder);
-//		BlurBackground.testFbo.unbind();
-//		RenderUtilV2.quad(matrixStack, x, y, width, height, colourHolder);
-
-
 	}
+
 
 	public static void circle(MatrixStack matrixStack, float x, float y, float width, float height, float radius, ColourHolder colourHolder)
 	{
@@ -363,6 +387,10 @@ public class RenderUtilV2
 		RenderUtilV2.quadTexture(matrixStack, x, y, x + width, y + height, u0, v0, u1, v1, colourHolder, colourHolder, colourHolder, colourHolder);
 	}
 
+	public static void postProcessRect(float width, float height)
+	{
+		postProcessRect(width, height, 0, 0, 1, 1);
+	}
 
 	public static void postProcessRect(float width, float height, float u0, float v0, float u1, float v1)
 	{
@@ -378,7 +406,7 @@ public class RenderUtilV2
 		bufferBuilder.vertex(width, 0.0D, 0.0D).texture(u1, v1).next();
 		bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(u0, v1).next();
 		bufferBuilder.end();
-		shader.setShaderUniform("TextureSize", new Vec2f(width, height));
+		shader.setShaderUniform("TextureSize", new Vec2f(MinecraftClient.getInstance().getFramebuffer().textureWidth, MinecraftClient.getInstance().getFramebuffer().textureHeight));
 		applyTextureToShader();
 
 		shader.bind();

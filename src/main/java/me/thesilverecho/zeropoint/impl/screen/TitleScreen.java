@@ -2,8 +2,9 @@ package me.thesilverecho.zeropoint.impl.screen;
 
 import me.thesilverecho.zeropoint.api.render.GLWrapper;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
+import me.thesilverecho.zeropoint.api.render.font.APIFonts;
+import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
-import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.uiv2.ButtonComponent;
 import me.thesilverecho.zeropoint.api.uiv2.Pane;
 import me.thesilverecho.zeropoint.api.uiv2.VerticalPane;
@@ -11,10 +12,11 @@ import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
@@ -25,27 +27,32 @@ public class TitleScreen
 
 	private static Pane pane;
 
-	private static Framebuffer framebuffer;
-	private static Framebuffer blurPing, blurPong;
-
 	public static void init(MinecraftClient client, Screen screen, int width, int height)
 	{
 		pane = new Pane(0, 0, width, height);
-		pane.setImageBackground(RenderUtilV2.getTextureFromLocation(START_ID));
+//		pane.setImageBackground(RenderUtilV2.getTextureFromLocation(START_ID));
 		final VerticalPane buttonPane = new VerticalPane(0, 0, 120, height);
-		buttonPane.setBackground(new ColourHolder(50, 50, 50, 190));
+//		buttonPane.setBackground(new ColourHolder(50, 50, 50, 190));
 
-		ButtonComponent singlePlayerButton = new ButtonComponent(0, 0, 120, 32, "Singleplayer", () -> client.setScreen(new SelectWorldScreen(screen)));
+		ButtonComponent singlePlayerButton = new ButtonComponent(0, 0, 50, 16, "Singleplayer", () -> client.setScreen(new SelectWorldScreen(screen)));
 		singlePlayerButton.setBackground(ColourHolder.decode("#FF2b2b"));
-		ButtonComponent multiplayerButton = new ButtonComponent(0, 0, 120, 32, "Multiplayer", () -> client.setScreen(new SelectWorldScreen(screen)));
+		singlePlayerButton.getText().setFontSize(0.5f);
+
+		ButtonComponent multiplayerButton = new ButtonComponent(0, 0, 50, 16, "Multiplayer", () -> client.setScreen(new MultiplayerScreen(screen)));
 		multiplayerButton.setBackground(ColourHolder.decode("#2b7b2b"));
+
+		ButtonComponent settingsButton = new ButtonComponent(0, 0, 50, 16, "Settings", () -> client.setScreen(new OptionsScreen(screen, client.options)));
+		settingsButton.setBackground(ColourHolder.decode("#FF2b2b"));
+
+		ButtonComponent quitButton = new ButtonComponent(0, 0, 50, 16, "Quit", client::scheduleStop);
+		quitButton.setBackground(ColourHolder.decode("#2b7b2b"));
 
 
 		pane.addComponent(buttonPane);
 		buttonPane.addComponent(singlePlayerButton);
 		buttonPane.addComponent(multiplayerButton);
-
-		framebuffer = new Framebuffer();
+		buttonPane.addComponent(settingsButton);
+		buttonPane.addComponent(quitButton);
 
 
 	}
@@ -56,14 +63,6 @@ public class TitleScreen
 
 	public static void render(MatrixStack matrixStack, float width, float height, int mouseX, int mouseY, float delta)
 	{
-
-		if (blurPing == null)
-		{
-			blurPong = new Framebuffer();
-			blurPong.texture.setMipmap(true);
-			blurPing = new Framebuffer();
-			blurPing.texture.setMipmap(true);
-		}
 
 		RenderUtilV2.setShader(APIShaders.WATER_RIPPLE.getShader());
 		final int textureFromLocation = RenderUtilV2.getTextureFromLocation(new Identifier(ZeroPointClient.MOD_ID, "textures/bg12.png"));
@@ -89,95 +88,63 @@ public class TitleScreen
 		RenderUtilV2.quadTexture(matrixStack, 0, 0, width, height, new ColourHolder(0, 0, 0, 255));
 
 
-		RenderUtilV2.setShader(APIShaders.LOADING.getShader());
-		RenderUtilV2.setShaderUniform("CenterPos", new Vec2f(32 + 50, 32 + 50));
-		RenderUtilV2.setShaderUniform("Time", time);
-		RenderUtilV2.setShaderUniform("P", new Vec2f(width, height));
+		float buttonPaneWidth = 94, buttonPaneHeight = 150;
+		final ColourHolder primaryCol = ColourHolder.decode("#2d2c2c");
+		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, primaryCol);
+		buttonPaneWidth = buttonPaneWidth - 3;
+		buttonPaneHeight = buttonPaneHeight - 3;
+		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, ColourHolder.decode("#111111"));
 
-		RenderUtilV2.quadTexture(matrixStack, 0, 0, width, height, ColourHolder.FULL);
-
-
-		/*framebuffer.bind();
-		final int test = RenderUtilV2.getTextureFromLocation(new Identifier(ZeroPointClient.MOD_ID, "textures/girl.png"));
-		RenderUtilV2.rectangleTexture(matrixStack, 20, 20, 120, 120, test, ColourHolder.FULL);
-		framebuffer.unbind();
+		buttonPaneWidth = buttonPaneWidth - 10;
+		buttonPaneHeight = buttonPaneHeight - 10;
+		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, primaryCol);
 
 
-		RenderUtilV2.setShader(APIShaders.OUT.getShader());
-		RenderUtilV2.setTextureId(framebuffer.texture);
-		final ColourHolder x = ColourHolder.decode("#0f111a");
-		final ColourHolder x1 = ColourHolder.decode("#074621");
-		final ColourHolder x2 = ColourHolder.decode("#0f111a");
+		buttonPaneWidth = buttonPaneWidth - 2;
+		buttonPaneHeight = buttonPaneHeight - 2;
+		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, ColourHolder.decode("#111111"));
 
-		RenderUtilV2.setShaderUniform("u_model_size", new Vec2f(width, height));
-		RenderUtilV2.setShaderUniform("u_threshold", 1.f);
-		RenderUtilV2.setShaderUniform("u_width", 3f);
-		RenderUtilV2.setShaderUniform("u_step_start", -1.0f);
-		RenderUtilV2.setShaderUniform("u_step_end", 0.7f);
-		RenderUtilV2.setShaderUniform("u_color", new Vector4f(x.red(), x.blue(), x.green(), 255));
-		RenderUtilV2.setShaderUniform("u_far_color", new Vector4f(x1.red(), x1.blue(), x1.green(), 255));
-		RenderUtilV2.setShaderUniform("u_low_color", new Vector4f(x2.red(), x2.blue(), x2.green(), 255));
-		RenderUtilV2.setShaderUniform("u_low_color_fade", 0f);
-		RenderUtilV2.setShaderUniform("u_mesh_pad", 0f);
+		buttonPaneWidth = buttonPaneWidth + 2 - 5;
+		buttonPaneHeight = buttonPaneHeight + 2 + FontRenderer.getHeight(APIFonts.REGULAR.getFont(), 0.35f) / 2;
+		FontRenderer.renderText(APIFonts.REGULAR.getFont(), 0.35f, "Main Menu", new ColourHolder(200, 222, 222, 255), false, matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60);
 
 
-		blurFbo.bind();
-		RenderUtilV2.quadTexture(matrixStack, 0, 0, width, height, 0, 1, 1, 0, ColourHolder.FULL);
-		blurFbo.unbind();
+		buttonPaneWidth = buttonPaneWidth - 5;
 
-		blurFboP2.bind();
-		final Shader shader = APIShaders.GAUSSIAN_BLUR_SHADER.getShader();
-		RenderUtilV2.setShader(shader);
-		RenderUtilV2.setTextureId(blurFbo.texture);
-		RenderUtilV2.setShaderUniform("Radius", 6f);
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1f, 0f));
-		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
-		blurFboP2.unbind();
+		float buttonHeight = 16;
 
+		final float bx = width / 2 - buttonPaneWidth / 2;
+		final float by = height / 2 - buttonHeight / 2 - 60;
 
+		final int radius = 5;
 
+		RenderUtilV2.roundRectAdjust(matrixStack, bx, by - buttonHeight * 3, buttonPaneWidth, buttonHeight, radius, radius, -radius, 0, radius, primaryCol);
 
-		RenderUtilV2.setShader(shader);
-		RenderUtilV2.setTextureId(blurFboP2.texture);
-		RenderUtilV2.setShaderUniform("Radius", 6f);
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(0f, 1f));
-		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
-		RenderUtilV2.rectangleTexture(matrixStack, 20, 20, 120, 120, test, ColourHolder.FULL);*/
+		//FixMe: when there is no rounding the edge of the button is not smoothly drawn(The smooth step is ineffective).
+		final float sizeHack = 0.5f;
+		if (mouseX > bx + sizeHack && mouseX < bx + sizeHack + buttonPaneWidth - 1 && mouseY > by - buttonHeight * 2 && mouseY < by - buttonHeight)
+			RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by - buttonHeight * 2, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, ColourHolder.FULL);
+		else
+			RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by - buttonHeight * 2, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, primaryCol);
 
 
-	/*	RenderUtilV2.setTextureId(framebuffer.texture);
-		//Set the after bounds of the shader again to change the direction.
-		RenderUtilV2.setShaderUniform("Radius", 10f);
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1f, 0f));
-		//Render the final product to the screen.
-		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);*/
+		RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by - buttonHeight, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, primaryCol);
+		RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, primaryCol);
+		RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by + buttonHeight, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, primaryCol);
+		RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by + buttonHeight * 2, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, primaryCol);
+		RenderUtilV2.roundRectAdjust(matrixStack, bx, by + buttonHeight * 3, buttonPaneWidth, buttonHeight, radius, 0, -radius, -radius, radius, primaryCol);
 
-
-		/*framebuffer.bind();
-		final Shader shader = APIShaders.GAUSSIAN_BLUR_SHADER.getShader();
-		RenderUtilV2.setShader(shader);
-		RenderUtilV2.setTextureId(blurFbo.texture);
-		RenderUtilV2.setShaderUniform("Radius", 10f);
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(0f, 1f));
-		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);
-		framebuffer.unbind();
-		//Blur shader is still bound so no need to change shaders.
-		//Set the texture to the fbo texture.
-		RenderUtilV2.setTextureId(framebuffer.texture);
-		//Set the after bounds of the shader again to change the direction.
-		RenderUtilV2.setShaderUniform("Radius", 10f);
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1f, 0f));
-		//Render the final product to the screen.
-		RenderUtilV2.postProcessRect(width, height, 0, 0, 1, 1);*/
-
-
-		blurPong.clear();
-		framebuffer.clear();
+//		RenderUtilV2.roundRectLine(matrixStack, bx-1, by - buttonHeight * 3, buttonPaneWidth+2, buttonHeight * 7, radius, 4f, primaryCol);
 
 
 		float cur_time = (float) glfwGetTime();
 		time += cur_time - prev_time;
 		prev_time = cur_time;
-//		pane.render(matrixStack, mouseX, mouseY, delta);
+		pane.render(matrixStack, mouseX, mouseY, delta);
+	}
+
+	public static void mouseClick(double mouseX, double mouseY, int button)
+	{
+		pane.onClick(mouseX, mouseY, button);
 	}
 }
