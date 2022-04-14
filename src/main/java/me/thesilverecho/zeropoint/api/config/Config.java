@@ -1,7 +1,6 @@
 package me.thesilverecho.zeropoint.api.config;
 
 import com.google.gson.*;
-import me.thesilverecho.zeropoint.api.config.selector.ExcludedSelector;
 import me.thesilverecho.zeropoint.api.util.Pair;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
@@ -48,13 +47,14 @@ public class Config
 			@Override
 			public boolean shouldSkipField(FieldAttributes f)
 			{
-				return f.getAnnotation(ExcludedSelector.class) != null;
+
+				return f.getAnnotation(ConfigSetting.class) == null;
 			}
 
 			@Override
 			public boolean shouldSkipClass(Class<?> clazz)
 			{
-				return clazz.getAnnotation(ExcludedSelector.class) != null;
+				return false;//clazz.getAnnotation(ExcludedSelector.class) != null;
 			}
 		}).setPrettyPrinting().create(), fileName);
 	}

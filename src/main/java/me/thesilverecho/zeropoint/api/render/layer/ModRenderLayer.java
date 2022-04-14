@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
-import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
-import me.thesilverecho.zeropoint.impl.module.display.ScoreBoardHud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -38,13 +36,13 @@ public class ModRenderLayer extends RenderLayer
 			                       .modShader(new ModRenderPhase.ModShader(
 					                       APIShaders.OUT.getShader(), shader ->
 			                       {
-				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
-				                       if (blurFBO != null && blurFBO.isBoundTest())
-					                       blurFBO.bind();
+//				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
+//				                       if (blurFBO != null && blurFBO.isBoundTest())
+//					                       blurFBO.bind();
 
 			                       }, () ->
 			                       {
-				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
+//				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
 //				                       if (blurFBO != null)
 //					                       blurFBO.unbind();
 			                       }

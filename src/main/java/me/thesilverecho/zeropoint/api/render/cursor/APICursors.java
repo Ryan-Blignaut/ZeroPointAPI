@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 public enum APICursors
 {
 	DEFAULT("pointer.png"),
-	HAND("cursor1.png"),
+	HAND("move.png"),
 	MOVE("move.png"),
 	UNAVAILABLE("unavailable.png"),
 	TEXT("beam.png");

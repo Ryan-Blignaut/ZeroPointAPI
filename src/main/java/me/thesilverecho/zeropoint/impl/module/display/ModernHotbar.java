@@ -15,6 +15,7 @@ import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.mixin.MinecraftClientAccessor;
+import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
@@ -62,10 +63,10 @@ public class ModernHotbar extends BaseModule
 //		RenderUtilV2.setShaderUniform("Radius", new Vec2f(2, 0));
 //		RenderUtilV2.setTextureId(fbo2.texture.getID());
 //		RenderUtilV2.quadTexture(event.matrixStack(), 0, height - codeHeight, width, height, 1f / w.getScaledWidth() * 0, 1 - 1f / w.getScaledHeight() * (height - codeHeight), 1f / w.getScaledWidth() * (width), 1 - 1f / w.getScaledHeight() * (height), ColourHolder.decode(hudCol).setAlpha(180));
-		ScoreBoardHud.blurFBO.bind();
-		RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180));
-		ScoreBoardHud.blurFBO.unbind();
-		RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180));
+//		ScoreBoardHud.blurFBO.bind();
+//		RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180));
+//		ScoreBoardHud.blurFBO.unbind();
+		BlurBackground.renderToBlur(() -> RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180)));
 
 
 		PlayerEntity playerEntity = event.player();
@@ -78,7 +79,7 @@ public class ModernHotbar extends BaseModule
 		final float halfWidth = width / 2f;
 		final float x = halfWidth - 93 + inventory.selectedSlot * 20 + 2;
 
-		this.animationX = (float) RenderUtilV2.getAnimationState(this.animationX, x, /*Math.max(50.0F, Math.abs(this.animationX - x)  **/MinecraftClient.getInstance().getTickDelta() *7);
+		this.animationX = (float) RenderUtilV2.getAnimationState(this.animationX, x, /*Math.max(50.0F, Math.abs(this.animationX - x)  **/MinecraftClient.getInstance().getTickDelta() * 7);
 		RenderUtilV2.roundRect(matrixStack, animationX, height - codeHeight, -x + halfWidth - 71 + inventory.selectedSlot * 20 + 2, codeHeight, 2, new ColourHolder(255, 255, 255, 80));
 		if (!offHandStack.isEmpty())
 			RenderUtilV2.roundRect(matrixStack, halfWidth - 90 - 29, height - codeHeight, 22, codeHeight, 2, new ColourHolder(255, 255, 255, 80));

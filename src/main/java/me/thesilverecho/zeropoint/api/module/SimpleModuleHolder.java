@@ -17,7 +17,7 @@ public final class SimpleModuleHolder
 	{
 		this.name = baseModule.getName();
 		this.key = baseModule.getKeybind().getKeyCode();
-		this.enabled = baseModule.isEnabled();
+		this.enabled = !baseModule.isEnabled();
 	}
 
 	public String getName() {return name;}

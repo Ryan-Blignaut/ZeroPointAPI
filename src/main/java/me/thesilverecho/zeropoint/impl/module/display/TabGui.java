@@ -1,4 +1,4 @@
-package me.thesilverecho.zeropoint.impl.module.render;
+package me.thesilverecho.zeropoint.impl.module.display;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import me.thesilverecho.zeropoint.api.event.EventListener;
@@ -11,6 +11,7 @@ import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -18,7 +19,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@ClientModule(name = "Tab Gui", active = true, keyBinding = GLFW.GLFW_KEY_SEMICOLON)
+@ClientModule(name = "Tab Gui", active = true, keyBinding = GLFW.GLFW_KEY_RIGHT_ALT)
 public class TabGui extends BaseModule
 {
 	private static final Comparator<String> COMPARATOR = Comparator.comparingDouble(value -> FontRenderer.getWidth(APIFonts.THIN.getFont(), 0.35f, value));
@@ -29,25 +30,24 @@ public class TabGui extends BaseModule
 		final MatrixStack matrixStack = event.matrixStack();
 		AtomicDouble yCord = new AtomicDouble(3);
 		AtomicInteger index = new AtomicInteger(0);
-//		FIXME: modules are not sorted properly
-		BaseModule.ENABLE_MODULES.keySet().stream().sorted(COMPARATOR.reversed()).
-		                         forEach((s) ->
-		                         {
-			                         final CustomFont font = APIFonts.THIN.getFont().setFontScale(0.5f);
-			                         final double v = yCord.get();
-			                         final float height = FontRenderer.getHeight(font, 0.35f);
-			                         final float andAdd = (float) yCord.getAndAdd(height);
+		BaseModule.ENABLE_MODULES2.values().stream().map(BaseModule::getName).sorted(COMPARATOR.reversed()).
+		                          forEach((s) ->
+		                          {
+			                          final CustomFont font = APIFonts.REGULAR.getFont();
+			                          final double v = yCord.get();
+			                          final float height = FontRenderer.getHeight(font, 0.35f);
+			                          final float andAdd = (float) yCord.getAndAdd(height);
 
+			                          BlurBackground.renderToBlur(() ->
+			                          {
+				                          RenderUtilV2.rectangle(matrixStack, 2, (float) v, FontRenderer.getWidth(font, 0.35f, s) + 3, height, 0, new ColourHolder(10, 10, 10, 89));
+			                          });
+			                          Color analogous = getAnalogousColor(ColourHolder.decode("#a43bcb"))[0];
+			                          Color textColor = interpolateColorsBackAndForth(35, index.get() * 20, new Color(55 * 2, 2, 88 * 2, 255), analogous, true);
 
-			                         RenderUtilV2.rectangle(matrixStack, 2, (float) v, FontRenderer.getWidth(font, 0.35f, s) + 3, height, 0, new ColourHolder(50, 50, 50, 80));
-			                         Color analogous = getAnalogousColor(ColourHolder.decode("#a43bcb"))[0];
-			                         Color textcolor = interpolateColorsBackAndForth(35, index.get() * 20, new Color(55 * 2, 2, 88 * 2, 255), analogous, false);
-//			                         font.render(matrixStack, s, 3, andAdd + 1);
-//			                         public static float renderText(CustomFont font, float size, String text, ColourHolder baseColour, boolean background, MatrixStack matrixStack, float x, float y)
-
-			                         FontRenderer.renderText(font, 0.35f, s, new ColourHolder(textcolor.getRed(), textcolor.getGreen(), textcolor.getBlue(), 255), true, matrixStack, 3, andAdd + 1);
-			                         index.getAndIncrement();
-		                         });
+			                          FontRenderer.renderText(font, 0.35f, s, new ColourHolder(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 255), false, matrixStack, 3, andAdd - 1);
+			                          index.getAndIncrement();
+		                          });
 
 	}
 

@@ -1,5 +1,6 @@
 package me.thesilverecho.zeropoint.api.module;
 
+import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.notification.Notification;
 import me.thesilverecho.zeropoint.api.notification.NotificationManager;
@@ -9,17 +10,28 @@ import net.minecraft.client.MinecraftClient;
 
 import java.util.HashMap;
 
+
+@ClientModule(name = "test")
 public class BaseModule implements IModule
 {
 	// Instance of MinecraftClient to prevent the need for constantly calling getInstance();
 	protected static final MinecraftClient MC = MinecraftClient.getInstance();
 
 	// Instance variables, set by ClientModule annotation
-	private final String name, description;
-	private final boolean shouldDraw;
-	private Keybind keybind;
+	@ConfigSetting
+	private final Keybind keybind;
+	@ConfigSetting
 	private boolean enabled;
+
+	// Name of the module, sane name in the config.
+	private final String name;
+	//Used to provide some more info on the module.
+	private final String description;
+	//Used to determine if the module should be drawn in the Arraylist gui.
+	private final boolean shouldDraw;
+
 	public static final HashMap<String, BaseModule> ENABLE_MODULES = new HashMap<>();
+	public static final HashMap<Class<? extends BaseModule>, BaseModule> ENABLE_MODULES2 = new HashMap<>();
 
 	/**
 	 * Constructor to set instance variables from {@link ClientModule} annotation, registers renderer toggle keybind and calls toggleOptions so that enabled can take effect.
@@ -36,7 +48,15 @@ public class BaseModule implements IModule
 			if (clickType == Keybind.ClickType.PRESSED)
 				this.toggle();
 		});
-		this.setEnabled(this.enabled);
+
+		if (enabled)
+		{
+			register();
+			onEnable();
+			this.enabled = false;
+		}
+
+//		this.setEnabled(this.enabled);
 	}
 
 	public BaseModule setKeybind(int key)
@@ -83,12 +103,15 @@ public class BaseModule implements IModule
 	{
 //		onEnable();
 		EventManager.register(this);
-		ENABLE_MODULES.put(this.getName(), this);
+//		ENABLE_MODULES.put(this.getName(), this);
+		ENABLE_MODULES2.put(this.getClass(), this);
+
 	}
 
 	private void deregister()
 	{
-		ENABLE_MODULES.remove(this.getName());
+//		ENABLE_MODULES.remove(this.getName());
+		ENABLE_MODULES2.remove(this.getClass());
 		EventManager.deregister(this);
 //		onDisable();
 	}

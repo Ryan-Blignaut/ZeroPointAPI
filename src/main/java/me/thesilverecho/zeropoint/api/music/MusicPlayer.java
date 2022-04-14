@@ -99,7 +99,7 @@ public enum MusicPlayer
 			}
 
 		}, "Music Thread");
-		thread.start();
+//		thread.start();
 
 
 	}

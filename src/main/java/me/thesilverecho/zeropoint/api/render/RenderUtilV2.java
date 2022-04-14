@@ -3,9 +3,7 @@ package me.thesilverecho.zeropoint.api.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
-import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
-import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -29,12 +27,6 @@ public class RenderUtilV2
 	private static int textureId = -1;
 
 	private static final ColourHolder.Quad QUAD_COLOUR_HOLDER = new ColourHolder.Quad(ColourHolder.FULL);
-
-
-	static
-	{
-		BlurBackground.testFbo = new Framebuffer();
-	}
 
 	public static int getTextureFromLocation(Identifier identifier)
 	{

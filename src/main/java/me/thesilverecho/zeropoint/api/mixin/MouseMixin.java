@@ -23,7 +23,7 @@ public abstract class MouseMixin
 	{
 		double x = this.x * (double) this.client.getWindow().getScaledWidth() / (double) this.client.getWindow().getWidth();
 		double y = this.y * (double) this.client.getWindow().getScaledHeight() / (double) this.client.getWindow().getHeight();
-		EventManager.call(new MouseEvent(window, button, mods, x, y, ci));
+		EventManager.call(new MouseEvent(window, button, action, mods, x, y, ci));
 	}
 
 //	@Overwrite

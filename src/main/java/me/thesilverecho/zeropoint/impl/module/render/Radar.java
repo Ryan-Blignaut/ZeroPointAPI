@@ -4,17 +4,16 @@ import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
+import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@ClientModule(name = "Radar", keyBinding = GLFW.GLFW_KEY_M, active = true)
+@ClientModule(name = "Radar")
 public class Radar extends BaseModule
 {
 	private float direction;

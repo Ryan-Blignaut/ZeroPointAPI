@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 
-@ClientModule(name = "BlockEntities ESP", active = true, keyBinding = GLFW.GLFW_KEY_RIGHT_ALT)
+@ClientModule(name = "BlockEntities ESP",  keyBinding = GLFW.GLFW_KEY_RIGHT_ALT)
 public class BlockEntityESP extends BaseModule
 {
 	private Mesh mesh;

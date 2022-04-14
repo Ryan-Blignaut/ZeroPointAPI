@@ -1,7 +1,5 @@
 package me.thesilverecho.zeropoint.impl.module.render2;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
@@ -16,7 +14,7 @@ import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
-@ClientModule(name = "Music hud", active = true, keyBinding = GLFW.GLFW_KEY_P)
+@ClientModule(name = "Music hud", keyBinding = GLFW.GLFW_KEY_P)
 public class MusicHud extends BaseModule
 {
 	private float volume;
@@ -91,7 +89,7 @@ public class MusicHud extends BaseModule
 	@EventListener
 	public void onTick(TickEvent.StartTickEvent event)
 	{
-		final MusicPlayer player = MusicPlayer.INSTANCE;
+		/*final MusicPlayer player = MusicPlayer.INSTANCE;
 		final AudioTrack currentSong = player.getCurrentSong();
 		if (currentSong != null)
 		{
@@ -104,7 +102,7 @@ public class MusicHud extends BaseModule
 			for (float sample : samples)
 				sum += sample * sample;
 			this.volume = (float) Math.sqrt(sum / samples.length);
-		}
+		}*/
 	}
 
 	private String valueOrDefault(String s)

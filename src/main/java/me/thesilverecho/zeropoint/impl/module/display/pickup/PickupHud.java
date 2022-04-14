@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 @ClientModule(name = "Pickup display",
-		description = "Shows a list of items picked up.", active = true)
+		description = "Shows a list of items picked up.", active = false)
 public class PickupHud extends BaseModule
 {
 	private int maxLines = 3;

@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface SliderSelector
 {
-	int min() default 0;
-
-	int max() default 100;
+	float min() default 0;
+	float increment() default 0;
+	float max() default 100;
 }

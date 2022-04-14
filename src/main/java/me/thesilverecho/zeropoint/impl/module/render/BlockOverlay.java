@@ -12,7 +12,7 @@ import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
-import me.thesilverecho.zeropoint.impl.module.display.ScoreBoardHud;
+import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
@@ -102,15 +102,16 @@ public class BlockOverlay extends BaseModule
 		shader.setShaderUniform("Size", 1f);
 
 		//TODO: find out why framebuffer cant be drawn to when depth test is enabled.(It seems that the glDepth function, GL_LESS is not passing)
-		ScoreBoardHud.blurFBO.bind();
 		RenderSystem.disableDepthTest();
-		RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z1, x1, y1, z2);
-		RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z2, x2, y1, z1);
-		RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z1, x1, y1, z1);
-		RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z2, x2, y1, z2);
-		RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y1, z1, x1, y1, z2);
-		RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y2, z2, x1, y2, z1);
-		ScoreBoardHud.blurFBO.unbind();
+		BlurBackground.renderToBlur(() ->
+		{
+			RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z1, x1, y1, z2);
+			RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z2, x2, y1, z1);
+			RenderUtilV3.quadTextureVertical(matrix4f, x2, y2, z1, x1, y1, z1);
+			RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z2, x2, y1, z2);
+			RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y1, z1, x1, y1, z2);
+			RenderUtilV3.quadTextureHorizontal(matrix4f, x2, y2, z2, x1, y2, z1);
+		});
 		RenderSystem.enableDepthTest();
 
 //		RenderSystem.enableDepthTest();

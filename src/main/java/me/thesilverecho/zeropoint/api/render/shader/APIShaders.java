@@ -33,8 +33,8 @@ public enum APIShaders
 	COMPOSITE("composite.frag", "post_process_texture.vert"),
 
 
-	OUTLINE0("ol.frag", "post_process_texture.vert"),
-	GLOW("glow.frag", "post_process_texture.vert"),
+	GLOW("glow.frag", true),
+	OUTLINE0("outline.frag", true),
 	BLOOM("bloom.frag", true),
 	ADD_EFFECTS("add.frag", true),
 

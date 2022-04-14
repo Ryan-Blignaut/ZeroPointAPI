@@ -4,6 +4,7 @@ import me.thesilverecho.zeropoint.api.event.EventManager;
 import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -47,10 +48,12 @@ public abstract class GameRendererMixin
 	}*/
 
 
+	@Shadow @Final private MinecraftClient client;
+
 	@Inject(method = "renderWorld", at = @At("TAIL"/*"RETURN"*/))
 	private void onRenderWorldPost(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo ci)
 	{
-		EventManager.call(new RenderWorldEvent.Post(matrix));
+		EventManager.call(new RenderWorldEvent.Post(matrix, this.client.getFramebuffer()));
 //		GL11.glClear(GL11.GL_STENCIL_BITS);
 	}
 
