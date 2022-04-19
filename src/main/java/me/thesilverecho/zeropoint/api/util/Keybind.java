@@ -1,8 +1,5 @@
 package me.thesilverecho.zeropoint.api.util;
 
-import me.thesilverecho.zeropoint.api.config.ConfigSetting;
-import me.thesilverecho.zeropoint.api.config.selector.ExcludedSelector;
-
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -14,10 +11,9 @@ public final class Keybind
 	 * List containing all the keybinds registered.
 	 */
 	public static final ArrayList<Keybind> REGISTERED_KEYBINDS = new ArrayList<>();
-	@ConfigSetting
 	private int code;
 	private final Duration duration;
-	@ExcludedSelector private final Consumer<ClickType> consumer;
+	private final Consumer<ClickType> consumer;
 
 
 	public Keybind(int code, Duration duration, Consumer<ClickType> consumer)

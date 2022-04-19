@@ -1,49 +1,71 @@
 package me.thesilverecho.zeropoint.impl.module;
 
+import com.google.gson.GsonBuilder;
 import me.thesilverecho.zeropoint.api.config.Config;
 import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
+import me.thesilverecho.zeropoint.api.module.ModuleTypeFactoryAdapter;
 import me.thesilverecho.zeropoint.api.util.DynamicClassUtil;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
+import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Optional;
 
 public class ModuleManager
 {
-	@ConfigSetting
-	private final HashMap<String, BaseModule> baseModules = new HashMap<>();
 
-	public static final Config MODULE_CONFIG = new Config("Zero-point/modules");
 	public static final ModuleManager INSTANCE = new ModuleManager();
+	public static Config moduleConfig;
+	@ConfigSetting public final HashMap<String, BaseModule> baseModules = new HashMap<>();
+
 
 	public static void registerAllModules()
 	{
-		MODULE_CONFIG.register(INSTANCE);
 
-		DynamicClassUtil.getClasses("me/thesilverecho/zeropoint/impl/module").forEach(clazzName ->
-				ReflectionUtil.getClassFromPath(clazzName, true).ifPresent(clazz ->
+		DynamicClassUtil.getClasses("me/thesilverecho/zeropoint/impl/module").forEach(clazzName -> ReflectionUtil.getClassFromPath(clazzName, true).ifPresent(clazz ->
+		{
+
+			if (clazz.getAnnotation(ClientModule.class) != null)
+				if (clazz.getSuperclass() == BaseModule.class)
 				{
-					if (clazz.getSuperclass() == BaseModule.class)
+					final String name = clazz.getAnnotation(ClientModule.class).name();
+					Optional<? extends BaseModule> module = callClassConstructor(clazz);
+					module.ifPresentOrElse(baseModule ->
 					{
-						final String name = clazz.getAnnotation(ClientModule.class).name();
-						final Optional<BaseModule> module = ReflectionUtil.callConstructor(clazz, BaseModule.class);
-						module.ifPresentOrElse(baseModule ->
-						{
-//							If the module is not already in the list, add it.
-							if (!INSTANCE.baseModules.containsKey(name))
-							{
-								ZeroPointApiLogger.debug("Module with name " + name + " does not exist, creating.");
-								INSTANCE.baseModules.put(name, baseModule);
-							}
-						}, () -> ZeroPointApiLogger.error("Failed to load module " + name));
-					}
-				}));
+						ZeroPointApiLogger.debug("Registered module: " + name);
+//						baseModule.loadSettings();
+						INSTANCE.baseModules.put(name, baseModule);
+					}, () -> ZeroPointApiLogger.error("Failed to load module " + name));
+				}
+		}));
+		if (moduleConfig == null)
+			moduleConfig = new Config(new GsonBuilder().registerTypeAdapterFactory(new ModuleTypeFactoryAdapter(INSTANCE.baseModules)).setPrettyPrinting().create(), "Zero-point/modules");
 
 
-		MODULE_CONFIG.save();
+		moduleConfig.register(INSTANCE);
+
+		moduleConfig.save();
+	}
+
+	@NotNull
+	private static Optional<? extends BaseModule> callClassConstructor(Class<?> clazz)
+	{
+		Optional<? extends BaseModule> module = Optional.empty();
+		try
+		{
+			final Constructor<?> constructor = clazz.getConstructor();
+			final Object o = constructor.newInstance();
+			module = Optional.of((BaseModule) o);
+		} catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
+		{
+			e.printStackTrace();
+		}
+		return module;
 	}
 
 

@@ -10,7 +10,7 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -36,13 +36,13 @@ public class MusicHud extends BaseModule
 
 		final MatrixStack matrixStack = event.matrixStack();
 
-		RenderUtilV2.roundRect(matrixStack, offsetX - paddingX, offsetY - paddingY, 100 + paddingX * 2, 25 + paddingY * 2, 2f, ColourHolder.decode("#2b2b2b").setAlpha(90));
+		RenderUtilV2.roundRect(matrixStack, offsetX - paddingX, offsetY - paddingY, 100 + paddingX * 2, 25 + paddingY * 2, 2f, APIColour.decode("#2b2b2b").setAlpha(90));
 		final CustomFont font = APIFonts.REGULAR.getFont();
 		final float height = FontRenderer.getHeight(font, 0.5f);
 		FontRenderer.renderText(font, 0.5f, matrixStack, songName, offsetX, offsetY);
 		FontRenderer.renderText(font, 0.5f, matrixStack, songAuthor, offsetX, offsetY + height);
-		RenderUtilV2.roundRect(matrixStack, offsetX, offsetY + height * 2, 100, 5, 2f, ColourHolder.decode("#2b2b2b"));
-		RenderUtilV2.roundRect(matrixStack, offsetX, offsetY + height * 2, 100 * currentProgress, 5, 2f, ColourHolder.decode("#00FF2b"));
+		RenderUtilV2.roundRect(matrixStack, offsetX, offsetY + height * 2, 100, 5, 2f, APIColour.decode("#2b2b2b"));
+		RenderUtilV2.roundRect(matrixStack, offsetX, offsetY + height * 2, 100 * currentProgress, 5, 2f, APIColour.decode("#00FF2b"));
 		FontRenderer.renderText(font, 0.5f, matrixStack, volume + "", offsetX, offsetY + height * 3);
 		for (int i = 0; i < 600; i++)
 		{
@@ -82,7 +82,7 @@ public class MusicHud extends BaseModule
 
 		public void render(MatrixStack matrixStack, float y)
 		{
-			RenderUtilV2.rectangle(matrixStack, x, y, 4, height, ColourHolder.decode("#1bFF2b"));
+			RenderUtilV2.rectangle(matrixStack, x, y, 4, height, APIColour.decode("#1bFF2b"));
 		}
 	}
 

@@ -8,7 +8,7 @@ import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.cursor.APICursors;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -20,7 +20,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ClientModule(name = "Custom Cursor", active = true)
+@ClientModule(name = "Custom Cursor", active = false)
 public class CustomCursor extends BaseModule
 {
 	private static final CopyOnWriteArrayList<APIParticle> PARTICLES = new CopyOnWriteArrayList<>();
@@ -102,9 +102,9 @@ public class CustomCursor extends BaseModule
 		private int timeLeft = 1000;
 		private float x, y;
 		private float size;
-		private ColourHolder colour;
+		private APIColour colour;
 
-		public APIParticle(int timeLeft, float x, float y, float size, ColourHolder colour)
+		public APIParticle(int timeLeft, float x, float y, float size, APIColour colour)
 		{
 			this.timeLeft = timeLeft;
 			this.x = x;

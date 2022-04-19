@@ -10,7 +10,7 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV3;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.render.BufferBuilder;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@ClientModule(name = "Block overlay", active = true, keyBinding = GLFW.GLFW_KEY_N)
+@ClientModule(name = "Block overlay",  keyBinding = GLFW.GLFW_KEY_N)
 public class BlockOverlay extends BaseModule
 {
 
@@ -80,7 +80,7 @@ public class BlockOverlay extends BaseModule
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 
 
-		RenderUtilV3.setQuadColourHolder(ColourHolder.FULL/*("#2b2b2b")*/);
+		RenderUtilV3.setQuadColourHolder(APIColour.WHITE/*("#2b2b2b")*/);
 	/*	framebuffer.bind();
 		final net.minecraft.client.gl.Framebuffer framebuffer1 = MinecraftClient.getInstance().getFramebuffer();
 		final int textureWidth = framebuffer1.textureWidth;

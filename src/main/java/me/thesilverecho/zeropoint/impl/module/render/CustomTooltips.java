@@ -7,7 +7,7 @@ import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.mixin.TooltipAccessor;
 import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -16,7 +16,7 @@ import net.minecraft.text.OrderedText;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@ClientModule(name = "Custom Tooltips", active = true)
+@ClientModule(name = "Custom Tooltips", active = false)
 public class CustomTooltips extends BaseModule
 {
 	@EventListener
@@ -60,7 +60,7 @@ public class CustomTooltips extends BaseModule
 		if (newY + maxHeight + 6 > event.height())
 			newY = event.height() - maxHeight - 6;
 
-		RenderUtilV2.roundRect(matrices, newX, newY, maxWidth, maxHeight + 8, 5, new ColourHolder(0, 120, 102, 180));
+		RenderUtilV2.roundRect(matrices, newX, newY, maxWidth, maxHeight + 8, 5, new APIColour(0, 120, 102, 180));
 
 		AtomicInteger lineCounter = new AtomicInteger(0);
 		final float finalNewX = newX;

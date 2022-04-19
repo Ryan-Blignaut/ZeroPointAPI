@@ -3,6 +3,7 @@ package me.thesilverecho.zeropoint.api.event;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -14,6 +15,8 @@ public class EventManager
 {
 	private static final HashMap<Class<?>, CopyOnWriteArrayList<MethodData>> EVENTS = new HashMap<>();
 
+	private static final ArrayList<Class<?>> REGISTERED_EVENTS = new ArrayList<>();
+
 	/**
 	 * Basic registration of modules
 	 * in this implementation only methods with the {@link EventListener} will be registered.
@@ -22,6 +25,9 @@ public class EventManager
 	 */
 	public static void register(Object moduleClass)
 	{
+		if (REGISTERED_EVENTS.contains(moduleClass.getClass()))
+			return;
+		REGISTERED_EVENTS.add(moduleClass.getClass());
 		for (Method method : moduleClass.getClass().getDeclaredMethods())
 			if (method.isAnnotationPresent(EventListener.class))
 				register(method, moduleClass);
@@ -36,6 +42,10 @@ public class EventManager
 	 */
 	public static void deregister(Object moduleClass)
 	{
+		if (REGISTERED_EVENTS.contains(moduleClass.getClass()))
+			return;
+		REGISTERED_EVENTS.remove(moduleClass.getClass());
+
 		for (Method method : moduleClass.getClass().getDeclaredMethods())
 			if (method.isAnnotationPresent(EventListener.class))
 				deregister(method, moduleClass);

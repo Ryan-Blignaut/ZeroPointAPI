@@ -1,6 +1,8 @@
 package me.thesilverecho.zeropoint.impl.module.render2;
 
-import me.thesilverecho.zeropoint.api.config.ConfigSetting;
+import me.thesilverecho.zeropoint.api.config.selector.BooleanHolder;
+import me.thesilverecho.zeropoint.api.config.selector.FloatSliderHolder;
+import me.thesilverecho.zeropoint.api.config.selector.SettingHolder;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
@@ -23,15 +25,22 @@ import static me.thesilverecho.zeropoint.impl.module.render3.BlockEntityESP.calc
 public class BlurBackground extends BaseModule
 {
 
-	private Framebuffer blurMask;
+	private static Framebuffer blurMask;
 	private Framebuffer pingFbo, pongFbo, bloomFbo;
 
+	public static Framebuffer getBlurMask()
+	{
+		return blurMask;
+	}
 
-	@ConfigSetting /*@SliderSelector(min = 0, max = 20, increment = 1)*/ private float blurRadius = 10;
-	@ConfigSetting /*@BooleanSelector*/ private boolean enableBloom = true;
+	public static Runnable r;
 
-	@ConfigSetting /*@BooleanSelector*/ private boolean blurBackground = true;
+	private final SettingHolder<Float> blurRadius = settingHolders.addItem(new FloatSliderHolder("Blur Radius", "The quality of blur(higher ranges will negatively affect performance)", 10f, 2f, 20f, 1f));
+	private final SettingHolder<Boolean> backgroundBlur = settingHolders.addItem(new BooleanHolder("Blur Background", "Blur the background of GUIS", true));
 
+	private final SettingHolder<Boolean> bloom = settingHolders.addItem(new BooleanHolder("Bloom", "Adds outlines around blurred elements", true));
+	private final SettingHolder<Float> bloomRadius = settingHolders.addItem(new FloatSliderHolder("Bloom Radius", "The quality of bloom(higher ranges will negatively affect performance)", 10f, 2f, 20f, 1f));
+	private final SettingHolder<Float> bloomOffset = settingHolders.addItem(new FloatSliderHolder("Bloom offset", "Space between bloom", 2f, 1f, 7f, 1f));
 
 	private boolean shouldRender;
 	private FloatBuffer guassianWeights;
@@ -56,22 +65,21 @@ public class BlurBackground extends BaseModule
 		final int screenWidth = event.framebuffer().viewportWidth;
 		final int screenHeight = event.framebuffer().viewportHeight;
 
-//		Horizontal blur
 		this.pingFbo.bind();
 		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
 		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1, 0));
-		RenderUtilV2.setShaderUniform("Radius", blurRadius);
+		RenderUtilV2.setShaderUniform("Radius", blurRadius.getValue());
 		RenderUtilV2.setTextureId(event.framebuffer().getColorAttachment());
 		RenderUtilV2.postProcessRect(screenWidth, screenHeight);
 		this.pingFbo.unbind();
 
 //		Vertical blur
 
-		if (!shouldRender && blurBackground) this.pongFbo.bind();
+		if (!shouldRender && backgroundBlur.getValue()) this.pongFbo.bind();
 		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(0, 1));
 		RenderUtilV2.setTextureId(this.pingFbo.texture.getID());
 		RenderUtilV2.postProcessRect(screenWidth, screenHeight);
-		if (shouldRender && blurBackground) return;
+		if (shouldRender && backgroundBlur.getValue()) return;
 		this.pongFbo.unbind();
 		this.pingFbo.clear();
 //		Remove parts of the screen that are not blurred using the mask fbo.
@@ -84,7 +92,7 @@ public class BlurBackground extends BaseModule
 
 //		This should be improved at some stage but the idea is that the bloom will affect the same are of the screen as the blur area.
 //		The reason that this is not just using the blur mask is because the blur mask has transparency.
-		if (enableBloom)
+		if (bloom.getValue())
 		{
 			bloomFbo.bind();
 			RenderUtilV2.postProcessRect(screenWidth, screenHeight);
@@ -95,7 +103,7 @@ public class BlurBackground extends BaseModule
 		this.pingFbo.clear();
 		this.pongFbo.clear();
 //		Bloom
-		if (enableBloom)
+		if (bloom.getValue())
 		{
 //          Re-enable blending
 			GL11.glEnable(GL11.GL_BLEND);
@@ -106,14 +114,14 @@ public class BlurBackground extends BaseModule
 			GLWrapper.activateTexture(1, bloomFbo.texture.getID());
 			RenderUtilV2.setShaderUniform("Sampler1", 1);
 			RenderUtilV2.setTextureId(bloomFbo.texture.getID());
-			RenderUtilV2.setShaderUniform("Direction", new Vec2f(2, 0));
-			final float value = 6f;
-			RenderUtilV2.setShaderUniform("Radius", value);
+			RenderUtilV2.setShaderUniform("Direction", new Vec2f(bloomOffset.getValue(), 0));
+			RenderUtilV2.setShaderUniform("Radius", bloomRadius.getValue());
 
 			if (guassianWeights == null)
 			{
 				guassianWeights = BufferUtils.createFloatBuffer(256);
-				for (int light = 1; light <= value; light++) guassianWeights.put(calculateGaussianValue(light, value));
+				for (int light = 1; light <= bloomRadius.getValue(); light++)
+					guassianWeights.put(calculateGaussianValue(light, bloomRadius.getValue()));
 				guassianWeights.rewind();
 			}
 			RenderUtilV2.setShaderUniform("Weights", guassianWeights);
@@ -125,7 +133,7 @@ public class BlurBackground extends BaseModule
 			RenderUtilV2.setShaderUniform("Sampler1", 1);
 
 			RenderUtilV2.setTextureId(pingFbo.texture.getID());
-			RenderUtilV2.setShaderUniform("Direction", new Vec2f(0, 2));
+			RenderUtilV2.setShaderUniform("Direction", new Vec2f(0, bloomOffset.getValue()));
 			RenderUtilV2.postProcessRect(screenWidth, screenHeight);
 
 		}

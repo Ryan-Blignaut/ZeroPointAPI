@@ -10,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3f;
 import org.lwjgl.glfw.GLFW;
 
-@ClientModule(name = "Adds fake blocking animations", active = true)
+@ClientModule(name = "Adds fake blocking animations", active = false)
 public class FakeItemBlocking extends BaseModule
 {
 

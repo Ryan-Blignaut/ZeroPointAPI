@@ -1,12 +1,8 @@
 package me.thesilverecho.zeropoint.api.render.font;
 
-import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.texture.Texture2D;
 import me.thesilverecho.zeropoint.api.util.ApiIOUtils;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackContext;
@@ -34,8 +30,7 @@ public class CustomFont
 
 	public Texture2D texture;
 	private GlyphInfo[] glyphs;
-	private final ColourHolder[] vertexColours = new ColourHolder[4];
-	private float fontScale;
+
 
 	public CustomFont(String nameSpace, String path)
 	{
@@ -134,40 +129,9 @@ public class CustomFont
 		return glyphs;
 	}
 
-/*	public float render(MatrixStack matrixStack, String string, float x, float y)
-	{
-		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, fontScale, false);
-	}
-
-	public float render(MatrixStack matrixStack, String string, float x, float y, float scale)
-	{
-		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, false);
-	}
-
-	public float renderOutline(MatrixStack matrixStack, String string, float x, float y)
-	{
-		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, fontScale, true);
-	}
-
-	public float renderOutline(MatrixStack matrixStack, String string, float x, float y, float scale)
-	{
-		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, true);
-	}
-
-	public float render(MatrixStack matrixStack, String string, float x, float y, float scale, boolean outline)
-	{
-		return render(matrixStack.peek().getModel(), string, new ColourHolder(255, 255, 255, 255), x, y, scale, outline);
-	}*/
-
 	public float getHeight()
 	{
 		return height;
-	}
-
-	public CustomFont setFontScale(float fontScale)
-	{
-		this.fontScale = fontScale;
-		return this;
 	}
 
 	public float getWidth(String string)
@@ -192,84 +156,6 @@ public class CustomFont
 
 		}
 
-		return x;
-	}
-
-	/*public float render(Matrix4f matrixStack, String string, ColourHolder defaultColour, float x, float y, float scale, boolean outline)
-	{
-//		Fills the vertex colours with the default colour every time a new string is rendered.
-		Arrays.fill(vertexColours, defaultColour);
-		y += ascent * this.scale * scale;
-		for (int light = 0; light < string.length(); light++)
-		{
-//			Get the character from the string.
-			int character = string.charAt(light);
-//			If the character is out of bounds replace it with default.
-			if (character < 32 || character > 256) character = 32;
-//			Look for custom formatting from the string ${format type}.
-//			\$\{(.*?)}
-			if (character == '$' && light + 1 < string.length() && string.charAt(light + 1) == '{')
-			{
-				final int startOfFormatString = string.indexOf("${", light);
-				final int endOfFormatString = string.indexOf("}", light);
-//				Checks if the custom format string has a start and end.
-				if (startOfFormatString != -1 && endOfFormatString != -1)
-				{
-//					Pulls out the string where containing the format options.
-					final String substring = string.substring(startOfFormatString + 2, endOfFormatString);
-//					Split custom options if possible.
-					final String[] split = substring.split(",");
-//					Apply colour to all
-					if (split.length > 1)
-					{
-//						When populating the vertex colour array it is essential to make sure that the size of the array is not exceeded.
-						for (int currentColourIndex = 0; currentColourIndex < vertexColours.length; currentColourIndex++)
-//							This ensures that if less than 4 colours are passed in. The default colour is used for the other vertices.
-							if (currentColourIndex < split.length)
-								vertexColours[currentColourIndex] = ColourHolder.decode(split[currentColourIndex]);
-							else
-								vertexColours[currentColourIndex] = defaultColour;
-					} else
-					{
-						Arrays.fill(vertexColours, ColourHolder.decode(substring));
-//						defaultColour = ColourHolder.decode(substring);
-					}
-					light += endOfFormatString - startOfFormatString;
-				}
-			} else
-			{
-//				Resets any formatting after a space.
-				if (character == ' ')
-					Arrays.fill(vertexColours, defaultColour);
-
-
-				x = getX(matrixStack, defaultColour, x, y, scale, glyphs[character - 32]);
-			}
-
-		}
-		return x;
-	}*/
-
-	public float getX(Matrix4f matrixStack, ColourHolder defaultColour, float x, float y, float scale, GlyphInfo glyph1)
-	{
-		final GlyphInfo glyph = glyph1;
-		RenderUtilV2.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
-		RenderUtilV2.setTextureId(texture.getID());
-
-		RenderUtilV2.quadTexture(matrixStack,
-				x + glyph.x() * scale,
-				y + glyph.y() * scale,
-				x + glyph.w() * scale,
-				y + glyph.h() * scale,
-				glyph.u0(),
-				glyph.v0(),
-				glyph.u1(),
-				glyph.v1(),
-				vertexColours[0] == null ? defaultColour : vertexColours[0],
-				vertexColours[1] == null ? defaultColour : vertexColours[1],
-				vertexColours[2] == null ? defaultColour : vertexColours[2],
-				vertexColours[3] == null ? defaultColour : vertexColours[3]);
-		x += glyph.xAdvance() * scale;
 		return x;
 	}
 

@@ -1,6 +1,9 @@
 package me.thesilverecho.zeropoint.api.config;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.thesilverecho.zeropoint.api.util.Pair;
 import me.thesilverecho.zeropoint.api.util.ReflectionUtil;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
@@ -42,21 +45,7 @@ public class Config
 	 */
 	public Config(String fileName)
 	{
-		this(new GsonBuilder().setExclusionStrategies(new ExclusionStrategy()
-		{
-			@Override
-			public boolean shouldSkipField(FieldAttributes f)
-			{
-
-				return f.getAnnotation(ConfigSetting.class) == null;
-			}
-
-			@Override
-			public boolean shouldSkipClass(Class<?> clazz)
-			{
-				return false;//clazz.getAnnotation(ExcludedSelector.class) != null;
-			}
-		}).setPrettyPrinting().create(), fileName);
+		this(new GsonBuilder().setPrettyPrinting().create(), fileName);
 	}
 
 	/**
@@ -96,10 +85,17 @@ public class Config
 	 */
 	public void register(Object instance)
 	{
+		configObjects.clear();
+		INSTANCES.clear();
 		if (Arrays.stream(instance.getClass().getDeclaredFields()).noneMatch(f -> f.isAnnotationPresent(ConfigSetting.class)))
 			return;
 		loadFieldToClass(instance);
 		configObjects.add(instance);
+	}
+
+	public void reload(Object instance)
+	{
+		loadFieldToClass(instance);
 	}
 
 	/**
@@ -148,6 +144,8 @@ public class Config
 		Class<?> clazz = instance.getClass();
 		if (!config.has(clazz.getSimpleName()))
 			config.add(clazz.getSimpleName(), new JsonObject());
+
+
 		applyStream(field -> loadFieldToClass(field, instance), instance);
 		applyStream(field -> INSTANCES.add(new Pair<>(field, instance)), instance);
 	}

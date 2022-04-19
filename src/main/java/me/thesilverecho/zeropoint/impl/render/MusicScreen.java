@@ -5,7 +5,7 @@ import me.thesilverecho.zeropoint.api.uiv2.LabelComponent;
 import me.thesilverecho.zeropoint.api.uiv2.Pane;
 import me.thesilverecho.zeropoint.api.uiv2.Positioning;
 import me.thesilverecho.zeropoint.api.uiv2.VerticalPane;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 
@@ -33,7 +33,7 @@ public class MusicScreen extends APIScreen
 					.setTextHorizontalPositioning(Positioning.Horizontal.CENTER)
 					.setTextVerticalPositioning(Positioning.Vertical.CENTER)
 					.setFontSize(0.72f);
-			lblTest.setBackground(ColourHolder.decode("#2b2b2b"));
+			lblTest.setBackground(APIColour.decode("#2b2b2b"));
 			components.add(lblTest);
 
 			pane.addComponent(lblTest);

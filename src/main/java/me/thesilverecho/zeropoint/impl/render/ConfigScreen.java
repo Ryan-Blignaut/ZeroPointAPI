@@ -4,7 +4,7 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.ui.APIScreen;
 import me.thesilverecho.zeropoint.api.ui.widgets.ButtonComponent;
 import me.thesilverecho.zeropoint.api.ui.widgets.TextBoxComponent;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -37,7 +37,7 @@ public class ConfigScreen extends APIScreen
 //		ModuleManager.baseModules.forEach(simpleModuleHolder -> {simpleModuleHolder.});
 
 		textBoxComponent = new TextBoxComponent(leftOfFrame + sizeOfColumn + 5 + 2, topOfFrame + 8, 120, 120, null, 2);
-		buttonComponent = new ButtonComponent(32, 32, 32, 32, ColourHolder.FULL, "test", null).setClickTask(() ->
+		buttonComponent = new ButtonComponent(32, 32, 32, 32, APIColour.WHITE, "test", null).setClickTask(() ->
 		{
 //			MusicPlayer.getPlayer().skipSong();
 		});
@@ -58,7 +58,7 @@ public class ConfigScreen extends APIScreen
 		final float topOfFrame = halfScaledHeight - winHeight / 2f;
 		final float sizeOfColumn = 80;
 
-		RenderUtilV2.roundRect(matrixStack, leftOfFrame, topOfFrame, halfScaledWidth + winWidth / 2f, halfScaledHeight + winHeight / 2f, 10, ColourHolder.decode("#272537"));
+		RenderUtilV2.roundRect(matrixStack, leftOfFrame, topOfFrame, halfScaledWidth + winWidth / 2f, halfScaledHeight + winHeight / 2f, 10, APIColour.decode("#272537"));
 //		APIFonts.FREE_SANS.getFont().setFontScale((float) ((1 / scaleFactor) / 18 * 22)).render(matrixStack, "${#f8f8ff}ZERO-POINT", leftOfFrame + 10, topOfFrame + 8);
 		textBoxComponent.render(matrixStack, mouseX, mouseY, delta);
 		buttonComponent.render(matrixStack, mouseX, mouseY, delta);

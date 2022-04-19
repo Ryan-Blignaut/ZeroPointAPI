@@ -5,7 +5,7 @@ import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.ui.widgets.ButtonComponent;
 import me.thesilverecho.zeropoint.api.ui.widgets.PaneComponent;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.screen.TitleScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -35,7 +35,7 @@ public abstract class TitleScreenMixin extends Screen
 	public void init(CallbackInfo ci)
 	{
 		TitleScreen.init(this.client, this, this.width, this.height);
-		paneComponent.addComponent(new ButtonComponent(0, 0, 100, 100, ColourHolder.FULL, "test", paneComponent));
+		paneComponent.addComponent(new ButtonComponent(0, 0, 100, 100, APIColour.WHITE, "test", paneComponent));
 		this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, (button) ->
 		{
 			Shader.resetShaderHashMap();

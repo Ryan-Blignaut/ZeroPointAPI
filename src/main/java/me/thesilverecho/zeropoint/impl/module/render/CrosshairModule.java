@@ -4,11 +4,11 @@ import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
-@ClientModule(name = "Custom Crosshair", keyBinding = GLFW.GLFW_KEY_C, active = true)
+@ClientModule(name = "Custom Crosshair", keyBinding = GLFW.GLFW_KEY_C)
 public class CrosshairModule extends BaseModule
 {
 	@EventListener
@@ -21,10 +21,10 @@ public class CrosshairModule extends BaseModule
 		int width = 5;
 		int height = 5;
 		int s = 1;
-		drawXCrosshair(matrixStack, scaledWidth, scaledHeight, 0, ColourHolder.FULL);
+		drawXCrosshair(matrixStack, scaledWidth, scaledHeight, 0, APIColour.WHITE);
 	}
 
-	private static void drawXCrosshair(MatrixStack matrix, int screenWidth, int screenHeight, int renderGap, ColourHolder renderColour)
+	private static void drawXCrosshair(MatrixStack matrix, int screenWidth, int screenHeight, int renderGap, APIColour renderColour)
 	{
 
 		float i = 5 / 2f;

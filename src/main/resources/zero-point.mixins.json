@@ -7,6 +7,8 @@
     "BlockEntityRenderDispatcherMixin",
     "ChatHudMixin",
     "ClientPlayNetworkHandlerMixin",
+    "EntityRenderDispatcherMixin",
+    "EntityRenderMixin",
     "HandledScreenMixin",
     "HeldItemRendererMixin",
     "ItemEntityRenderMixin",

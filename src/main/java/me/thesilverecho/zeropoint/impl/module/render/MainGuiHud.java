@@ -5,7 +5,7 @@ import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.impl.render.ConfigScreen2;
 import org.lwjgl.glfw.GLFW;
 
-@ClientModule(name = "Modern Hotbar", active = true, keyBinding = GLFW.GLFW_KEY_RIGHT_SHIFT)
+@ClientModule(name = "Modern Hotbar",  keyBinding = GLFW.GLFW_KEY_RIGHT_SHIFT)
 public class MainGuiHud extends BaseModule
 {
 

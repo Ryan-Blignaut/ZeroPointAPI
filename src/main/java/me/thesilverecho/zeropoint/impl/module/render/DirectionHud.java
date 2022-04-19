@@ -1,37 +1,21 @@
 package me.thesilverecho.zeropoint.impl.module.render;
 
 
-import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.event.EventListener;
-import me.thesilverecho.zeropoint.api.event.events.TickEvent;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
-import me.thesilverecho.zeropoint.impl.mixin.MinecraftClientAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-@ClientModule(name = "Dir hud", active = true)
+@ClientModule(name = "Dir hud", active = false)
 public class DirectionHud extends BaseModule
 {
-	private float animationX = 0;
-
-	@ConfigSetting
-	private final String hudCol = "#323232";
-	@ConfigSetting
-	private final String fpsCol = "rainbow";
-
 	@EventListener
 	public void render(Render2dEvent.Pre event)
 	{
@@ -68,31 +52,6 @@ public class DirectionHud extends BaseModule
 	{
 		return yaw + direction.ordinal() * Math.PI / 2;
 	}
-
-	private String ping = "", fps = "", pos = "", date = "", time = "";
-
-	@EventListener
-	public void onTick(TickEvent.StartTickEvent event)
-	{
-		final MinecraftClient client = event.client();
-		final ClientPlayerEntity player = client.player;
-		if (player != null)
-		{
-			if (client.getNetworkHandler() != null)
-			{
-				final PlayerListEntry playerListEntry = client.getNetworkHandler().getPlayerListEntry(player.getUuid());
-				ping = "Ping: ${#388E3C} " + (playerListEntry != null ? Integer.toString(playerListEntry.getLatency()) : "0");
-			}
-			fps = "FPS: ${" + fpsCol + "}" + MinecraftClientAccessor.getCurrentFps();
-			final Vec3d playerPos = player.getPos();
-			pos = "X: " + (int) playerPos.getX() + " Y: " + (int) playerPos.getY() + " Z: " + (int) playerPos.getZ();
-			final LocalDateTime now = LocalDateTime.now();
-			time = DateTimeFormatter.ofPattern("HH:mm").format(now);
-			date = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(now);
-		}
-	}
-
-	Framebuffer barFBO;
 
 
 }

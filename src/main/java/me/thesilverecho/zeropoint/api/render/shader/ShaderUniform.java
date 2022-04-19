@@ -1,6 +1,7 @@
 package me.thesilverecho.zeropoint.api.render.shader;
 
 import me.thesilverecho.zeropoint.api.render.GLWrapper;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vector4f;
@@ -62,6 +63,8 @@ public final class ShaderUniform
 			GLWrapper.setShaderBoundInt(cachedLocation, intNum);
 		else if (value instanceof final Vec2f vec2f)
 			GLWrapper.setShaderBoundVec2(cachedLocation, vec2f);
+		else if (value instanceof final APIColour col)
+			GLWrapper.setShaderBoundVec4(cachedLocation, new Vector4f(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f));
 		else if (value instanceof final Vector4f vec4f)
 			GLWrapper.setShaderBoundVec4(cachedLocation, vec4f);
 		else if (value instanceof final Matrix4f matrix4f)

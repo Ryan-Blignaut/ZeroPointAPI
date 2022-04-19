@@ -7,21 +7,20 @@ import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.glfw.GLFW;
 
-@ClientModule(name = "Direction hud", keyBinding = GLFW.GLFW_KEY_H, active = true)
+@ClientModule(name = "Direction hud")
 public class Compass extends BaseModule
 {
 	private int direction;
 
 	@EventListener
-	public void renderEvent(Render2dEvent.Post e)
+	public void renderEvent(Render2dEvent.Pre e)
 	{
 		final MatrixStack matrixStack = e.matrixStack();
 		final float scaledHeight = e.scaledHeight() / 2;
@@ -31,7 +30,7 @@ public class Compass extends BaseModule
 		RenderUtilV2.setShader(APIShaders.RECTANGLE_TEXTURE_SHADER.getShader());
 		RenderUtilV2.setTextureId(textureFromLocation);
 //		shader.setShaderUniform("u_Radius", new Vec2f(0, 0));
-		final ColourHolder x = ColourHolder.FULL;
+		final APIColour x = APIColour.WHITE;
 
 		RenderUtilV2.quadTexture(matrixStack.peek().getPositionMatrix(), 3, 3, 100, 100, direction / 300f, 0, 1, 1, x, x, x, x);
 

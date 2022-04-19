@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.api.uiv2;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class Pane extends IntractableComponent
 	{
 		if (renderBackground)
 			if (imageBackground != -1)
-				RenderUtilV2.rectangleTexture(matrixStack, x, y, w, h, imageBackground, ColourHolder.FULL);
+				RenderUtilV2.rectangleTexture(matrixStack, x, y, w, h, imageBackground, APIColour.WHITE);
 			else
 				RenderUtilV2.rectangle(matrixStack, x, y, w, h, getBackground());
 		components.forEach(component -> component.render(matrixStack, mouseX, mouseY, delta));

@@ -1,10 +1,12 @@
 package me.thesilverecho.zeropoint.api.render.layer;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
+import me.thesilverecho.zeropoint.impl.module.render3.BlockEntityESP;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -24,33 +26,56 @@ import java.util.function.BiFunction;
 
 public class ModRenderLayer extends RenderLayer
 {
+
 	public static final ArrayList<RenderLayer> ALL_LAYERS = new ArrayList<>();
 	public static final RenderLayer POT_OVERLAY;
+	public static final RenderLayer BLUR = of("test:glint_direct", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, 256,
+			ModMultiPhaseParameters.builder()
+			                       .shader(RenderPhase.GLINT_SHADER)
+			                       .writeMaskState(COLOR_MASK)
+			                       .texture(new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			                       .cull(DISABLE_CULLING)
+			                       .depthTest(/*RenderPhase.EQUAL_DEPTH_TEST*/RenderPhase.ALWAYS_DEPTH_TEST)
+			                       .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+			                       .texturing(GLINT_TEXTURING)
+//			                       .target(new Target("blur_out", () -> BlurBackground.blurMask.bind(), () -> BlurBackground.blurMask.unbind()))
+                                   .build(false));
 
+	public static final RenderLayer CHARMING = of("test:2", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, 256,
+			ModMultiPhaseParameters.builder()
+			                       .shader(RenderPhase.COLOR_SHADER)
+			                       .cull(DISABLE_CULLING)
+			                       .layering(POLYGON_OFFSET_LAYERING)
+			                       .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+			                       .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
+			                       .target(new Target("blur_out", () -> /*BlurBackground.getBlurMask()*/BlockEntityESP.getFramebuffer().bind(), () -> /*BlurBackground.getBlurMask()*/BlockEntityESP.getFramebuffer().unbind()))
+			                       .build(false));
 
 	public static final RenderLayer DG = of(ZeroPointClient.MOD_ID + ":blur",
 			VertexFormats.POSITION_TEXTURE,
 			VertexFormat.DrawMode.QUADS,
 			256,
 			ModMultiPhaseParameters.builder()
-			                       .modShader(new ModRenderPhase.ModShader(
-					                       APIShaders.OUT.getShader(), shader ->
-			                       {
-//				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
-//				                       if (blurFBO != null && blurFBO.isBoundTest())
-//					                       blurFBO.bind();
-
-			                       }, () ->
-			                       {
-//				                       final Framebuffer blurFBO = ScoreBoardHud.blurFBO;
-//				                       if (blurFBO != null)
-//					                       blurFBO.unbind();
-			                       }
-			                       ))
+			                       .shader(SOLID_SHADER)
 			                       .writeMaskState(COLOR_MASK)
 			                       .cull(DISABLE_CULLING)
 			                       .depthTest(EQUAL_DEPTH_TEST)
-			                       .transparency(GLINT_TRANSPARENCY)
+			                       .transparency(new Transparency("default", () ->
+			                       {
+				                       RenderSystem.enableBlend();
+				                       RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+			                       }, () ->
+			                       {
+				                       RenderSystem.disableBlend();
+				                       RenderSystem.defaultBlendFunc();
+			                       }))
+			                       /* .target(new Target("blur_out", () ->
+									{
+										BlurBackground.blurMask.bind();
+									}, () ->
+									{
+										BlurBackground.blurMask.unbind();
+									}))*/
 			                       .build(false));
 
 
@@ -101,7 +126,10 @@ public class ModRenderLayer extends RenderLayer
 		}, RenderSystem::resetTextureMatrix);
 		POT_OVERLAY = basic("glint_direct", ModMultiPhaseParameters.builder().shader(DIRECT_GLINT_SHADER).texture(new ModRenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false)).writeMaskState(COLOR_MASK).cull(ENABLE_CULLING).depthTest(LEQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(glintTexturing).build(false));
 
-	ALL_LAYERS.add(DG);
+		ALL_LAYERS.add(DG);
+		ALL_LAYERS.add(BLUR);
+		ALL_LAYERS.add(CHARMING);
+
 
 	}
 
@@ -337,6 +365,7 @@ public class ModRenderLayer extends RenderLayer
 
 	public static class ModMultiPhase extends ModRenderLayer
 	{
+		//Renders the
 		static final BiFunction<Identifier, Cull, ModRenderLayer> CULLING_LAYERS = Util.memoize((texture, culling) -> ModRenderLayer.of("outline", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.QUADS, 256, ModMultiPhaseParameters.builder().shader(OUTLINE_SHADER).texture(new ModRenderPhase.Texture(texture, false, false)).cull(culling).depthTest(ALWAYS_DEPTH_TEST).target(OUTLINE_TARGET).build(ModMultiPhaseParameters.OutlineMode.IS_OUTLINE)));
 		private final ModMultiPhaseParameters phases;
 		private final Optional<RenderLayer> affectedOutline;

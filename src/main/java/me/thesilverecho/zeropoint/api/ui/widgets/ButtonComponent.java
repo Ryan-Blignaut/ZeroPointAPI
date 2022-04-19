@@ -7,24 +7,24 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
 public class ButtonComponent extends IntractableComponent
 {
-	private final ColourHolder colourHolder;
+	private final APIColour APIColour;
 	private final String text;
 	private boolean resizeFromText;
 	private final float padding;
 	private CustomFont font = APIFonts.REGULAR.getFont();
 	private Runnable clickTask;
 
-	public ButtonComponent(int x, int y, int w, int h, ColourHolder colourHolder, String text, Component2D parent)
+	public ButtonComponent(int x, int y, int w, int h, APIColour APIColour, String text, Component2D parent)
 	{
 		super(x, y, w, h, parent);
 		padding = 3;
-		this.colourHolder = colourHolder;
+		this.APIColour = APIColour;
 		this.text = text;
 		calculateSize();
 		EventManager.register(this);
@@ -47,7 +47,7 @@ public class ButtonComponent extends IntractableComponent
 	@Override
 	public void renderComp(MatrixStack matrices, float mouseX, float mouseY, double delta)
 	{
-		RenderUtilV2.roundRect(matrices, x, y, x + w, y + w, 3, colourHolder);
+		RenderUtilV2.roundRect(matrices, x, y, x + w, y + w, 3, APIColour);
 		FontRenderer.renderText(font, matrices, text, false, x + padding, y + padding);
 	}
 

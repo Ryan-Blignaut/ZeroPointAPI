@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.api.uiv2;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class ButtonComponent extends IntractableComponent
@@ -26,7 +26,7 @@ public class ButtonComponent extends IntractableComponent
 	{
 		RenderUtilV2.roundRect(matrixStack, x, y, w, h, 2, getBackground());
 		if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h)
-			RenderUtilV2.roundRect(matrixStack, x, y, w, h, 2, new ColourHolder(255, 255, 255, 95));
+			RenderUtilV2.roundRect(matrixStack, x, y, w, h, 2, new APIColour(255, 255, 255, 95));
 		text.render(matrixStack, mouseX, mouseY, delta);
 	}
 

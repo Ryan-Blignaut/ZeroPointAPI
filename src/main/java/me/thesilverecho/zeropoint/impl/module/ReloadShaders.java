@@ -5,7 +5,7 @@ import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import org.lwjgl.glfw.GLFW;
 
-@ClientModule(name = "Reload Shaders", active = true, keyBinding = GLFW.GLFW_KEY_HOME)
+@ClientModule(name = "Reload Shaders",  keyBinding = GLFW.GLFW_KEY_HOME)
 public class ReloadShaders extends BaseModule
 {
 	@Override

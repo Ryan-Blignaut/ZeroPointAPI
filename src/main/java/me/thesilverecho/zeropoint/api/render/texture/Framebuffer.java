@@ -2,6 +2,7 @@ package me.thesilverecho.zeropoint.api.render.texture;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.MinecraftClient;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ public class Framebuffer
 {
 	private static final ArrayList<Framebuffer> LOADED_FRAME_BUFFERS = new ArrayList<>();
 	private int id;
-	public Texture2D texture;
+	public Texture2D texture, depth;
 	private boolean useMipMaps;
 
 	private boolean isBoundTest = false;
@@ -22,21 +23,42 @@ public class Framebuffer
 		LOADED_FRAME_BUFFERS.add(this);
 	}
 
+	public Framebuffer(boolean mip)
+	{
+		this.useMipMaps = true;
+		init(MinecraftClient.getInstance().getFramebuffer().textureWidth, MinecraftClient.getInstance().getFramebuffer().textureHeight, 0);
+		LOADED_FRAME_BUFFERS.add(this);
+	}
+
+	public void copyDepthFrom(net.minecraft.client.gl.Framebuffer framebuffer)
+	{
+		framebuffer.beginRead();
+		GlStateManager._glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer.fbo);
+		bind();
+		GlStateManager._glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this.id);
+		GlStateManager._glBlitFrameBuffer(0, 0, framebuffer.textureWidth, framebuffer.textureHeight, 0, 0, framebuffer.textureWidth, framebuffer.textureHeight, 0x100, 0x2600);
+		unbind();
+	}
 
 	private void init(int width, int height, int location)
 	{
 		id = glGenFramebuffers();
 		bind();
 		this.texture = new Texture2D(width, height, Texture2D.Format.RGBA);
-		this.texture.setMipmap(useMipMaps);
 		this.texture.setFilter(GL_NEAREST, GL_NEAREST);
+		this.texture.setMipmap(useMipMaps);
+
+//		this.depth = new Texture2D(width, height, Texture2D.Format.DEPTH);
+
 
 		final int renderbuffer = glGenRenderbuffers();
 		glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + location, GL_TEXTURE_2D, this.texture.getID(), 0);
+//		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this.depth.getID(), 0);
+
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
 
 
@@ -76,9 +98,9 @@ public class Framebuffer
 	public void clear()
 	{
 		this.bind();
-		GlStateManager._clearColor(0, 0, 0, 0);
-		int i = 16384;
-		GlStateManager._clear(i, false);
+		glClearColor(0, 0, 0, 0);
+		glClearDepth(1);
+		GL11.glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		this.unbind();
 	}
 

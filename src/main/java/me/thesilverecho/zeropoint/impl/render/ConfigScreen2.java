@@ -1,15 +1,21 @@
 package me.thesilverecho.zeropoint.impl.render;
 
+import me.thesilverecho.zeropoint.api.config.selector.FloatSliderHolder;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
+import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
+import me.thesilverecho.zeropoint.api.render.font.FontRenderer2;
 import me.thesilverecho.zeropoint.api.ui.APIScreen;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.mixin.MinecraftClientAccessor;
+import me.thesilverecho.zeropoint.impl.module.ModuleManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ConfigScreen2 extends APIScreen
 {
@@ -32,10 +38,19 @@ public class ConfigScreen2 extends APIScreen
 	public float outro;
 	public float lastOutro;
 
+	@Override
+	protected void init()
+	{
+		super.init();
+//		addComp(new Pane(0, 0, width, height));
+
+
+	}
 
 	public ConfigScreen2()
 	{
 		super(new LiteralText("config screen"));
+
 
 		percent = 1.33f;
 		lastPercent = 1f;
@@ -115,7 +130,7 @@ public class ConfigScreen2 extends APIScreen
 			MinecraftClient.getInstance().currentScreen = null;
 		}
 
-		RenderUtilV2.rectangle(matrixStack, 0, 0, scaledWidth, scaledHeight, new ColourHolder(107, 147, 255, 100));
+		RenderUtilV2.rectangle(matrixStack, 0, 0, scaledWidth, scaledHeight, new APIColour(107, 147, 255, 100));
 //		RenderUtils.drawGradientRect(0, 0, sResolution.getScaledWidth(), sResolution.getScaledHeight(), new Color(107, 147, 255, 100).getRGB(), new Color(0, 0, 0, 30).getRGB());
 
 //		TODO: dragging
@@ -151,9 +166,42 @@ public class ConfigScreen2 extends APIScreen
 			dragY = 0;
 		}*/
 
-		RenderUtilV2.rectangle(matrixStack, windowX, windowY, width, height, new ColourHolder(21, 22, 25, 255));
+		RenderUtilV2.rectangle(matrixStack, windowX, windowY, width, height, new APIColour(21, 22, 25, 255));
 
-		FontRenderer.renderText(APIFonts.REGULAR.getFont(), 1, "Config", new ColourHolder(77, 78, 84, 255), false, matrixStack, windowX + 20, windowY + height - 20);
+		FontRenderer.renderText(APIFonts.REGULAR.getFont(), 1, "Config", new APIColour(77, 78, 84, 255), false, matrixStack, windowX + 20, windowY + height - 20);
+		AtomicReference<Float> pos = new AtomicReference<>(1f);
+
+		ModuleManager.INSTANCE.baseModules.forEach((s, baseModule) ->
+		{
+			final CustomFont font = APIFonts.UD.getFont();
+			final float size = 0.65f;
+//			FontRenderer.renderText(font, size, baseModule.getName(), new APIColour(77, 78, 84, 255), false, matrixStack, windowX, windowY + pos.get());
+			FontRenderer2.renderText(matrixStack, windowX, windowY + pos.get(), font, size, baseModule.getName(), new APIColour(77, 78, 84, 255), false);
+
+
+			pos.set(pos.get() + FontRenderer.getHeight(font, size));
+
+			baseModule.getSettingHolders().getAllSettings().forEach(settingHolder ->
+			{
+
+				final float w = FontRenderer2.renderText(matrixStack, windowX + 13, windowY + pos.get() + 2, font, size, settingHolder.getName(), new APIColour(77, 78, 84, 255), false);
+				final float v = FontRenderer2.renderText(matrixStack, w + 15, windowY + pos.get() + 2, font, size, settingHolder.serialize(), new APIColour(77, 78, 84, 255), false);
+				final float height = FontRenderer.getHeight(font, size);
+				if (settingHolder instanceof FloatSliderHolder)
+					RenderUtilV2.rectangle(matrixStack, v + 15, windowY + pos.get() + 2, 32, height - 2, new APIColour(77, 78, 84, 255));
+
+				pos.set(pos.get() + height);
+
+				/*final float w = FontRenderer2.renderText(matrixStack, windowX + 13, windowY + pos.get() + 2, APIFonts.THIN.getFont(), settingHolder.getName(), new APIColour(77, 78, 84, 255), false);
+				final float v = FontRenderer2.renderText(matrixStack, w + 15, windowY + pos.get() + 2, APIFonts.THIN.getFont(), settingHolder.serialize(), new APIColour(77, 78, 84, 255), false);
+				if (settingHolder instanceof FloatSliderHolder)
+					RenderUtilV2.rectangle(matrixStack, v + 15, windowY + pos.get() + 2, 32, 5, new APIColour(77, 78, 84, 255));
+
+				pos.set(pos.get() + FontRenderer2.getHeight(APIFonts.THIN.getFont()));*/
+			});
+
+
+		});
 
 
 		matrixStack.pop();

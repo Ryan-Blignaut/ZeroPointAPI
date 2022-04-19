@@ -95,7 +95,6 @@ public class Shader
 		return bind(projectionMatrix, modelViewMatrix);
 	}
 
-
 	public Shader bind(Matrix4f projectionMatrix, Matrix4f modelViewMatrix)
 	{
 		setShaderUniform("ProjMat", projectionMatrix);

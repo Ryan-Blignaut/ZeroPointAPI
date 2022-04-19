@@ -3,6 +3,7 @@ package me.thesilverecho.zeropoint.impl.module.display;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
+import me.thesilverecho.zeropoint.api.config.ConfigSetting;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.render.Render2dEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
@@ -11,7 +12,7 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.scoreboard.Scoreboard;
@@ -27,19 +28,29 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-@ClientModule(name = "ScoreBoard tweaks", active = true, keyBinding = GLFW.GLFW_KEY_U)
+@ClientModule(name = "ScoreBoard tweaks", keyBinding = GLFW.GLFW_KEY_U)
 public class ScoreBoardHud extends BaseModule
 {
 
+	@ConfigSetting
 	private APIFonts font = APIFonts.FREE_SANS;
+	@ConfigSetting
 	private boolean showNumbers = false;
-	private ColourHolder customColour = ColourHolder.FULL;
-
+	@ConfigSetting
+	private APIColour customColour = APIColour.WHITE;
+	@ConfigSetting
 	private String seperator = ": ";
-
+	@ConfigSetting
 	private float x = 150, y = 150;
-
+	@ConfigSetting
 	private int xPadding = 5, yPadding = 2;
+
+	@Override
+	public void onEnable()
+	{
+		System.out.println(x + " " + y);
+		super.onEnable();
+	}
 
 	//positioning will be a ting at some stage.
 
@@ -47,118 +58,12 @@ public class ScoreBoardHud extends BaseModule
 	private boolean blurBackground;
 	private boolean useRoundedCorners;
 
-	//	private Framebuffer fbo, fbo2;
-	private float radius = 2.0f;
-	private float quality = 1.0f;
-
-/*
-*
-* 	private void renderScoreboardSidebar(MatrixStack matrices, ScoreboardObjective objective) {
-		Scoreboard scoreboard = objective.getScoreboard();
-		Collection<ScoreboardPlayerScore> collection = scoreboard.getAllPlayerScores(objective);
-		List<ScoreboardPlayerScore> list = (List)collection.stream().filter((score) -> {
-			return score.getPlayerName() != null && !score.getPlayerName().startsWith("#");
-		}).collect(Collectors.toList());
-		Object collection;
-		if (list.size() > 15) {
-			collection = Lists.newArrayList(Iterables.skip(list, collection.size() - 15));
-		} else {
-			collection = list;
-		}
-
-		List<Pair<ScoreboardPlayerScore, Text>> list2 = Lists.newArrayListWithCapacity(((Collection)collection).size());
-		Text text = objective.getDisplayName();
-		int light = this.getTextRenderer().getWidth((StringVisitable)text);
-		int j = light;
-		int k = this.getTextRenderer().getWidth(": ");
-
-		ScoreboardPlayerScore scoreboardPlayerScore;
-		MutableText text2;
-		for(Iterator var11 = ((Collection)collection).iterator(); var11.hasNext(); j = Math.max(j, this.getTextRenderer().getWidth((StringVisitable)text2) + k + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())))) {
-			scoreboardPlayerScore = (ScoreboardPlayerScore)var11.next();
-			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
-			list2.add(Pair.of(scoreboardPlayerScore, text2));
-		}
-
-		int var10000 = ((Collection)collection).size();
-		Objects.requireNonNull(this.getTextRenderer());
-		int l = var10000 * 9;
-		int scoreboardPlayerScore = this.scaledHeight / 2 + l / 3;
-		int team = true;
-		int text2 = this.scaledWidth - j - 3;
-		int m = 0;
-		int n = this.client.options.getTextBackgroundColor(0.3F);
-		int o = this.client.options.getTextBackgroundColor(0.4F);
-		Iterator var18 = list2.iterator();
-
-		while(var18.hasNext()) {
-			Pair<ScoreboardPlayerScore, Text> pair = (Pair)var18.next();
-			++m;
-			ScoreboardPlayerScore scoreboardPlayerScore2 = (ScoreboardPlayerScore)pair.getFirst();
-			Text text3 = (Text)pair.getSecond();
-			Formatting var31 = Formatting.RED;
-			String string = var31 + scoreboardPlayerScore2.getScore();
-			Objects.requireNonNull(this.getTextRenderer());
-			int q = scoreboardPlayerScore - m * 9;
-			int r = this.scaledWidth - 3 + 2;
-			int var10001 = text2 - 2;
-			Objects.requireNonNull(this.getTextRenderer());
-			fill(matrices, var10001, q, r, q + 9, n);
-			this.getTextRenderer().draw(matrices, (Text)text3, (float)text2, (float)q, -1);
-			this.getTextRenderer().draw(matrices, (String)string, (float)(r - this.getTextRenderer().getWidth(string)), (float)q, -1);
-			if (m == ((Collection)collection).size()) {
-				var10001 = text2 - 2;
-				Objects.requireNonNull(this.getTextRenderer());
-				fill(matrices, var10001, q - 9 - 1, r, q - 1, o);
-				fill(matrices, text2 - 2, q - 1, r, q, n);
-				TextRenderer var32 = this.getTextRenderer();
-				float var10003 = (float)(text2 + j / 2 - light / 2);
-				Objects.requireNonNull(this.getTextRenderer());
-				var32.draw(matrices, (Text)text, var10003, (float)(q - 9), -1);
-			}
-		}
-
-	}
-
-* */
-
-//	public static Framebuffer blurFBO;
-
 	@EventListener
 	public void render(Render2dEvent.ScoreBoard event)
 	{
 		final CustomFont font = this.font.getFont();
 
 		event.ci().cancel();
-//		RenderUtilV2.setShader(APIShaders.RECTANGLE_TEXTURE_SHADER.getShader());
-//		RenderUtilV2.setTextureId(fbo2.texture.getID());
-//		RenderUtilV2.setTextureId(font.texture.getID());
-//		final Window w = MinecraftClient.getInstance().getWindow();
-
-//	    This is working
-//		RenderUtilV2.quadTexture(event.matrixStack(), 0, 0, w.getScaledWidth() / 2f, w.getScaledHeight() / 2f, 0.f, 1, 0.5f, 0.5f, ColourHolder.FULL);
-
-//		RenderUtilV2.quadTexture(event.matrixStack(), 0, 0, w.getScaledWidth() / 2f, w.getScaledHeight() / 2f, 0.f, 1, 0.5f, 0.5f, ColourHolder.FULL);
-
-
-//		final double sf = w.getScaleFactor();
-
-//		final int x = 120;
-//		final int y = 120;
-//		final int w1 = 160;
-//		final int h1 = 160;
-//		RenderUtilV2.quadTexture(event.matrixStack(), x, y, w1, h1, 1f / w.getScaledWidth() * x, 1 - 1f / w.getScaledHeight() * y, 1f / w.getScaledWidth() * w1, 1 - 1f / w.getScaledHeight() * h1, ColourHolder.FULL);
-
-
-//		fbo2.clear();
-		/*RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
-		RenderUtilV2.setShaderUniform("TextureSize", new Vec2f(framebuffer.textureWidth, framebuffer.textureHeight));
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1, 0));
-		RenderUtilV2.setShaderUniform("Radius", 10f);
-		RenderUtilV2.setTextureId(fbo2.texture.getID());
-		RenderUtilV2.postProcessRect(12, 12, 0, 0, 0.5f, 0.5f);*/
-//		fbo.clear();
 
 		final ScoreboardObjective objective = event.scoreboardObjective();
 		final Scoreboard scoreboard = objective.getScoreboard();
@@ -193,16 +98,12 @@ public class ScoreBoardHud extends BaseModule
 
 		BlurBackground.renderToBlur(() ->
 		{
-			RenderUtilV2.roundRect(matrixStack, rectX, rectY.get(), rectW, fontHeight, rectX + r, rectY.get() + r, rectX + rectW - r, rectY.get() + fontHeight, r, ColourHolder.decode("#ff5159").setAlpha(120));
+			RenderUtilV2.roundRect(matrixStack, rectX, rectY.get(), rectW, fontHeight, rectX + r, rectY.get() + r, rectX + rectW - r, rectY.get() + fontHeight, r, APIColour.decode("#ff5159").setAlpha(120));
 			rectY.updateAndGet(v -> v + fontHeight);
-			RenderUtilV2.roundRect(matrixStack, rectX, rectY.get(), rectW, rectH, rectX + r, rectY.get(), rectX + rectW - r, rectY.get() + rectH - r, r, new ColourHolder(10, 10, 10, 90)/*ColourHolder.decode("#2b2b2b").setAlpha(120)*/);
-//			rectY.getAndUpdate(v -> v - fontHeight);
+			RenderUtilV2.roundRect(matrixStack, rectX, rectY.get(), rectW, rectH, rectX + r, rectY.get(), rectX + rectW - r, rectY.get() + rectH - r, r, new APIColour(10, 10, 10, 90)/*ColourHolder.decode("#2b2b2b").setAlpha(120)*/);
+			rectY.getAndUpdate(v -> v - fontHeight);
 		});
 
-		/*rectY -= fontHeight;
-		RenderUtilV2.roundRect(matrixStack, rectX, rectY, rectW, fontHeight, rectX + r, rectY + r, rectX + rectW - r, rectY + fontHeight, r, ColourHolder.decode("#ff5159").setAlpha(120));
-		rectY += fontHeight;
-		RenderUtilV2.roundRect(matrixStack, rectX, rectY, rectW, rectH, rectX + r, rectY, rectX + rectW - r, rectY + rectH - r, r, ColourHolder.decode("#2b2b2b").setAlpha(120));*/
 
 		FontRenderer.renderText(font, fontSize, matrixStack, heading, this.x + (maxWidth.floatValue() / 2f) - FontRenderer.getWidth(font, fontSize, heading) / 2, this.y - 1);
 		for (int i = 0, stringsSize = strings.size(); i < stringsSize; i++)
@@ -212,86 +113,5 @@ public class ScoreBoardHud extends BaseModule
 		}
 
 	}
-
-
-/*	@EventListener
-	public void render(RenderWorldEvent.Post event)
-	{
-
-		GL11.glDisable(GL11.GL_BLEND);
-		glDisable(GL11.GL_DEPTH_TEST);
-
-		if (fbo == null)
-		{
-			fbo = new Framebuffer();
-			fbo2 = new Framebuffer();
-			blurFBO = new Framebuffer();
-
-		}
-		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
-
-		final int textureWidth = framebuffer.textureWidth;
-		final int textureHeight = framebuffer.textureHeight;
-
-
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-		fbo.bind();
-		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1, 0));
-		RenderUtilV2.setShaderUniform("Radius", 10f);
-		final int colorAttachment = framebuffer.getColorAttachment();
-		RenderUtilV2.setTextureId(colorAttachment);
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
-		fbo.unbind();
-
-		fbo2.bind();
-		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(0, 1));
-		RenderUtilV2.setTextureId(fbo.texture.getID());
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
-		fbo2.unbind();
-		fbo.clear();
-
-		RenderUtilV2.setShader(APIShaders.COMPOSITE.getShader());
-		GLWrapper.activateTexture(1, blurFBO.texture.getID());
-		RenderUtilV2.setShaderUniform("Sampler1", 1);
-		RenderUtilV2.setTextureId(fbo2.texture.getID());
-		fbo.bind();
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
-		fbo.unbind();
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
-		fbo2.clear();
-
-
-//		fbo.bind();
-		fbo2.bind();
-		RenderSystem.enableBlend();
-		RenderUtilV2.setShader(APIShaders.BLOOM.getShader());
-		GLWrapper.activateTexture(1, fbo.texture.getID());
-		RenderUtilV2.setShaderUniform("Sampler1", 1);
-		RenderUtilV2.setTextureId(fbo.texture.getID());
-		RenderUtilV2.setShaderUniform("Direction", new Vec2f(1, 0));
-		final float value = 16f;
-		RenderUtilV2.setShaderUniform("Radius", value);
-		final FloatBuffer buffer = BufferUtils.createFloatBuffer(256);
-		for (int light = 1; light <= value; light++) buffer.put(calculateGaussianValue(light, value));
-		buffer.rewind();
-		RenderUtilV2.setShaderUniform("Weights", buffer);
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
-		fbo2.unbind();
-
-		GLWrapper.activateTexture(1, fbo.texture.getID());
-		RenderUtilV2.setShaderUniform("Sampler1", 1);
-		RenderUtilV2.setTextureId(fbo2.texture.getID());
-		RenderUtilV2.setShaderUniform("Direction", new Vec2f(0, 1));
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight, 0, 0, 1, 1);
-
-
-		fbo.clear();
-		fbo2.clear();
-		blurFBO.clear();
-
-	}*/
-
 
 }

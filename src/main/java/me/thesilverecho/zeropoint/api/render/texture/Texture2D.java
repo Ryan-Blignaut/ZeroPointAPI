@@ -36,8 +36,11 @@ public class Texture2D implements AutoCloseable
 	{
 		this.mipmap = enabled;
 		if (enabled)
-			this.setFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST);
-		else
+		{
+			this.setFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 7);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		} else
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -61,7 +64,8 @@ public class Texture2D implements AutoCloseable
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), GL_UNSIGNED_BYTE, (ByteBuffer) null);
+//		            GlStateManager._texImage2D(GL_TEXTURE_2D, 0, 0x1902, this.textureWidth, this.textureHeight, 0, 0x1902, 0x1406, null);
+		glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), format == Format.DEPTH ? GL_FLOAT : GL_UNSIGNED_BYTE, (ByteBuffer) null);
 	}
 
 	public Texture2D(int width, int height, ByteBuffer buffer, Format format)
@@ -174,7 +178,8 @@ public class Texture2D implements AutoCloseable
 	{
 		A(1),
 		RGB(3),
-		RGBA(4);
+		RGBA(4),
+		DEPTH(4);;
 		private final int channels;
 
 		Format(int channels) {this.channels = channels;}
@@ -186,6 +191,7 @@ public class Texture2D implements AutoCloseable
 						case A -> GL_RED;
 						case RGB -> GL_RGB;
 						case RGBA -> GL_RGBA;
+						case DEPTH -> GL_DEPTH_COMPONENT;
 					};
 		}
 	}

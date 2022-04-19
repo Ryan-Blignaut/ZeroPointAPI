@@ -21,11 +21,11 @@ void main() {
 		totalSamples = totalSamples + 1.0;
 
 		// Accumulate smoothed blur
-//		float strength = (2.0 - abs(r / Radius))*sample.a;
-//		float strength = sample1.a;
-//		float strength = 1.0 - abs(r);
-//		totalStrength = totalStrength + strength;
-//		blurred = blurred + sample1;
+		//		float strength = (2.0 - abs(r / Radius))*sample.a;
+		//		float strength = sample1.a;
+		//		float strength = 1.0 - abs(r);
+		//		totalStrength = totalStrength + strength;
+		//		blurred = blurred + sample1;
 
 		float strength = 1.0 - abs(r / Radius);
 		totalStrength = totalStrength + strength;
@@ -33,6 +33,6 @@ void main() {
 
 
 	}
-//	float alpha = totalAlpha/totalSamples;
+	//	float alpha = totalAlpha/totalSamples;
 	fragColor = vec4(blurred.rgb / /*totalStrength*/(Radius*2.0 + 1.0), totalAlpha);
 }

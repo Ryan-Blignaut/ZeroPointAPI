@@ -6,6 +6,7 @@
   "mixins": [
     "BufferBuilderStorageAccessor",
     "BufferRendererAccessor",
+    "FramebufferAccessor",
     "GameRendererMixin",
     "InGameHudMixin",
     "KeyboardMixin",

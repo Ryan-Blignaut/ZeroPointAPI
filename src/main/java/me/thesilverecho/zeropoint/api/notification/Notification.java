@@ -2,6 +2,8 @@ package me.thesilverecho.zeropoint.api.notification;
 
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
+import me.thesilverecho.zeropoint.api.render.animations.Animation;
+import me.thesilverecho.zeropoint.api.render.animations.impl.DecelerateAnimation;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
@@ -16,6 +18,8 @@ public class Notification
 	private String title, text;
 	private String icon;
 
+	private Animation animation = new DecelerateAnimation(1000, 1);
+
 	private float timeInTicks;
 	private boolean showing;
 
@@ -29,6 +33,9 @@ public class Notification
 		this.icon = icon;
 		this.timeInTicks = 20 * timeInSeconds;
 		this.showing = showing;
+		if (this.title != null)
+			if (this.title.equals("Module Disabled"))
+				animation.changeDirection();
 	}
 
 
@@ -64,14 +71,14 @@ public class Notification
 		float xOffset = 0;
 		float yOffset = 25;
 
-		final float fontWidth = FontRenderer.getWidth(font, 0.75f, text);
 
+		final float fontWidth = FontRenderer.getWidth(font, 0.75f, text);
 		float width = Math.min(Math.max(fontWidth, 120), 200);
 		float height = FontRenderer.getHeight(font, 0.45f) + FontRenderer.getWrapHeight(font, 0.35f, text.toUpperCase(), width - 28) + 10;
-		RenderUtilV2.roundRect(matrixStack, window.getScaledWidth() - xOffset - width, window.getScaledHeight() - yOffset - height, width, height, 3, getType().getColour());
-		FontRenderer.renderText(font, 0.45f, matrixStack, title.toUpperCase(), window.getScaledWidth() - xOffset - width + 20, window.getScaledHeight() - yOffset - height + 1);
+		RenderUtilV2.roundRect(matrixStack, (float) (window.getScaledWidth() + (-xOffset - width) * animation.getOutput()), window.getScaledHeight() - yOffset - height, width, height, 3, getType().getColour());
+		FontRenderer.renderText(font, 0.45f, matrixStack, title.toUpperCase(), (float) (window.getScaledWidth() + (-xOffset - width + 20) * animation.getOutput()), window.getScaledHeight() - yOffset - height + 1);
 		final float height1 = FontRenderer.getHeight(font, 0.45f);
-		FontRenderer.renderTextWrapped(font, 0.35f, matrixStack, text.toUpperCase(), window.getScaledWidth() - xOffset - width + 20 + 3, window.getScaledHeight() - yOffset - height + height1 + 2, width - 28);
+		FontRenderer.renderTextWrapped(font, 0.35f, matrixStack, text.toUpperCase(), (float) (window.getScaledWidth() + (-xOffset - width + 20 + 3) * animation.getOutput()), window.getScaledHeight() - yOffset - height + height1 + 2, width - 28);
 
 	}
 

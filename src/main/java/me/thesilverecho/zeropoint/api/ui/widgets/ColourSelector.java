@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.api.ui.widgets;
 
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class ColourSelector extends Component2D
@@ -18,6 +18,6 @@ public class ColourSelector extends Component2D
 	{
 		if (mouseOver)
 			mousePos = mouseY;
-		RenderUtilV2.colourPicker(matrices, x, y, w, h, mousePos, ColourHolder.FULL);
+		RenderUtilV2.colourPicker(matrices, x, y, w, h, mousePos, APIColour.WHITE);
 	}
 }

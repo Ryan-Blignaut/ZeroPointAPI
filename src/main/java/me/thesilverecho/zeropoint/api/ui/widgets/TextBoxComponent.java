@@ -9,7 +9,7 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -44,7 +44,7 @@ public class TextBoxComponent extends IntractableComponent
 			//Render cursor blinker
 			final float width = font.getWidth(text.substring(0, caretPos));
 //			if (delta >= 0.1)
-			RenderUtilV2.rectangle(matrices, x + width, y + padding, x + width + 3, y + padding + font.getHeight(), ColourHolder.decode("#EDDDBC"));
+			RenderUtilV2.rectangle(matrices, x + width, y + padding, x + width + 3, y + padding + font.getHeight(), APIColour.decode("#EDDDBC"));
 		}
 		//No text show prompt text
 		if (text.isEmpty() && !focus)

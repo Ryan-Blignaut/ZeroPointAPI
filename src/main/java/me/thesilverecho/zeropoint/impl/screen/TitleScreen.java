@@ -8,7 +8,7 @@ import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.uiv2.ButtonComponent;
 import me.thesilverecho.zeropoint.api.uiv2.Pane;
 import me.thesilverecho.zeropoint.api.uiv2.VerticalPane;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -35,17 +35,18 @@ public class TitleScreen
 //		buttonPane.setBackground(new ColourHolder(50, 50, 50, 190));
 
 		ButtonComponent singlePlayerButton = new ButtonComponent(0, 0, 50, 16, "Singleplayer", () -> client.setScreen(new SelectWorldScreen(screen)));
-		singlePlayerButton.setBackground(ColourHolder.decode("#FF2b2b"));
+		singlePlayerButton.setBackground(APIColour.decode("#151619"));
 		singlePlayerButton.getText().setFontSize(0.5f);
+		singlePlayerButton.getText().setColour(APIColour.decode("#4d4e53"));
 
 		ButtonComponent multiplayerButton = new ButtonComponent(0, 0, 50, 16, "Multiplayer", () -> client.setScreen(new MultiplayerScreen(screen)));
-		multiplayerButton.setBackground(ColourHolder.decode("#2b7b2b"));
+		multiplayerButton.setBackground(APIColour.decode("#4d4e53"));
 
 		ButtonComponent settingsButton = new ButtonComponent(0, 0, 50, 16, "Settings", () -> client.setScreen(new OptionsScreen(screen, client.options)));
-		settingsButton.setBackground(ColourHolder.decode("#FF2b2b"));
+		settingsButton.setBackground(APIColour.decode("#4d4e53"));
 
 		ButtonComponent quitButton = new ButtonComponent(0, 0, 50, 16, "Quit", client::scheduleStop);
-		quitButton.setBackground(ColourHolder.decode("#2b7b2b"));
+		quitButton.setBackground(APIColour.decode("#4d4e53"));
 
 
 		pane.addComponent(buttonPane);
@@ -84,16 +85,16 @@ public class TitleScreen
 		RenderUtilV2.setShaderUniform("ScrollSpeed", 0f);
 		RenderUtilV2.setShaderUniform("Direction", 0f);
 		RenderUtilV2.setShaderUniform("Time", time);
-		RenderUtilV2.setQuadColourHolder(ColourHolder.decode("#9aa4db"));
-		RenderUtilV2.quadTexture(matrixStack, 0, 0, width, height, new ColourHolder(0, 0, 0, 255));
+		RenderUtilV2.setQuadColourHolder(APIColour.decode("#9aa4db"));
+		RenderUtilV2.quadTexture(matrixStack, 0, 0, width, height, new APIColour(0, 0, 0, 255));
 
 
 		float buttonPaneWidth = 94, buttonPaneHeight = 150;
-		final ColourHolder primaryCol = ColourHolder.decode("#2d2c2c");
+		final APIColour primaryCol = APIColour.decode("#2d2c2c");
 		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, primaryCol);
 		buttonPaneWidth = buttonPaneWidth - 3;
 		buttonPaneHeight = buttonPaneHeight - 3;
-		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, ColourHolder.decode("#111111"));
+		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, APIColour.decode("#111111"));
 
 		buttonPaneWidth = buttonPaneWidth - 10;
 		buttonPaneHeight = buttonPaneHeight - 10;
@@ -102,11 +103,11 @@ public class TitleScreen
 
 		buttonPaneWidth = buttonPaneWidth - 2;
 		buttonPaneHeight = buttonPaneHeight - 2;
-		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, ColourHolder.decode("#111111"));
+		RenderUtilV2.rectangle(matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60, buttonPaneWidth, buttonPaneHeight, APIColour.decode("#111111"));
 
 		buttonPaneWidth = buttonPaneWidth + 2 - 5;
 		buttonPaneHeight = buttonPaneHeight + 2 + FontRenderer.getHeight(APIFonts.REGULAR.getFont(), 0.35f) / 2;
-		FontRenderer.renderText(APIFonts.REGULAR.getFont(), 0.35f, "Main Menu", new ColourHolder(200, 222, 222, 255), false, matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60);
+		FontRenderer.renderText(APIFonts.REGULAR.getFont(), 0.35f, "Main Menu", new APIColour(200, 222, 222, 255), false, matrixStack, width / 2 - buttonPaneWidth / 2, height / 2 - buttonPaneHeight / 2 - 60);
 
 
 		buttonPaneWidth = buttonPaneWidth - 5;
@@ -123,7 +124,7 @@ public class TitleScreen
 		//FixMe: when there is no rounding the edge of the button is not smoothly drawn(The smooth step is ineffective).
 		final float sizeHack = 0.5f;
 		if (mouseX > bx + sizeHack && mouseX < bx + sizeHack + buttonPaneWidth - 1 && mouseY > by - buttonHeight * 2 && mouseY < by - buttonHeight)
-			RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by - buttonHeight * 2, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, ColourHolder.FULL);
+			RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by - buttonHeight * 2, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, APIColour.WHITE);
 		else
 			RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by - buttonHeight * 2, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, primaryCol);
 

@@ -1,6 +1,6 @@
 package me.thesilverecho.zeropoint.api.uiv2;
 
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.util.math.MatrixStack;
 
 public abstract class Component
@@ -9,7 +9,7 @@ public abstract class Component
 
 	protected float x, y, w, h;
 
-	private ColourHolder background = ColourHolder.decode("#2b2b2b").setAlpha(20);
+	private APIColour background = APIColour.decode("#2b2b2b").setAlpha(20);
 
 	public Component(float x, float y, float w, float h)
 	{
@@ -34,12 +34,12 @@ public abstract class Component
 
 	public abstract void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta);
 
-	public ColourHolder getBackground()
+	public APIColour getBackground()
 	{
 		return background;
 	}
 
-	public Component setBackground(ColourHolder background)
+	public Component setBackground(APIColour background)
 	{
 		this.background = background;
 		return this;

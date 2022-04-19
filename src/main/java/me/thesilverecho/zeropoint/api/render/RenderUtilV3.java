@@ -2,7 +2,7 @@ package me.thesilverecho.zeropoint.api.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
@@ -20,7 +20,7 @@ public class RenderUtilV3
 	public static float zIndex;
 	public static Shader shader;
 	private static int textureId = -1;
-	private static final ColourHolder.Quad QUAD_COLOUR_HOLDER = new ColourHolder.Quad(ColourHolder.FULL);
+	private static final APIColour.ColourQuad COLOUR_QUAD_COLOUR_HOLDER = new APIColour.ColourQuad(APIColour.WHITE);
 
 	public static void setShaderUniform(String var, Object value)
 	{
@@ -34,12 +34,12 @@ public class RenderUtilV3
 		return texture.getGlId();
 	}
 
-	public static void setQuadColourHolder(ColourHolder newColour)
+	public static void setQuadColourHolder(APIColour newColour)
 	{
-		QUAD_COLOUR_HOLDER.setTopLeft(newColour);
-		QUAD_COLOUR_HOLDER.setTopRight(newColour);
-		QUAD_COLOUR_HOLDER.setBottomRight(newColour);
-		QUAD_COLOUR_HOLDER.setBottomLeft(newColour);
+		COLOUR_QUAD_COLOUR_HOLDER.setTopLeft(newColour);
+		COLOUR_QUAD_COLOUR_HOLDER.setTopRight(newColour);
+		COLOUR_QUAD_COLOUR_HOLDER.setBottomRight(newColour);
+		COLOUR_QUAD_COLOUR_HOLDER.setBottomLeft(newColour);
 	}
 
 	public static void setShader(Shader shader)
@@ -91,16 +91,16 @@ public class RenderUtilV3
 	public static void quadTexture(Matrix4f matrix4f, float x1, float y1, float z1, float x2, float y2, float z2, float u0, float v0, float u1, float v1, boolean vertical)
 	{
 		final BufferBuilder builder = RenderSystem.renderThreadTesselator().getBuffer();
-		final ColourHolder tL = QUAD_COLOUR_HOLDER.getTopLeft();
-		final ColourHolder bL = QUAD_COLOUR_HOLDER.getBottomLeft();
-		final ColourHolder bR = QUAD_COLOUR_HOLDER.getTopRight();
-		final ColourHolder tR = QUAD_COLOUR_HOLDER.getBottomRight();
+		final APIColour tL = COLOUR_QUAD_COLOUR_HOLDER.getTopLeft();
+		final APIColour bL = COLOUR_QUAD_COLOUR_HOLDER.getBottomLeft();
+		final APIColour bR = COLOUR_QUAD_COLOUR_HOLDER.getTopRight();
+		final APIColour tR = COLOUR_QUAD_COLOUR_HOLDER.getBottomRight();
 
 		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
-		builder.vertex(matrix4f, x1, y1, z1).color(tL.red(), tL.green(), tL.blue(), tL.alpha()).texture(u0, v0).next();
-		builder.vertex(matrix4f, x1, y2, vertical ? z2 : z1).color(bL.red(), bL.green(), bL.blue(), bL.alpha()).texture(u0, v1).next();
-		builder.vertex(matrix4f, x2, y2, z2).color(bR.red(), bR.green(), bR.blue(), bR.alpha()).texture(u1, v1).next();
-		builder.vertex(matrix4f, x2, y1, vertical ? z1 : z2).color(tR.red(), tR.green(), tR.blue(), tR.alpha()).texture(u1, v0).next();
+		builder.vertex(matrix4f, x1, y1, z1).color(tL.getRed(), tL.getGreen(), tL.getBlue(), tL.getAlpha()).texture(u0, v0).next();
+		builder.vertex(matrix4f, x1, y2, vertical ? z2 : z1).color(bL.getRed(), bL.getGreen(), bL.getBlue(), bL.getAlpha()).texture(u0, v1).next();
+		builder.vertex(matrix4f, x2, y2, z2).color(bR.getRed(), bR.getGreen(), bR.getBlue(), bR.getAlpha()).texture(u1, v1).next();
+		builder.vertex(matrix4f, x2, y1, vertical ? z1 : z2).color(tR.getRed(), tR.getGreen(), tR.getBlue(), tR.getAlpha()).texture(u1, v0).next();
 		builder.end();
 
 		applyTextureToShader();

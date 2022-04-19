@@ -13,7 +13,7 @@ import me.thesilverecho.zeropoint.api.render.animation.Animate;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.CustomFont;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import me.thesilverecho.zeropoint.impl.mixin.MinecraftClientAccessor;
 import me.thesilverecho.zeropoint.impl.module.render2.BlurBackground;
 import net.minecraft.client.MinecraftClient;
@@ -31,10 +31,13 @@ import org.lwjgl.glfw.GLFW;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@ClientModule(name = "Modern Hotbar", active = true, keyBinding = GLFW.GLFW_KEY_H)
+@ClientModule(name = "Modern Hotbar",  keyBinding = GLFW.GLFW_KEY_H)
 public class ModernHotbar extends BaseModule
 {
 	private float animationX = 0;
+
+
+//	settingHolders.add(new ConfigSetting("Hotbar Scale", "hotbarScale", 1.0f, 0.0f, 2.0f));
 
 	@ConfigSetting
 	private final String hudCol = "#323232";
@@ -66,7 +69,7 @@ public class ModernHotbar extends BaseModule
 //		ScoreBoardHud.blurFBO.bind();
 //		RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180));
 //		ScoreBoardHud.blurFBO.unbind();
-		BlurBackground.renderToBlur(() -> RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, ColourHolder.decode(hudCol).setAlpha(180)));
+		BlurBackground.renderToBlur(() -> RenderUtilV2.rectangle(matrixStack, 0, height - codeHeight, width, codeHeight, 0, APIColour.decode(hudCol).setAlpha(180)));
 
 
 		PlayerEntity playerEntity = event.player();
@@ -80,9 +83,9 @@ public class ModernHotbar extends BaseModule
 		final float x = halfWidth - 93 + inventory.selectedSlot * 20 + 2;
 
 		this.animationX = (float) RenderUtilV2.getAnimationState(this.animationX, x, /*Math.max(50.0F, Math.abs(this.animationX - x)  **/MinecraftClient.getInstance().getTickDelta() * 7);
-		RenderUtilV2.roundRect(matrixStack, animationX, height - codeHeight, -x + halfWidth - 71 + inventory.selectedSlot * 20 + 2, codeHeight, 2, new ColourHolder(255, 255, 255, 80));
+		RenderUtilV2.roundRect(matrixStack, animationX, height - codeHeight, -x + halfWidth - 71 + inventory.selectedSlot * 20 + 2, codeHeight, 2, new APIColour(255, 255, 255, 80));
 		if (!offHandStack.isEmpty())
-			RenderUtilV2.roundRect(matrixStack, halfWidth - 90 - 29, height - codeHeight, 22, codeHeight, 2, new ColourHolder(255, 255, 255, 80));
+			RenderUtilV2.roundRect(matrixStack, halfWidth - 90 - 29, height - codeHeight, 22, codeHeight, 2, new APIColour(255, 255, 255, 80));
 
 
 		RenderUtilV2.setZIndex(tempZIndex);

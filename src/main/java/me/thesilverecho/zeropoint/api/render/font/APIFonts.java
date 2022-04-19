@@ -8,6 +8,7 @@ public enum APIFonts
 	FREE_SANS("free_sans.ttf"),
 	ICON("zp-icons.ttf"),
 	REGULAR("regular.ttf"),
+	UD("ud.ttf"),
 	THIN("thin.ttf");
 
 	private final CustomFont font;

@@ -1,6 +1,6 @@
 package me.thesilverecho.zeropoint.api.render;
 
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -20,9 +20,9 @@ public class MeshVertexConsumerProvider implements VertexConsumerProvider
 		return vertexConsumer;
 	}
 
-	public void setColor(ColourHolder color)
+	public void setColor(APIColour color)
 	{
-		vertexConsumer.fixedColor(color.red(), color.green(), color.blue(), color.alpha());
+		vertexConsumer.fixedColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 
 	public void setOffset(double offsetX, double offsetY, double offsetZ)
@@ -39,7 +39,7 @@ public class MeshVertexConsumerProvider implements VertexConsumerProvider
 		private final double[] xs = new double[4];
 		private final double[] ys = new double[4];
 		private final double[] zs = new double[4];
-		private ColourHolder color = ColourHolder.FULL;
+		private APIColour color = APIColour.WHITE;
 
 		private int i;
 
@@ -113,7 +113,7 @@ public class MeshVertexConsumerProvider implements VertexConsumerProvider
 		@Override
 		public void fixedColor(int red, int green, int blue, int alpha)
 		{
-			color = new ColourHolder(red, green, blue, alpha);
+			color = new APIColour(red, green, blue, alpha);
 		}
 
 		@Override

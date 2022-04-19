@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.api.render;
 
 import me.thesilverecho.zeropoint.api.mixin.BufferRendererAccessor;
-import me.thesilverecho.zeropoint.api.util.ColourHolder;
+import me.thesilverecho.zeropoint.api.util.APIColour;
 import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
@@ -132,14 +132,14 @@ public class Mesh
 		return this;
 	}
 
-	public Mesh color(ColourHolder c)
+	public Mesh color(APIColour c)
 	{
 		long p = verticesPointer + vertexComponentCount * 4L;
 
-		memPutFloat(p, c.red() / 255f);
-		memPutFloat(p + 4, c.green() / 255f);
-		memPutFloat(p + 8, c.blue() / 255f);
-		memPutFloat(p + 12, c.alpha() / 255f * (float) alpha);
+		memPutFloat(p, c.getRed() / 255f);
+		memPutFloat(p + 4, c.getGreen() / 255f);
+		memPutFloat(p + 8, c.getBlue() / 255f);
+		memPutFloat(p + 12, c.getAlpha() / 255f * (float) alpha);
 
 		vertexComponentCount += 4;
 		return this;

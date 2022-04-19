@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3f;
 
 import java.util.Random;
 
-@ClientModule(name = "Item Physics", active = true)
+@ClientModule(name = "Item Physics", active = false)
 public class ItemPhysics extends BaseModule
 {
 
