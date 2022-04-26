@@ -104,7 +104,6 @@ public class Framebuffer
 		this.unbind();
 	}
 
-
 	public static void resizeAllFBOs()
 	{
 		LOADED_FRAME_BUFFERS.forEach(Framebuffer::resize);

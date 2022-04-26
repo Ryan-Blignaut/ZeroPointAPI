@@ -1,5 +1,6 @@
 package me.thesilverecho.zeropoint.api.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
@@ -416,6 +417,9 @@ public class RenderUtilV2
 	public static void postProcessRect(float width, float height, float u0, float v0, float u1, float v1)
 	{
 //		GLWrapper.enableGL2D();
+		GlStateManager._disableDepthTest();
+		GlStateManager._depthMask(false);
+
 		final Matrix4f matrix = RenderSystem.getProjectionMatrix();
 
 		final Matrix4f m = Matrix4f.projectionMatrix(width, -height, 1000.0F, 3000.0F);
@@ -435,6 +439,8 @@ public class RenderUtilV2
 		shader.bind();
 		BufferRenderer.postDraw(bufferBuilder);
 		shader.unBind();
+
+		GlStateManager._depthMask(true);
 //		GLWrapper.disableGL2D();
 //		RenderSystem.setProjectionMatrix(matrix);
 	}

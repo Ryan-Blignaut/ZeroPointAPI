@@ -23,11 +23,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin
 {
-/*	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;shouldRender(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/render/Frustum;DDD)Z"))
-	private <E extends Entity> boolean shouldRenderRedirect(EntityRenderDispatcher entityRenderDispatcher, E entity, Frustum frustum, double x, double y, double z)
-	{
-		return true || entityRenderDispatcher.shouldRender(entity, frustum, x, y, z);
-	}*/
+	/*	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;shouldRender(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/render/Frustum;DDD)Z"))
+		private <E extends Entity> boolean shouldRenderRedirect(EntityRenderDispatcher entityRenderDispatcher, E entity, Frustum frustum, double x, double y, double z)
+		{
+			return true || entityRenderDispatcher.shouldRender(entity, frustum, x, y, z);
+		}*/
 	@Shadow
 	@Nullable
 	private Frustum capturedFrustum;
@@ -53,6 +53,7 @@ public class WorldRendererMixin
 	{
 		EventManager.call(new BlockOutlineEvent(matrices, blockState.getOutlineShape(this.world, blockPos, ShapeContext.of(entity)), (float) (blockPos.getX() - d), (float) (blockPos.getY() - e), (float) (blockPos.getZ() - f), ci));
 	}
+
 	@Inject(
 			method = "render",
 			slice = @Slice(from = @At(value = "FIELD:LAST", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/WorldRenderer;transparencyShader:Lnet/minecraft/client/gl/ShaderEffect;")),
@@ -61,8 +62,14 @@ public class WorldRendererMixin
 					@At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;depthMask(Z)V", ordinal = 1, shift = At.Shift.AFTER)
 			}
 	)
-	private void hookPostWorldRender(MatrixStack matrices, float tickDelta, long nanoTime, boolean renderBlockOutline, Camera camera, GameRenderer renderer, LightmapTextureManager lmTexManager, Matrix4f matrix4f, CallbackInfo ci) {
+	private void hookPostWorldRender(MatrixStack matrices, float tickDelta, long nanoTime, boolean renderBlockOutline, Camera camera, GameRenderer renderer, LightmapTextureManager lmTexManager, Matrix4f matrix4f, CallbackInfo ci)
+	{
 //		EventManager.call(new RenderWorldEvent.Post(matrices));
 
+//		BlockEntityESP.getFramebuffer().copyDepthFrom(MinecraftClient.getInstance().getFramebuffer());
+
+
 	}
+
+
 }

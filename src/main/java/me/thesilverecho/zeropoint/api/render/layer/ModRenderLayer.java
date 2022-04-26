@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.impl.ZeroPointClient;
-import me.thesilverecho.zeropoint.impl.module.render3.BlockEntityESP;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -47,8 +46,8 @@ public class ModRenderLayer extends RenderLayer
 			                       .cull(DISABLE_CULLING)
 			                       .layering(POLYGON_OFFSET_LAYERING)
 			                       .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
-			                       .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
-			                       .target(new Target("blur_out", () -> /*BlurBackground.getBlurMask()*/BlockEntityESP.getFramebuffer().bind(), () -> /*BlurBackground.getBlurMask()*/BlockEntityESP.getFramebuffer().unbind()))
+			                       .depthTest(/*RenderPhase.ALWAYS_DEPTH_TEST*/RenderPhase.EQUAL_DEPTH_TEST)
+//			                       .target(new Target("blur_out", () -> /*BlurBackground.getBlurMask()*/BlockEntityESP.getFramebuffer().bind(), () -> /*BlurBackground.getBlurMask()*/BlockEntityESP.getFramebuffer().unbind()))
 			                       .build(false));
 
 	public static final RenderLayer DG = of(ZeroPointClient.MOD_ID + ":blur",

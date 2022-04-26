@@ -113,7 +113,7 @@ public class BaseModule implements IModule
 
 	private void deregister()
 	{
-		ENABLE_MODULES2.remove(this.getClass());
+		final BaseModule remove = ENABLE_MODULES2.remove(this.getClass());
 		EventManager.deregister(this);
 	}
 

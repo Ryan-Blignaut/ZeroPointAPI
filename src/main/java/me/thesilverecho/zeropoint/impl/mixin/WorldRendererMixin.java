@@ -1,5 +1,7 @@
 package me.thesilverecho.zeropoint.impl.mixin;
 
+import me.thesilverecho.zeropoint.api.event.EventManager;
+import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -36,7 +38,7 @@ public class WorldRendererMixin
 	@Inject(method = "render", at = @At("TAIL"))
 	private void onRenderEnd(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)
 	{
-//		EventManager.call(new RenderWorldEvent.Post(null, this.client.getFramebuffer()));
+		EventManager.call(new RenderWorldEvent.Post(null, this.client.getFramebuffer()));
 	}
 /*	@Inject(method = "renderEntity", at = @At(value = "LOAD",target = "Lnet/minecraft/world"))
 	private void onRenderEnd(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)
@@ -60,6 +62,7 @@ public class WorldRendererMixin
 	)
 	private void hookPostWorldRender(MatrixStack matrices, float tickDelta, long nanoTime, boolean renderBlockOutline, Camera camera, GameRenderer renderer, LightmapTextureManager lmTexManager, Matrix4f matrix4f, CallbackInfo ci)
 	{
+
 //		PostWorldRenderCallbackV2.EVENT.invoker().onWorldRendered(matrices, camera, tickDelta, nanoTime);
 //		EventManager.call(new RenderWorldEvent.Post(null, this.client.getFramebuffer()));
 

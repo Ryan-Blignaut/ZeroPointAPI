@@ -10,7 +10,10 @@ import me.thesilverecho.zeropoint.api.event.events.RenderTileEntityEvent;
 import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.*;
+import me.thesilverecho.zeropoint.api.render.GLWrapper;
+import me.thesilverecho.zeropoint.api.render.Mesh;
+import me.thesilverecho.zeropoint.api.render.MeshVertexConsumerProvider;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.APIColour;
@@ -57,16 +60,16 @@ public class BlockEntityESP extends BaseModule
 	@EventListener
 	public void renderTileStart(RenderTileEntityEvent.startRenderTile event)
 	{
-		if (framebuffer == null || glowFramebuffer == null)
+	/*	if (framebuffer == null || glowFramebuffer == null)
 		{
 			outlineHorizontal = new Framebuffer();
 			outlineVertical = new Framebuffer();
 			glowFramebuffer = new Framebuffer();
 			framebuffer = new Framebuffer();
-//			mesh = new Mesh(DrawMode.Triangles, Mesh.Attrib.Vec3, Mesh.Attrib.Color);
-//			provider = new MeshVertexConsumerProvider(mesh);
+			mesh = new Mesh(DrawMode.Triangles, Mesh.Attrib.Vec3, Mesh.Attrib.Color);
+			provider = new MeshVertexConsumerProvider(mesh);
 		}
-//		mesh.begin();
+		mesh.begin();*/
 	}
 
 	@EventListener
@@ -97,13 +100,21 @@ public class BlockEntityESP extends BaseModule
 //		event.renderer().render(be, event.tickDelta(), ms, provider, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 	}
 
+	@EventListener(priority = 1)
+	public void renderTes1(RenderWorldEvent.Pre event)
+	{
+
+	}
 
 	@EventListener(priority = 1)
 	public void renderTest(RenderWorldEvent.Post event)
 	{
-		if (this.framebuffer == null) return;
+		if (this.framebuffer == null || this.outlineVertical == null) return;
 		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
 
+
+		getFramebuffer().clear();
+		getFramebuffer().copyDepthFrom(MinecraftClient.getInstance().getFramebuffer());
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -164,8 +175,8 @@ public class BlockEntityESP extends BaseModule
 		RenderSystem.disableBlend();
 		this.outlineHorizontal.clear();
 		this.outlineVertical.clear();
-		this.framebuffer.clear();
 		this.glowFramebuffer.clear();
+
 
 	}
 
