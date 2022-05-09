@@ -4,8 +4,8 @@ import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.RenderItemEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.layer.ModRenderLayer;
 import me.thesilverecho.zeropoint.impl.event.RenderItemEvent1;
+import me.thesilverecho.zeropoint.impl.render.layering.ZeroLayers;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -24,6 +24,10 @@ public class RenderLayerTest extends BaseModule
 		final ItemStack stack = event.getStack();
 		final RenderLayer layer = event.getLayer();
 		final CallbackInfoReturnable<VertexConsumer> cancelInfo = event.getCancelInfo();
+
+		final VertexConsumer union = VertexConsumers.union(vertexConsumerProvider.getBuffer(ZeroLayers.TEST_LAYER), vertexConsumerProvider.getBuffer(layer));
+		cancelInfo.setReturnValue(union);
+
 		/*if (stack.getItem() instanceof SwordItem)
 		{
 			final VertexConsumer union = VertexConsumers.union(vertexConsumerProvider.getBuffer(layer), vertexConsumerProvider.getBuffer(RenderLayer.getGlint()));
@@ -31,8 +35,7 @@ public class RenderLayerTest extends BaseModule
 
 			cancelInfo.setReturnValue(union);
 		}*/
-
-		cancelInfo.setReturnValue(VertexConsumers.union(event.getVertexConsumerProvider().getBuffer(ModRenderLayer.BLUR), event.getVertexConsumerProvider().getBuffer(layer)));
+//		cancelInfo.setReturnValue(event.getVertexConsumerProvider().getBuffer(ModRenderLayer.CHARMING/*BLUR*/));//VertexConsumers.union(event.getVertexConsumerProvider().getBuffer(ModRenderLayer.CHARMING/*BLUR*/), event.getVertexConsumerProvider().getBuffer(layer)));
 
 //		cancelInfo.setReturnValue(VertexConsumers.union(event.getVertexConsumerProvider().getBuffer(event.isSolid() ? RenderLayer.getDirectGlint() : RenderLayer.getDirectEntityGlint()), event.getVertexConsumerProvider().getBuffer(layer)));
 
@@ -46,11 +49,12 @@ public class RenderLayerTest extends BaseModule
 	@EventListener
 	public void render3dEvent(RenderItemEvent1 event)
 	{
+		if (true) return;
 //		if (event.stack.getItem() instanceof SwordItem)
 		{
-			final VertexConsumer union = VertexConsumers.union(event.vertexConsumerProvider().getBuffer(event.solid() ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), event.vertexConsumerProvider().getBuffer(event.layer()));
+//			final VertexConsumer union = VertexConsumers.union(event.vertexConsumerProvider().getBuffer(event.solid() ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), event.vertexConsumerProvider().getBuffer(event.layer()));
 //			final VertexConsumer union = VertexConsumers.union(event.vertexConsumerProvider().getBuffer(RenderLayer.getEntityGlint()), event.vertexConsumerProvider().getBuffer(event.layer()));
-			event.cir().setReturnValue(union);
+//			event.cir().setReturnValue(union);
 		}
 	}
 

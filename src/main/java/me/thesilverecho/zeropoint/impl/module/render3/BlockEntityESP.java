@@ -6,24 +6,36 @@ import me.thesilverecho.zeropoint.api.config.selector.ColourHolder;
 import me.thesilverecho.zeropoint.api.config.selector.FloatSliderHolder;
 import me.thesilverecho.zeropoint.api.config.selector.SettingHolder;
 import me.thesilverecho.zeropoint.api.event.EventListener;
+import me.thesilverecho.zeropoint.api.event.events.KeyEvent;
 import me.thesilverecho.zeropoint.api.event.events.RenderTileEntityEvent;
 import me.thesilverecho.zeropoint.api.event.events.RenderWorldEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
-import me.thesilverecho.zeropoint.api.render.*;
+import me.thesilverecho.zeropoint.api.render.GLWrapper;
+import me.thesilverecho.zeropoint.api.render.Mesh;
+import me.thesilverecho.zeropoint.api.render.MeshVertexConsumerProvider;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.APIColour;
+import me.thesilverecho.zeropoint.impl.render.CustomVertexConsumerProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.STBImageWrite;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 @ClientModule(name = "BlockEntities ESP", keyBinding = GLFW.GLFW_KEY_RIGHT_ALT)
 public class BlockEntityESP extends BaseModule
@@ -94,19 +106,73 @@ public class BlockEntityESP extends BaseModule
 		final BlockEntity be = event.blockEntity();
 		final MatrixStack ms = event.matrices();
 
-//		event.renderer().render(be, event.tickDelta(), ms, provider, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+		event.renderer().render(be, event.tickDelta(), ms, CustomVertexConsumerProvider.INSTANCE/*provider*/, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 	}
 
+	private boolean screenShot = false;
+
+	@EventListener(priority = 1)
+	public void onKeu(KeyEvent event)
+	{
+		if (event.key() == GLFW.GLFW_KEY_LEFT_ALT && event.action() == GLFW.GLFW_PRESS)
+		{
+			screenShot = true;
+		}
+	}
 
 	@EventListener(priority = 1)
 	public void renderTest(RenderWorldEvent.Post event)
 	{
-		if (this.framebuffer == null) return;
-		final net.minecraft.client.gl.Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
 
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
+//		MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw(ModRenderLayer.CHARMING);
+
+		if (this.framebuffer == null) return;
+		final net.minecraft.client.gl.Framebuffer fb = MinecraftClient.getInstance().getFramebuffer();
+
+
+		if (screenShot)
+		{
+
+			final ByteBuffer allocate = BufferUtils.createByteBuffer(fb.textureHeight * fb.textureWidth * 4);
+//			framebuffer.texture.bindTexture();
+			final int textureId = framebuffer.texture.getID();
+			GLWrapper.activateTexture(0, textureId);
+			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, allocate);
+			STBImageWrite.stbi_write_png("test" + "a" + ".png", fb.textureHeight, fb.textureWidth, 1, allocate, 0);
+			screenShot = false;
+		}
+
+//		RenderSystem.enableBlend();
+//		RenderSystem.defaultBlendFunc();
+//		this.framebuffer.bind();
+//		MC.getBufferBuilders().getEntityVertexConsumers().draw(ModRenderLayer.CHARMING);
+//		GL11.glDisable(GL11.GL_DEPTH_TEST);
+//		MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw(ModRenderLayer.CHARMING);
+
+/*		RenderSystem.disableBlend();
+//		RenderSystem.defaultBlendFunc();
+
+
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
+		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1, 0));
+		RenderUtilV2.setShaderUniform("Radius", 1f);
+		RenderUtilV2.setTextureId(this.framebuffer.texture.getID()*//*fb.getColorAttachment()*//*);
+		RenderUtilV2.drawInternal(MC.getWindow().getFramebufferWidth(), MC.getWindow().getFramebufferHeight());
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+
+//		this.framebuffer.clear();
+//		this.framebuffer.copyDepthFrom(fb);
+
+		if (true) return;*/
+
+		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
+		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1, 0));
+		RenderUtilV2.setShaderUniform("Radius", 1f);
+		RenderUtilV2.setTextureId(this.framebuffer.texture.getID());
+		RenderUtilV2.postProcessRect(MC.getWindow().getFramebufferWidth(), MC.getWindow().getFramebufferHeight());
+		this.framebuffer.clear();
+		if (true) return;
 
 
 		RenderUtilV2.setShader(APIShaders.OUTLINE0.getShader());
@@ -115,16 +181,16 @@ public class BlockEntityESP extends BaseModule
 		RenderUtilV2.setShaderUniform("Radius", radius.getValue() / 1.5f);
 		RenderUtilV2.setShaderUniform("Colour", new Vector4f(1, 1, 1, 1));
 		RenderUtilV2.setTextureId(this.framebuffer.texture.getID());
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight);
+		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
 		this.outlineVertical.unbind();
 
 		this.outlineHorizontal.bind();
 		RenderUtilV2.setShaderUniform("Direction", new Vec2f(1, 0));
 		RenderUtilV2.setTextureId(this.framebuffer.texture.getID());
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight);
+		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
 		this.outlineHorizontal.unbind();
 
-		this.framebuffer.clear();
+//		this.framebuffer.clear();
 		this.framebuffer.bind();
 		RenderUtilV2.setShader(APIShaders.ADD_EFFECTS.getShader());
 		GLWrapper.activateTexture(0, this.outlineHorizontal.texture.getID());
@@ -132,7 +198,7 @@ public class BlockEntityESP extends BaseModule
 		RenderUtilV2.setTextureId(this.outlineHorizontal.texture.getID());
 		RenderUtilV2.setShaderUniform("Sampler0", 0);
 		RenderUtilV2.setShaderUniform("Sampler1", 1);
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight);
+		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
 		this.framebuffer.unbind();
 
 
@@ -151,22 +217,21 @@ public class BlockEntityESP extends BaseModule
 //		<-
 		RenderUtilV2.setShaderUniform("Weights", buffer);
 		RenderUtilV2.setTextureId(this.framebuffer.texture.getID());
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight);
+		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
 		glowFramebuffer.unbind();
 		RenderUtilV2.setShader(APIShaders.GLOW.getShader());
 		RenderUtilV2.setTextureId(glowFramebuffer.texture.getID());
 		RenderUtilV2.setShaderUniform("Direction", new Vec2f(0, 1));
 		RenderUtilV2.setShaderUniform("Colour", glowColour.getValue());
-		RenderUtilV2.postProcessRect(framebuffer.viewportWidth, framebuffer.viewportHeight);
+		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		RenderSystem.disableBlend();
 		this.outlineHorizontal.clear();
 		this.outlineVertical.clear();
-		this.framebuffer.clear();
+//		this.framebuffer.clear();
 		this.glowFramebuffer.clear();
-
 	}
 
 	//	TODO: Move to util class

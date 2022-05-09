@@ -34,10 +34,11 @@ public class Framebuffer
 	{
 		framebuffer.beginRead();
 		GlStateManager._glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer.fbo);
-		bind();
+//		bind();
 		GlStateManager._glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this.id);
 		GlStateManager._glBlitFrameBuffer(0, 0, framebuffer.textureWidth, framebuffer.textureHeight, 0, 0, framebuffer.textureWidth, framebuffer.textureHeight, 0x100, 0x2600);
-		unbind();
+		GlStateManager._glBindFramebuffer(36160, 0);
+//		unbind();
 	}
 
 	private void init(int width, int height, int location)
@@ -48,7 +49,7 @@ public class Framebuffer
 		this.texture.setFilter(GL_NEAREST, GL_NEAREST);
 		this.texture.setMipmap(useMipMaps);
 
-//		this.depth = new Texture2D(width, height, Texture2D.Format.DEPTH);
+		this.depth = new Texture2D(width, height, Texture2D.Format.DEPTH);
 
 
 		final int renderbuffer = glGenRenderbuffers();
@@ -57,9 +58,9 @@ public class Framebuffer
 
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + location, GL_TEXTURE_2D, this.texture.getID(), 0);
-//		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this.depth.getID(), 0);
-
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this.depth.getID(), 0);
+
 
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -85,7 +86,7 @@ public class Framebuffer
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		isBoundTest = false;
-		MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
 	}
 
 	private void resize()
@@ -99,7 +100,7 @@ public class Framebuffer
 	{
 		this.bind();
 		glClearColor(0, 0, 0, 0);
-		glClearDepth(1);
+//		glClearDepth(0);
 		GL11.glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		this.unbind();
 	}

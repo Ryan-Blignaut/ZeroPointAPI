@@ -64,8 +64,14 @@ public class FontRenderer
 				final int i2 = string.indexOf("}", i);
 				if (i1 != -1 && i2 != -1)
 					i += i2 - i1;
-			} else
-				x += font.getGlyph(character - 32).xAdvance() * size;
+			} else if (character == '§' && i + 1 < string.length() && "0123456789abcdefklmnor".indexOf(string.charAt(i + 1)) != -1)
+				i++;
+			else
+			{
+				final GlyphInfo glyph = font.getGlyph(character - 32);
+				if (glyph != null)
+					x += glyph.xAdvance() * size;
+			}
 
 		}
 		return x;
@@ -105,14 +111,25 @@ public class FontRenderer
 		return x;
 	}
 
-	private static float renderChar(CustomFont font, float size, int characterLoc, APIColour[] vertexColours, Matrix4f matrixStack, float x, float y)
+	//	TODO: Optimise draw calls.
+	public static float renderCharOffset(CustomFont font, float size, int character, APIColour[] vertexColours, Matrix4f matrix, float x, float y)
 	{
+		if (character < 32 || character > 256) character = 32;
+		final float offsetY = y + font.getAscent() * font.getScale() * size;
+		x = renderChar(font, size, character, vertexColours, matrix, x, offsetY);
+		return x;
+	}
+
+	//	TODO: Optimise draw calls.
+	private static float renderChar(CustomFont font, float size, int characterLoc, APIColour[] vertexColours, Matrix4f matrix, float x, float y)
+	{
+
 		final GlyphInfo glyph = font.getGlyph(characterLoc - 32);
 		RenderUtilV2.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
 		RenderUtilV2.setTextureId(font.getTexture().getID());
 		RenderUtilV2.setQuadColourHolder(vertexColours[0]);
 
-		RenderUtilV2.quadTexture(matrixStack,
+		RenderUtilV2.quadTexture(matrix,
 				x + glyph.x() * size,
 				y + glyph.y() * size,
 				x + glyph.w() * size,
@@ -214,10 +231,14 @@ public class FontRenderer
 			{
 				int colourIndex = "0123456789abcdef".indexOf(text.charAt(index + 1));
 				if (mcColours == null) fillCols();
+
+				if (colourIndex > mcColours.length || colourIndex < 0)
+					colourIndex = 0;
 				colours[0] = mcColours[colourIndex];
 				colours[1] = mcColours[colourIndex];
 				colours[2] = mcColours[colourIndex];
 				colours[3] = mcColours[colourIndex];
+				index++;
 			} else
 			{
 				if (background)

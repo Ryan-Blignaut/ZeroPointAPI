@@ -22,7 +22,7 @@ public class ModuleManager
 	public static final ModuleManager INSTANCE = new ModuleManager();
 	public static Config moduleConfig;
 	@ConfigSetting public final HashMap<String, BaseModule> baseModules = new HashMap<>();
-
+	public final HashMap<String, BaseModule> copyOfModules = new HashMap<>();
 
 	public static void registerAllModules()
 	{
@@ -37,19 +37,29 @@ public class ModuleManager
 					Optional<? extends BaseModule> module = callClassConstructor(clazz);
 					module.ifPresentOrElse(baseModule ->
 					{
-						ZeroPointApiLogger.debug("Registered module: " + name);
+						ZeroPointApiLogger.error("Registered module: " + name);
 //						baseModule.loadSettings();
 						INSTANCE.baseModules.put(name, baseModule);
+						INSTANCE.copyOfModules.put(name, baseModule);
 					}, () -> ZeroPointApiLogger.error("Failed to load module " + name));
 				}
 		}));
+
+		final Object clone = INSTANCE.baseModules.clone();
+
+
 		if (moduleConfig == null)
 			moduleConfig = new Config(new GsonBuilder().registerTypeAdapterFactory(new ModuleTypeFactoryAdapter(INSTANCE.baseModules)).setPrettyPrinting().create(), "Zero-point/modules");
 
-
 		moduleConfig.register(INSTANCE);
-
+//		TODO: Fix this, literally just hacked it together here, I think a custom type adapter is needed for map;
+		INSTANCE.copyOfModules.putAll(INSTANCE.baseModules);
+		INSTANCE.baseModules.putAll(INSTANCE.copyOfModules);
 		moduleConfig.save();
+		INSTANCE.baseModules.forEach((s, baseModule) ->
+		{
+			if (baseModule.isEnabled()) baseModule.silentRegister();
+		});
 	}
 
 	@NotNull

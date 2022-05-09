@@ -42,7 +42,7 @@ public class EventManager
 	 */
 	public static void deregister(Object moduleClass)
 	{
-		if (REGISTERED_EVENTS.contains(moduleClass.getClass()))
+		if (!REGISTERED_EVENTS.contains(moduleClass.getClass()))
 			return;
 		REGISTERED_EVENTS.remove(moduleClass.getClass());
 

@@ -49,7 +49,12 @@ public class TabGui extends BaseModule
 			final float andAdd = (float) yCord.getAndAdd(height);
 			x.getAndUpdate(aFloat -> aFloat + (float) Math.abs((moduleAnimation.getOutput() - 1) * (FontRenderer.getWidth(font, 0.35f, s))));
 
+			RenderUtilV2.zIndex = -11;
+
 			BlurBackground.renderToBlur(() -> RenderUtilV2.rectangle(matrixStack, x.get(), (float) v, FontRenderer.getWidth(font, 0.35f, s) + 3, height, 0, new APIColour(10, 10, 10, 89)));
+			RenderUtilV2.zIndex = 11;
+
+
 			Color analogous = getAnalogousColor(APIColour.decode("#a43bcb"))[0];
 			Color textColor = interpolateColorsBackAndForth(35, index.get() * 20, new Color(55 * 2, 2, 88 * 2, 255), analogous, true);
 

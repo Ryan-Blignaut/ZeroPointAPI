@@ -9,12 +9,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-public class RenderScreenEvent
+public class ScreenEvent
 {
 	public static record PRE(Screen screen, MatrixStack matrices, int mouseX, int mouseY,
 	                         float delta) implements BaseEvent
 	{
-
 	}
 
 	public static record POST(Screen screen, MatrixStack matrices, int mouseX, int mouseY,
@@ -38,4 +37,11 @@ public class RenderScreenEvent
 		}
 	}
 
+	public static record OPEN_SCREEN(Screen screen, CallbackInfo ci) implements BaseEvent
+	{
+	}
+
+	public static record CLOSE_SCREEN(Screen screen, CallbackInfo ci) implements BaseEvent
+	{
+	}
 }

@@ -98,10 +98,12 @@ public class ScoreBoardHud extends BaseModule
 
 		BlurBackground.renderToBlur(() ->
 		{
+			RenderUtilV2.zIndex = -32;
 			RenderUtilV2.roundRect(matrixStack, rectX, rectY.get(), rectW, fontHeight, rectX + r, rectY.get() + r, rectX + rectW - r, rectY.get() + fontHeight, r, APIColour.decode("#ff5159").setAlpha(120));
 			rectY.updateAndGet(v -> v + fontHeight);
 			RenderUtilV2.roundRect(matrixStack, rectX, rectY.get(), rectW, rectH, rectX + r, rectY.get(), rectX + rectW - r, rectY.get() + rectH - r, r, new APIColour(10, 10, 10, 90)/*ColourHolder.decode("#2b2b2b").setAlpha(120)*/);
 			rectY.getAndUpdate(v -> v - fontHeight);
+			RenderUtilV2.zIndex = 0;
 		});
 
 

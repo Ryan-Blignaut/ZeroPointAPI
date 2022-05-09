@@ -10,7 +10,12 @@ uniform float Radius;
 out vec4 fragColor;
 
 void main() {
-	vec4 blurred = vec4(0.0);
+	vec4 col = texture(Sampler0, texCoord);
+
+	fragColor =col;// vec4(0, 0, 0, col.r);
+
+
+	/*vec4 blurred = vec4(0.0);
 	float totalStrength = 0.0;
 	float totalAlpha = 0.0;
 	float totalSamples = 0.0;
@@ -34,5 +39,5 @@ void main() {
 
 	}
 	//	float alpha = totalAlpha/totalSamples;
-	fragColor = vec4(blurred.rgb / /*totalStrength*/(Radius*2.0 + 1.0), totalAlpha);
+	fragColor = vec4(blurred.rgb / *//*totalStrength*//*(Radius*2.0 + 1.0), totalAlpha);*/
 }

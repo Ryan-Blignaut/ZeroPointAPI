@@ -1,7 +1,7 @@
 package me.thesilverecho.zeropoint.impl.module.render;
 
 import me.thesilverecho.zeropoint.api.event.EventListener;
-import me.thesilverecho.zeropoint.api.event.events.render.RenderScreenEvent;
+import me.thesilverecho.zeropoint.api.event.events.render.ScreenEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CustomTooltips extends BaseModule
 {
 	@EventListener
-	public void renderCustomTooltip(RenderScreenEvent.TooltipEvent event)
+	public void renderCustomTooltip(ScreenEvent.TooltipEvent event)
 	{
 		event.ci().cancel();
 		extracted(event);
@@ -28,7 +28,7 @@ public class CustomTooltips extends BaseModule
 
 	}
 
-	private void extracted(RenderScreenEvent.TooltipEvent event)
+	private void extracted(ScreenEvent.TooltipEvent event)
 	{
 		final MatrixStack matrices = event.matrices();
 		float newX = event.x() + 12;

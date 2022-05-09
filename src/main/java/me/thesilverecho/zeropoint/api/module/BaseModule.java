@@ -91,16 +91,22 @@ public class BaseModule implements IModule
 	{
 		if (!enabled)
 		{
-			PositionedSoundInstance onSound = new PositionedSoundInstance(ZeroPointClient.MODULE_ON, SoundCategory.MASTER, 1, 1, MC.player.getX(), MC.player.getY(), MC.player.getZ());
-			MC.getSoundManager().play(onSound);
+			if (MC.player != null)
+			{
+				PositionedSoundInstance onSound = new PositionedSoundInstance(ZeroPointClient.MODULE_ON, SoundCategory.MASTER, 1, 1, MC.player.getX(), MC.player.getY(), MC.player.getZ());
+				MC.getSoundManager().play(onSound);
+			}
 			register();
 			onEnable();
 		} else
 		{
-			PositionedSoundInstance offSound = new PositionedSoundInstance(ZeroPointClient.MODULE_OFF, SoundCategory.MASTER, 1, 1, MC.player.getX(), MC.player.getY(), MC.player.getZ());
 			onDisable();
 			deregister();
-			MC.getSoundManager().play(offSound);
+			if (MC.player != null)
+			{
+				PositionedSoundInstance offSound = new PositionedSoundInstance(ZeroPointClient.MODULE_OFF, SoundCategory.MASTER, 1, 1, MC.player.getX(), MC.player.getY(), MC.player.getZ());
+				MC.getSoundManager().play(offSound);
+			}
 		}
 	}
 

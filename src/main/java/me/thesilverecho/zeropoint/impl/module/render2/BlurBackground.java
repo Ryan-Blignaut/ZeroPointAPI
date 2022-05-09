@@ -12,6 +12,7 @@ import me.thesilverecho.zeropoint.api.render.GLWrapper;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
+import me.thesilverecho.zeropoint.impl.module.render3.BlockEntityESP;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.Vec2f;
 import org.lwjgl.BufferUtils;
@@ -49,6 +50,8 @@ public class BlurBackground extends BaseModule
 	@EventListener(priority = -2)
 	public void renderEvent(RenderWorldEvent.Post event)
 	{
+		if (true) return;
+
 		if (blurMask == null || this.pingFbo == null || this.pongFbo == null || this.bloomFbo == null)
 		{
 			blurMask = new Framebuffer();
@@ -159,9 +162,14 @@ public class BlurBackground extends BaseModule
 		if (!ENABLE_MODULES2.containsKey(BlurBackground.class)) return;
 		final BlurBackground blurBackground = (BlurBackground) ENABLE_MODULES2.get(BlurBackground.class);
 
-		blurBackground.blurMask.bind();
+		BlockEntityESP.getFramebuffer().bind();
 		codeToBlur.run();
-		blurBackground.blurMask.unbind();
+		BlockEntityESP.getFramebuffer().unbind();
+
+
+		/*blurBackground.blurMask.bind();
+		codeToBlur.run();
+		blurBackground.blurMask.unbind();*/
 
 	}
 

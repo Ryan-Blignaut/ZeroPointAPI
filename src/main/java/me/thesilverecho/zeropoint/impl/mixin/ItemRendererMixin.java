@@ -27,12 +27,6 @@ public abstract class ItemRendererMixin
 		EventManager.call(RENDER_ITEM_EVENT.setup(vertexConsumerProvider, layer, solid, glint, cir));
 	}
 
-	@Inject(method = "getItemGlintConsumer", at = @At(value = "HEAD"), cancellable = true)
-	private static void render3d(VertexConsumerProvider vertexConsumerProvider, RenderLayer layer, boolean solid, boolean glint, CallbackInfoReturnable<VertexConsumer> cir)
-	{
-//		EventManager.call(new RenderItemEvent1(vertexConsumerProvider, layer, solid, glint, cir));
-	}
-
 
 	@Inject(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V", at = @At(value = "HEAD"), cancellable = true)
 	private void render(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model, CallbackInfo ci)

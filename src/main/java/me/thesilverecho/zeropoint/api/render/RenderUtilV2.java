@@ -1,14 +1,12 @@
 package me.thesilverecho.zeropoint.api.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -247,6 +245,7 @@ public class RenderUtilV2
 		shader.unBind();
 		GLWrapper.disableGL2D();
 	}
+//	TODO: Optimise draw calls.
 
 	public static void quadTexture(Matrix4f matrix4f, float x, float y, float width, float height, float u0, float v0, float u1, float v1, APIColour cTopLeft, APIColour cTopRight, APIColour cBottomRight, APIColour cBottomLeft)
 	{
@@ -416,7 +415,11 @@ public class RenderUtilV2
 	public static void postProcessRect(float width, float height, float u0, float v0, float u1, float v1)
 	{
 //		GLWrapper.enableGL2D();
-		final Matrix4f matrix = RenderSystem.getProjectionMatrix();
+		GlStateManager._colorMask(true, true, true, false);
+		GlStateManager._disableDepthTest();
+		GlStateManager._depthMask(false);
+		GlStateManager._viewport(0, 0, (int) width, (int) height);
+		RenderSystem.backupProjectionMatrix();
 
 		final Matrix4f m = Matrix4f.projectionMatrix(width, -height, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(m);
@@ -432,11 +435,48 @@ public class RenderUtilV2
 		applyTextureToShader();
 //      TODO: when a framebuffer uses a mipmap, the glGenerateMipmap needs to be called so that the new frame data will be used in shader.
 //	    glGenerateMipmap(GL_TEXTURE_2D);
-		shader.bind();
+		shader.bind(m, Matrix4f.translate(0.0f, 0.0f, -2000.0f));
 		BufferRenderer.postDraw(bufferBuilder);
 		shader.unBind();
 //		GLWrapper.disableGL2D();
 //		RenderSystem.setProjectionMatrix(matrix);
+		RenderSystem.restoreProjectionMatrix();
+		GlStateManager._depthMask(true);
+		GlStateManager._colorMask(true, true, true, true);
+
+	}
+
+	public static void drawInternal(int width, int height)
+	{
+		drawInternal(width, height, 0, 0, 1, 1);
+	}
+
+	public static void drawInternal(int width, int height, float u0, float v0, float u1, float v1)
+	{
+		RenderSystem.assertOnRenderThread();
+		GlStateManager._colorMask(true, true, true, false);
+		GlStateManager._disableDepthTest();
+		GlStateManager._depthMask(false);
+		GlStateManager._viewport(0, 0, width, height);
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		Matrix4f matrix4f = Matrix4f.projectionMatrix(width, -height, 1000.0f, 3000.0f);
+		RenderSystem.setProjectionMatrix(matrix4f);
+		RenderUtilV2.shader.setShaderUniform("TextureSize", new Vec2f(minecraftClient.getFramebuffer().textureWidth, minecraftClient.getFramebuffer().textureHeight));
+		applyTextureToShader();
+
+		shader.bind(matrix4f, Matrix4f.translate(0.0f, 0.0f, -2000.0f));
+		Tessellator tessellator = RenderSystem.renderThreadTesselator();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.vertex(0.0D, height, 0.0D).texture(u0, v0).next();
+		bufferBuilder.vertex(width, height, 0.0D).texture(u1, v0).next();
+		bufferBuilder.vertex(width, 0.0D, 0.0D).texture(u1, v1).next();
+		bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(u0, v1).next();
+		bufferBuilder.end();
+		BufferRenderer.postDraw(bufferBuilder);
+		shader.unBind();
+		GlStateManager._depthMask(true);
+		GlStateManager._colorMask(true, true, true, true);
 	}
 
 

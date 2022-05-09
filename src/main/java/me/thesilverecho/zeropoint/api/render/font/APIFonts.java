@@ -23,4 +23,10 @@ public enum APIFonts
 	{
 		return this.font.get();
 	}
+
+	public CustomFont getFontUnloaded()
+	{
+		return this.font;
+	}
+
 }

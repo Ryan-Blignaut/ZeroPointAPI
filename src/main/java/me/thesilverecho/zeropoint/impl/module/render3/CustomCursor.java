@@ -3,7 +3,7 @@ package me.thesilverecho.zeropoint.impl.module.render3;
 import me.thesilverecho.zeropoint.api.event.EventListener;
 import me.thesilverecho.zeropoint.api.event.events.MouseEvent;
 import me.thesilverecho.zeropoint.api.event.events.TickEvent;
-import me.thesilverecho.zeropoint.api.event.events.render.RenderScreenEvent;
+import me.thesilverecho.zeropoint.api.event.events.render.ScreenEvent;
 import me.thesilverecho.zeropoint.api.module.BaseModule;
 import me.thesilverecho.zeropoint.api.module.ClientModule;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
@@ -29,7 +29,7 @@ public class CustomCursor extends BaseModule
 	private me.thesilverecho.zeropoint.api.render.cursor.CustomCursor previousCursor;
 
 	@EventListener
-	public void renderEvent(RenderScreenEvent.POST e)
+	public void renderEvent(ScreenEvent.POST e)
 	{
 		me.thesilverecho.zeropoint.api.render.cursor.CustomCursor cursor = APICursors.DEFAULT.getCursor();
 		final Screen screen = e.screen();

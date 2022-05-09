@@ -16,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
-
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin
 {
@@ -34,18 +32,6 @@ public abstract class GameRendererMixin
 
 	@Shadow
 	protected abstract void bobViewWhenHurt(MatrixStack matrices, float tickDelta);
-
-/*	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", shift = AFTER))
-	private void onRender(float tickDelta, long startTime, boolean tick, CallbackInfo ci)
-	{
-		EventManager.call(new RenderWorldEvent.End());
-	}
-
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", shift = At.Shift.BEFORE))
-	private void onRender2(float tickDelta, long startTime, boolean tick, CallbackInfo ci)
-	{
-		EventManager.call(new RenderWorldEvent.End1());
-	}*/
 
 
 	@Shadow @Final private MinecraftClient client;
@@ -70,15 +56,6 @@ public abstract class GameRendererMixin
 		Framebuffer.resizeAllFBOs();
 	}
 
-	@Inject(
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;drawEntityOutlinesFramebuffer()V", shift = AFTER),
-			method = "render"
-	)
-	private void hookShaderRender(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info)
-	{
-//		EventManager.call(new RenderWorldEvent.Post(null));
-
-	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
 	public void renderForEvent(float float_1, long long_1, boolean boolean_1, CallbackInfo ci)

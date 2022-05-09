@@ -11,14 +11,14 @@ import net.minecraft.util.Identifier;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ModRenderPhase extends RenderLayer
+public class ApiRenderPhase extends RenderLayer
 {
 
 	public static final ModShader NO_MOD_SHADER = new ModShader();
-	protected static final ModRenderPhase.TextureBase NO_TEXTURE = new TextureBase();
+	protected static final ApiRenderPhase.TextureBase NO_TEXTURE = new TextureBase();
 
 
-	public ModRenderPhase(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction)
+	public ApiRenderPhase(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction)
 	{
 		super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
 	}

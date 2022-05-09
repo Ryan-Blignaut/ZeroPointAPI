@@ -102,7 +102,9 @@ public class BlockOverlay extends BaseModule
 		shader.setShaderUniform("Size", 1f);
 
 		//TODO: find out why framebuffer cant be drawn to when depth test is enabled.(It seems that the glDepth function, GL_LESS is not passing)
-		RenderSystem.disableDepthTest();
+//		RenderSystem.disableDepthTest();
+		RenderSystem.enableDepthTest();
+//		RenderUtilV3.setQuadColourHolder(APIColour.WHITE.setAlpha(10));
 		BlurBackground.renderToBlur(() ->
 		{
 			RenderUtilV3.quadTextureVertical(matrix4f, x1, y2, z1, x1, y1, z2);

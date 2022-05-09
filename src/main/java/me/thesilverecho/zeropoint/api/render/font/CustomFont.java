@@ -44,7 +44,7 @@ public class CustomFont
 	{
 		final CustomFont customFont = ALL_FONTS.get(name);
 		if (customFont == null)
-			return APIFonts.REGULAR.getFont();
+			return APIFonts.REGULAR.getFontUnloaded();
 		return customFont.get();
 	}
 
@@ -59,8 +59,11 @@ public class CustomFont
 
 	private void loadFont()
 	{
-		ApiIOUtils.getResourceFromClientPack(this.customFontID).ifPresent(this::loadFont);
-		this.loaded = true;
+		ApiIOUtils.getResourceFromClientPack(this.customFontID).ifPresent(inputStream ->
+		{
+			loadFont(inputStream);
+			this.loaded = true;
+		});
 	}
 
 	/**

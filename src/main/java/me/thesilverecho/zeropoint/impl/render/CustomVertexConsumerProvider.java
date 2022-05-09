@@ -1,6 +1,6 @@
 package me.thesilverecho.zeropoint.impl.render;
 
-import me.thesilverecho.zeropoint.api.render.layer.ModRenderLayer;
+import me.thesilverecho.zeropoint.impl.render.layering.ZeroLayers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 
@@ -15,7 +15,7 @@ public class CustomVertexConsumerProvider implements VertexConsumerProvider
 	public VertexConsumer getBuffer(RenderLayer layer)
 	{
 		final Immediate entityVertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		return VertexConsumers.union(entityVertexConsumers.getBuffer(ModRenderLayer.CHARMING), entityVertexConsumers.getBuffer(layer));//VertexConsumers.union(new OutlineVertexConsumer(entityVertexConsumers.getBuffer(ModRenderLayer.CHARMING), 1, 1, 1, 1), entityVertexConsumers.getBuffer(layer));
+		return VertexConsumers.union(entityVertexConsumers.getBuffer(ZeroLayers.BLOCK_ENTITY_LAYER), entityVertexConsumers.getBuffer(layer));//VertexConsumers.union(entityVertexConsumers.getBuffer(/*ModRenderLayer.CHARMING*/RenderLayer.getGlint()), entityVertexConsumers.getBuffer(layer));//VertexConsumers.union(new OutlineVertexConsumer(entityVertexConsumers.getBuffer(ModRenderLayer.CHARMING), 1, 1, 1, 1), entityVertexConsumers.getBuffer(layer));
 	}
 
 	public void draw()

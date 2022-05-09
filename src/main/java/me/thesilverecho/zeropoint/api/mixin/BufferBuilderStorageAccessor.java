@@ -1,6 +1,6 @@
 package me.thesilverecho.zeropoint.api.mixin;
 
-import me.thesilverecho.zeropoint.api.render.layer.ModRenderLayer;
+import me.thesilverecho.zeropoint.impl.render.layering.ZeroLayers;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.RenderLayer;
@@ -28,7 +28,8 @@ public abstract class BufferBuilderStorageAccessor
 	@Inject(method = "<init>", at = @At("TAIL"))
 	protected void add(CallbackInfo ci)
 	{
-		ModRenderLayer.ALL_LAYERS.forEach(modRenderLayer -> entityBuilders.put(modRenderLayer, new BufferBuilder(modRenderLayer.getExpectedBufferSize())));
+		ZeroLayers.registerLayers().forEach(modRenderLayer -> entityBuilders.put(modRenderLayer, new BufferBuilder(modRenderLayer.getExpectedBufferSize())));
+//		ApiRenderLayer.ALL_LAYERS.forEach(modRenderLayer -> entityBuilders.put(modRenderLayer, new BufferBuilder(modRenderLayer.getExpectedBufferSize())));
 //		CustomVertexConsumerProvider.INSTANCE.parent = getEntityVertexConsumers();
 
 	}
