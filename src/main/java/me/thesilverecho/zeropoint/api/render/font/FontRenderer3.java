@@ -1,12 +1,12 @@
 package me.thesilverecho.zeropoint.api.render.font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.thesilverecho.zeropoint.api.render.GLWrapper;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV4;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
 
@@ -28,7 +28,7 @@ public class FontRenderer3
 			int character = string.charAt(i);
 
 			if (character < 32 || character > 256) character = 32;
-			if (character == 36 && i + 1 < string.length() && string.charAt(i + 1) == 123)
+		/*	if (character == 36 && i + 1 < string.length() && string.charAt(i + 1) == 123)
 			{
 				final int i1 = string.indexOf("${", i);
 				final int i2 = string.indexOf("}", i);
@@ -36,11 +36,12 @@ public class FontRenderer3
 					i += i2 - i1;
 			} else if (character == '§' && i + 1 < string.length() && "0123456789abcdefklmnor".indexOf(string.charAt(i + 1)) != -1)
 				i++;
-			else
+			else*/
 			{
 				final GlyphInfo glyph = font.getGlyph(character - 32);
-				if (glyph != null)
-					x += glyph.xAdvance() * size;
+//				if (x == 0)
+//					x += ( glyph.xAdvance()) *size;
+				x += glyph.xAdvance() * size;
 			}
 
 		}
@@ -97,7 +98,7 @@ public class FontRenderer3
 		RenderUtilV4.setTexture(font.getTexture().getID());
 		RenderUtilV4.setShader(APIShaders.FONT_MASK_TEXTURE.getShader());
 		RenderUtilV4.beginDraw(builder);
-		GLWrapper.enableGL2D();
+//		GLWrapper.enableGL2D();
 
 		for (int index = 0; index < text.length(); index++)
 		{
@@ -202,5 +203,83 @@ public class FontRenderer3
 		x = renderChar(matrix, font, character, size, x, offsetY, bufferBuilder);
 		return x;
 	}
+
+
+	public static float renderText(CustomFont font, float size, String text, APIColour baseColour, boolean background, Matrix4f matrix, float x, float y, VertexConsumer consumer)
+	{
+		if (text == null) text = "Error text String is empty.";
+		y += font.getAscent() * font.getScale() * size;
+//      Loop for each letter of the text.
+		final APIColour[] colours = new APIColour[4];
+		Arrays.fill(colours, baseColour);
+
+
+		for (int index = 0; index < text.length(); index++)
+		{
+//          Get the integer representation each letter of the text at given index.
+			int character = text.charAt(index);
+//			If the character is out of bounds replace it with default.
+			if (character < 32 || character > 256) character = 32;
+//			Look for custom formatting from the string ${format type}.
+			if (character == '$' && index + 1 < text.length() && text.charAt(index + 1) == '{')
+				index = applyFormatting(character, index, text, baseColour, colours, x, y);
+			else if (character == '§' && index + 1 < text.length() && "0123456789abcdefklmnor".indexOf(text.charAt(index + 1)) != -1)
+			{
+				int colourIndex = "0123456789abcdef".indexOf(text.charAt(index + 1));
+				if (mcColours == null) fillCols();
+
+				if (colourIndex > mcColours.length || colourIndex < 0)
+					colourIndex = 0;
+				colours[0] = mcColours[colourIndex];
+				colours[1] = mcColours[colourIndex];
+				colours[2] = mcColours[colourIndex];
+				colours[3] = mcColours[colourIndex];
+				index++;
+			} else
+			{
+//				if (background) renderChar(matrix, font, character, size, x + 0.5f, y + 0.5f, builder);
+				RenderUtilV4.setQuadColourHolder(new APIColour.ColourQuad(APIColour.decode("#011627")));
+				if (background) renderCharVC(matrix, font, character, size, x + 0.5f, y + 0.5f, consumer);
+				RenderUtilV4.setQuadColourHolder(new APIColour.ColourQuad(colours[0], colours[1], colours[2], colours[3]));
+				x += renderCharVC(matrix, font, character, size, x, y, consumer);
+//				x += renderChar(matrix, font, character, size, x, y, builder);
+			}
+		}
+
+//		RenderUtilV4.endDraw(builder);
+//		RenderUtilV4.renderQuad(builder, false);
+		return x;
+	}
+
+	private static float renderCharVC(Matrix4f matrix, CustomFont font, int characterLoc, float size, float x, float y, VertexConsumer consumer)
+	{
+		final GlyphInfo glyph = font.getGlyph(characterLoc - 32);
+		RenderUtilV4.generateLayerQuad(consumer, matrix, x + glyph.x() * size, y + glyph.y() * size, x + glyph.w() * size, y + glyph.h() * size, glyph.u0(), glyph.v0(), glyph.u1(), glyph.v1());
+		return glyph.xAdvance() * size;
+	}
+
+	public static float renderCharOffsetVC(SDFFont2 font1, CustomFont font, float size, int character, Matrix4f matrix, float x, float y, VertexConsumer consumer)
+	{
+//		if (character < 32 || character > 256) character = 32;
+//		final float offsetY = y + font.getAscent() * font.getScale() * size;
+//		x = renderCharVC(matrix, font, character, size, x, offsetY, consumer);
+
+
+/*		if (!loaded)
+		{
+			ApiIOUtils.getResourceFromClientPack(new Identifier(ZeroPointClient.MOD_ID, "fonts/regular.ttf")).ifPresent(inputStream ->
+			{
+				font1 = new SDFFont();
+				font1.loadFont(inputStream);
+				loaded = true;
+			});
+		}*/
+//		final int i = String.valueOf(character).codePointAt(0);
+//		final int i = Character.getNumericValue(character);
+		x = font1.renderChar(matrix, character, x, y, 3.5f, consumer);
+
+		return x;
+	}
+
 
 }

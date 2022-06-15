@@ -4,10 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.thesilverecho.zeropoint.api.render.shader.Shader;
 import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -135,4 +132,15 @@ public class RenderUtilV4
 		bufferBuilder.vertex(matrix4f, width, y, zIndex).color(tR.getRed(), tR.getGreen(), tR.getBlue(), tR.getAlpha()).texture(u1, v0).next();
 	}
 
+	public static void generateLayerQuad(VertexConsumer consumer, Matrix4f matrix4f, float x, float y, float width, float height, float u0, float v0, float u1, float v1)
+	{
+		final APIColour tL = COLOUR_QUAD_COLOUR_HOLDER.getTopLeft();
+		final APIColour bL = COLOUR_QUAD_COLOUR_HOLDER.getBottomLeft();
+		final APIColour bR = COLOUR_QUAD_COLOUR_HOLDER.getTopRight();
+		final APIColour tR = COLOUR_QUAD_COLOUR_HOLDER.getBottomRight();
+		consumer.vertex(matrix4f, x, y, zIndex).color(tL.getRed(), tL.getGreen(), tL.getBlue(), tL.getAlpha()).texture(u0, v0).next();
+		consumer.vertex(matrix4f, x, height, zIndex).color(bL.getRed(), bL.getGreen(), bL.getBlue(), bL.getAlpha()).texture(u0, v1).next();
+		consumer.vertex(matrix4f, width, height, zIndex).color(bR.getRed(), bR.getGreen(), bR.getBlue(), bR.getAlpha()).texture(u1, v1).next();
+		consumer.vertex(matrix4f, width, y, zIndex).color(tR.getRed(), tR.getGreen(), tR.getBlue(), tR.getAlpha()).texture(u1, v0).next();
+	}
 }

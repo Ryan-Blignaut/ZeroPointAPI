@@ -2,7 +2,6 @@ package me.thesilverecho.zeropoint.impl;
 
 import me.thesilverecho.zeropoint.api.config.Config;
 import me.thesilverecho.zeropoint.api.config.ConfigSetting;
-import me.thesilverecho.zeropoint.api.util.DiscordPresence;
 import me.thesilverecho.zeropoint.api.util.ZeroPointApiLogger;
 import me.thesilverecho.zeropoint.impl.module.ModuleManager;
 import net.fabricmc.api.ClientModInitializer;
@@ -29,10 +28,10 @@ public class ZeroPointClient implements ClientModInitializer
 		ZeroPointApiLogger.setUp(true, true, true);
 		ModuleManager.registerAllModules();
 		DEFAULT_CONFIG.save();
-		DiscordPresence.startRPC();
+//		DiscordPresence.startRPC();
 
-		Registry.register(Registry.SOUND_EVENT, new Identifier(MOD_ID,"module_on"), MODULE_ON);
-		Registry.register(Registry.SOUND_EVENT, new Identifier(MOD_ID,"module_off"), MODULE_OFF);
+		Registry.register(Registry.SOUND_EVENT, new Identifier(MOD_ID, "module_on"), MODULE_ON);
+		Registry.register(Registry.SOUND_EVENT, new Identifier(MOD_ID, "module_off"), MODULE_OFF);
 
 //		MusicPlayer.INSTANCE.togglePause();
 //		MusicPlayer.load();
@@ -41,7 +40,7 @@ public class ZeroPointClient implements ClientModInitializer
 //		FontManager.initFonts();
 	}
 
-	public static final SoundEvent MODULE_ON = new SoundEvent(new Identifier(MOD_ID,"module_on"));
-	public static final SoundEvent MODULE_OFF = new SoundEvent(new Identifier(MOD_ID,"module_off"));
+	public static final SoundEvent MODULE_ON = new SoundEvent(new Identifier(MOD_ID, "module_on"));
+	public static final SoundEvent MODULE_OFF = new SoundEvent(new Identifier(MOD_ID, "module_off"));
 
 }

@@ -1,18 +1,11 @@
 package me.thesilverecho.zeropoint.impl.mixin;
 
-import me.thesilverecho.zeropoint.api.render.GLWrapper;
-import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
-import me.thesilverecho.zeropoint.api.render.font.APIFonts;
-import me.thesilverecho.zeropoint.api.render.font.CustomFont;
-import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
-import me.thesilverecho.zeropoint.api.util.APIColour;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudMixin
@@ -58,8 +50,8 @@ public abstract class ChatHudMixin
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onChatRenderedStart(MatrixStack matrices, int tickDelta, CallbackInfo ci)
 	{
-		ci.cancel();
-
+//		ci.cancel();
+/*
 		if (!this.isChatHidden())
 		{
 			this.processMessageQueue();
@@ -106,7 +98,7 @@ public abstract class ChatHudMixin
 						}
 					}
 				}
-			/*	matrices.push();
+			*//*	matrices.push();
 //				RenderUtilV2.roundRect(matrices, 0, -120, 2000, 2000, 3, ColourHolder.decode("#2b2b2b"));
 
 				matrices.pop();
@@ -130,10 +122,10 @@ public abstract class ChatHudMixin
 
 				}
 
-				matrices.pop();*/
+				matrices.pop();*//*
 			}
 			GLWrapper.enableGL2D();
-		}
+		}*/
 
 	}
 

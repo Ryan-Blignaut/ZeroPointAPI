@@ -1,13 +1,9 @@
 package me.thesilverecho.zeropoint.api.render.layer;
 
 import com.google.common.collect.ImmutableList;
-import me.thesilverecho.zeropoint.impl.module.render3.BlockEntityESP;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -104,23 +100,48 @@ public class ApiRenderLayer extends RenderLayer
 									}))*//*
 			                       .build(false));*/
 
+	private final boolean isTranslucent;
+
+	@Override
+	public void draw(BufferBuilder buffer, int cameraX, int cameraY, int cameraZ)
+	{
+		if (!buffer.isBuilding())
+		{
+			return;
+		}
+		if (this.isTranslucent)
+		{
+			buffer.sortFrom(cameraX, cameraY, cameraZ);
+		}
+		buffer.end();
+		this.startDrawing();
+		BufferRenderer.postDraw(buffer);
+//		BufferRenderer.draw(buffer);
+		this.endDrawing();
+	}
 
 	public static ApiMultiPhase apiCreate(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, ApiMultiPhaseParameters phases)
 	{
-		return apiCreate(name, vertexFormat, drawMode, expectedBufferSize, false, false, phases);
+		return apiCreate(name, vertexFormat, drawMode, expectedBufferSize, false, false, phases, true);
+	}
+
+	public static ApiMultiPhase apiCreate(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, ApiMultiPhaseParameters phases, boolean enabled)
+	{
+		//		ALL_LAYERS.add(apiMultiPhase);
+		return new ApiMultiPhase(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, phases, enabled);
 	}
 
 	public static ApiMultiPhase apiCreate(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, ApiMultiPhaseParameters phases)
 	{
-		final ApiMultiPhase apiMultiPhase = new ApiMultiPhase(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, phases);
-		ALL_LAYERS.add(apiMultiPhase);
-		return apiMultiPhase;
+		//		ALL_LAYERS.add(apiMultiPhase);
+		return new ApiMultiPhase(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, phases, true);
 	}
 
-	public ApiRenderLayer(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction)
+	public ApiRenderLayer(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction, boolean enable)
 	{
 		super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
-		ALL_LAYERS.add(this);
+		this.isTranslucent = translucent;
+		if (enable) ALL_LAYERS.add(this);
 	}
 
 	public static class ApiMultiPhaseParameters
@@ -157,7 +178,9 @@ public class ApiRenderLayer extends RenderLayer
 			this.writeMaskState = writeMaskState;
 			this.lineWidth = lineWidth;
 			this.outlineMode = outlineMode;
-			this.phases = ImmutableList.of(this.texture, this.shader, this.modShader, this.transparency, this.depthTest, this.cull, this.lightmap, this.overlay, this.layering, this.target, this.texturing, this.writeMaskState, this.lineWidth);
+
+
+			this.phases = ImmutableList.of(this.texture, this.modShader, /*this.shader,*/ this.transparency, this.depthTest, this.cull, this.lightmap, this.overlay, this.layering, this.target, this.texturing, this.writeMaskState, this.lineWidth);
 		}
 
 		public String toString()
@@ -290,6 +313,8 @@ public class ApiRenderLayer extends RenderLayer
 
 			public ApiMultiPhaseParameters build(ApiOutlineMode outlineMode)
 			{
+
+//              return new MultiPhaseParameters(this.texture, this.shader, this.transparency, this.depthTest, this.cull, this.lightmap, this.overlay, this.layering, this.target, this.texturing, this.writeMaskState, this.lineWidth, outlineMode);
 				return new ApiMultiPhaseParameters(this.texture, this.shader, this.modShader, this.transparency, this.depthTest, this.cull, this.lightmap, this.overlay, this.layering, this.target, this.texturing, this.writeMaskState, this.lineWidth, outlineMode);
 			}
 
@@ -319,10 +344,10 @@ public class ApiRenderLayer extends RenderLayer
 		//Renders the
 		static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize((texture, culling) -> apiCreate("outline", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.QUADS, 256, ApiMultiPhaseParameters.builder().shader(OUTLINE_SHADER).texture(new ApiRenderPhase.Texture((Identifier) texture, false, false)).cull(culling).depthTest(ALWAYS_DEPTH_TEST).target(new Target("test", () ->
 		{
-			BlockEntityESP.getFramebuffer().bind();
+//			BlockEntityESP.getFramebuffer().bind();
 		}, () ->
 		{
-			BlockEntityESP.getFramebuffer().unbind();
+//			BlockEntityESP.getFramebuffer().unbind();
 
 		})).build(ApiMultiPhaseParameters.ApiOutlineMode.IS_OUTLINE)));
 
@@ -331,9 +356,9 @@ public class ApiRenderLayer extends RenderLayer
 		private final Optional<RenderLayer> affectedOutline;
 		private final boolean outline;
 
-		ApiMultiPhase(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, ApiMultiPhaseParameters phases)
+		ApiMultiPhase(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, ApiMultiPhaseParameters phases, boolean ena)
 		{
-			super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, () -> phases.phases.forEach(RenderPhase::startDrawing), () -> phases.phases.forEach(RenderPhase::endDrawing));
+			super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, () -> phases.phases.forEach(RenderPhase::startDrawing), () -> phases.phases.forEach(RenderPhase::endDrawing), ena);
 			this.phases = phases;
 			this.affectedOutline = phases.outlineMode == ApiMultiPhaseParameters.ApiOutlineMode.AFFECTS_OUTLINE ? phases.texture.getId().map((texture) -> CULLING_LAYERS.apply(texture, phases.cull)) : Optional.empty();
 			this.outline = phases.outlineMode == ApiMultiPhaseParameters.ApiOutlineMode.IS_OUTLINE;

@@ -14,6 +14,9 @@ out vec4 fragColor;
 #define offset Direction * oneTexel
 
 void main() {
+
+
+
 	float centerAlpha = texture(Sampler0, texCoord).a;
 	float innerAlpha = centerAlpha;
 	for (float r = 1.0; r <= Radius; r++) {

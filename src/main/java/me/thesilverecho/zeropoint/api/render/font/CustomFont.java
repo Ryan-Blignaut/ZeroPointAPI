@@ -12,7 +12,9 @@ import org.lwjgl.system.MemoryStack;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.stb.STBTruetype.*;
 
@@ -42,10 +44,15 @@ public class CustomFont
 
 	public static CustomFont getFontByName(String name)
 	{
-		final CustomFont customFont = ALL_FONTS.get(name);
-		if (customFont == null)
-			return APIFonts.REGULAR.getFontUnloaded();
-		return customFont.get();
+		AtomicReference<CustomFont> f = new AtomicReference<>(APIFonts.REGULAR.getFontUnloaded());
+		Arrays.stream(APIFonts.values()).filter(apiFonts -> apiFonts.getFontUnloaded().getName().equalsIgnoreCase(name)).findFirst().ifPresent(fonts ->
+		{
+			f.set(fonts.getFontUnloaded());
+		});
+//		final CustomFont customFont = ALL_FONTS.get(name);
+//		if (customFont == null)
+//			return APIFonts.REGULAR.getFontUnloaded();
+		return f.get();
 	}
 
 	public CustomFont get()

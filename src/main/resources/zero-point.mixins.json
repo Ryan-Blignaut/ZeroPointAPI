@@ -6,6 +6,9 @@
   "mixins": [
     "BlockEntityRenderDispatcherMixin",
     "ChatHudMixin",
+    "ClientChunkManagerClientChunkMapAccessor",
+    "ClientChunkManagerClientChunkMapMixin",
+    "ClientChunkManagerAccessor",
     "ClientPlayNetworkHandlerMixin",
     "EntityRenderDispatcherMixin",
     "EntityRenderMixin",

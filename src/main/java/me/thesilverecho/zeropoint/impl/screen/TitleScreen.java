@@ -4,6 +4,7 @@ import me.thesilverecho.zeropoint.api.render.GLWrapper;
 import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.font.APIFonts;
 import me.thesilverecho.zeropoint.api.render.font.FontRenderer;
+import me.thesilverecho.zeropoint.api.render.font.SDFFont;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.uiv2.ButtonComponent;
 import me.thesilverecho.zeropoint.api.uiv2.Pane;
@@ -26,6 +27,7 @@ public class TitleScreen
 	private static final Identifier START_ID = new Identifier(ZeroPointClient.MOD_ID, "textures/zero-point_background_start.png");
 
 	private static Pane pane;
+	private static SDFFont font;
 
 	public static void init(MinecraftClient client, Screen screen, int width, int height)
 	{
@@ -58,7 +60,7 @@ public class TitleScreen
 
 	}
 
-
+	private static boolean loaded = false;
 	private static float time = (float) glfwGetTime();
 	private static float prev_time = 0;
 
@@ -135,6 +137,23 @@ public class TitleScreen
 		RenderUtilV2.roundRectAdjust(matrixStack, bx + sizeHack, by + buttonHeight * 2, buttonPaneWidth - 1, buttonHeight, 0, 0, 0, 0, radius, primaryCol);
 		RenderUtilV2.roundRectAdjust(matrixStack, bx, by + buttonHeight * 3, buttonPaneWidth, buttonHeight, radius, 0, -radius, -radius, radius, primaryCol);
 
+
+
+
+
+		RenderUtilV2.quadTexture(matrixStack, 0, 0, width, height, new APIColour(0, 0, 0, 255));
+
+
+/*		if (!loaded)
+		{
+			ApiIOUtils.getResourceFromClientPack(new Identifier(ZeroPointClient.MOD_ID, "fonts/thin.ttf")).ifPresent(inputStream ->
+			{
+				font = new SDFFont();
+				font.loadFont(inputStream);
+				loaded = true;
+			});
+		}*/
+
 //		RenderUtilV2.roundRectLine(matrixStack, bx-1, by - buttonHeight * 3, buttonPaneWidth+2, buttonHeight * 7, radius, 4f, primaryCol);
 
 
@@ -142,6 +161,10 @@ public class TitleScreen
 		time += cur_time - prev_time;
 		prev_time = cur_time;
 		pane.render(matrixStack, mouseX, mouseY, delta);
+
+//		font.renderText(matrixStack.peek().getPositionMatrix(), "Test 0 0 1", 100, 100, 1,RenderUtilV2);
+
+
 	}
 
 	public static void mouseClick(double mouseX, double mouseY, int button)

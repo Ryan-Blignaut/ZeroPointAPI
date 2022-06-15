@@ -1,6 +1,7 @@
 package me.thesilverecho.zeropoint.api.render.layer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.thesilverecho.zeropoint.api.render.RenderUtilV4;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
@@ -23,6 +24,17 @@ public class ApiRenderPhase extends RenderLayer
 		super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
 	}
 
+	public static class ShaderBase extends RenderPhase.Shader
+	{
+		public ShaderBase()
+		{
+		}
+
+		public Optional<Identifier> getId()
+		{
+			return Optional.empty();
+		}
+	}
 
 	public static class TextureBase extends RenderPhase.TextureBase
 	{
@@ -87,7 +99,12 @@ public class ApiRenderPhase extends RenderLayer
 
 		public ModShader(me.thesilverecho.zeropoint.api.render.shader.Shader shader)
 		{
-			super("zero-point_shader", shader::bind, shader::unBind);
+			super("zero-point_shader", () ->
+			{
+				RenderUtilV4.setShader(shader);
+				shader.bind();
+			}, shader::unBind);
+
 		}
 
 		public ModShader(me.thesilverecho.zeropoint.api.render.shader.Shader shader, Consumer<me.thesilverecho.zeropoint.api.render.shader.Shader> extraTasks)

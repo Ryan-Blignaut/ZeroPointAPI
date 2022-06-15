@@ -41,13 +41,13 @@ public abstract class TextRenderMixin
 	@Inject(method = "drawLayer(Lnet/minecraft/text/OrderedText;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)F", at = @At(value = "HEAD"), cancellable = true)
 	private void drawInternal(OrderedText text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light, CallbackInfoReturnable<Float> cir)
 	{
-		EventManager.call(new TextRenderEvent.RenderOrderedText(text, x, y, color, shadow, matrix, Z_INDEX, cir));
+		EventManager.call(new TextRenderEvent.RenderOrderedText(text, x, y, color, shadow, matrix, Z_INDEX, seeThrough, vertexConsumerProvider, cir));
 	}
 
 	@Inject(method = "drawLayer(Ljava/lang/String;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)F", at = @At(value = "HEAD"), cancellable = true)
 	private void drawInternal(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light, CallbackInfoReturnable<Float> cir)
 	{
-		EventManager.call(new TextRenderEvent.RenderStringText(text, x, y, color, shadow, matrix, Z_INDEX, cir));
+		EventManager.call(new TextRenderEvent.RenderStringText(text, x, y, color, shadow, matrix, Z_INDEX, seeThrough, vertexConsumerProvider, cir));
 	}
 
 

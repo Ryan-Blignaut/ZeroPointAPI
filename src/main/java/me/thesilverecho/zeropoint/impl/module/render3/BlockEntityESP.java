@@ -18,24 +18,16 @@ import me.thesilverecho.zeropoint.api.render.RenderUtilV2;
 import me.thesilverecho.zeropoint.api.render.shader.APIShaders;
 import me.thesilverecho.zeropoint.api.render.texture.Framebuffer;
 import me.thesilverecho.zeropoint.api.util.APIColour;
-import me.thesilverecho.zeropoint.impl.render.CustomVertexConsumerProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.stb.STBImageWrite;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 @ClientModule(name = "BlockEntities ESP", keyBinding = GLFW.GLFW_KEY_RIGHT_ALT)
 public class BlockEntityESP extends BaseModule
@@ -60,9 +52,6 @@ public class BlockEntityESP extends BaseModule
 	private final SettingHolder<APIColour> glowColour = settingHolders.addItem(new ColourHolder("Glow colour", "Controls the colour of the outline", new APIColour(200, 200, 200, 220)));
 
 	private final SettingHolder<Boolean> renderSolidBehindWalls = settingHolders.addItem(new BooleanHolder("Render walls", "Render Solid Behind Walls", true));
-
-	private boolean renderSolid = false;
-	private APIColour renderSolidBehindWallsColour = APIColour.decode("#0f111a").setAlpha(100);
 
 //	TODO: Add option to filter block entities and add way to change there colours.
 
@@ -106,7 +95,7 @@ public class BlockEntityESP extends BaseModule
 		final BlockEntity be = event.blockEntity();
 		final MatrixStack ms = event.matrices();
 
-		event.renderer().render(be, event.tickDelta(), ms, CustomVertexConsumerProvider.INSTANCE/*provider*/, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+//		event.renderer().render(be, event.tickDelta(), ms, CustomVertexConsumerProvider.INSTANCE/*provider*/, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 	}
 
 	private boolean screenShot = false;
@@ -130,7 +119,7 @@ public class BlockEntityESP extends BaseModule
 		final net.minecraft.client.gl.Framebuffer fb = MinecraftClient.getInstance().getFramebuffer();
 
 
-		if (screenShot)
+/*		if (screenShot)
 		{
 
 			final ByteBuffer allocate = BufferUtils.createByteBuffer(fb.textureHeight * fb.textureWidth * 4);
@@ -140,7 +129,7 @@ public class BlockEntityESP extends BaseModule
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, allocate);
 			STBImageWrite.stbi_write_png("test" + "a" + ".png", fb.textureHeight, fb.textureWidth, 1, allocate, 0);
 			screenShot = false;
-		}
+		}*/
 
 //		RenderSystem.enableBlend();
 //		RenderSystem.defaultBlendFunc();
@@ -166,32 +155,36 @@ public class BlockEntityESP extends BaseModule
 
 		if (true) return;*/
 
-		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
+/*		RenderUtilV2.setShader(APIShaders.BLURV3.getShader());
 		RenderUtilV2.setShaderUniform("BlurDir", new Vec2f(1, 0));
 		RenderUtilV2.setShaderUniform("Radius", 1f);
 		RenderUtilV2.setTextureId(this.framebuffer.texture.getID());
 		RenderUtilV2.postProcessRect(MC.getWindow().getFramebufferWidth(), MC.getWindow().getFramebufferHeight());
 		this.framebuffer.clear();
-		if (true) return;
 
+		if (true) return;*/
 
 		RenderUtilV2.setShader(APIShaders.OUTLINE0.getShader());
+
 		this.outlineVertical.bind();
 		RenderUtilV2.setShaderUniform("Direction", new Vec2f(0, 1));
-		RenderUtilV2.setShaderUniform("Radius", radius.getValue() / 1.5f);
+		RenderUtilV2.setShaderUniform("Radius", 112f);
 		RenderUtilV2.setShaderUniform("Colour", new Vector4f(1, 1, 1, 1));
 		RenderUtilV2.setTextureId(this.framebuffer.texture.getID());
 		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
 		this.outlineVertical.unbind();
+//		this.framebuffer.clear();
+
 
 		this.outlineHorizontal.bind();
 		RenderUtilV2.setShaderUniform("Direction", new Vec2f(1, 0));
 		RenderUtilV2.setTextureId(this.framebuffer.texture.getID());
 		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
 		this.outlineHorizontal.unbind();
-
 //		this.framebuffer.clear();
-		this.framebuffer.bind();
+		this.framebuffer.clear();
+//		if (true) return;
+//		this.framebuffer.bind();
 		RenderUtilV2.setShader(APIShaders.ADD_EFFECTS.getShader());
 		GLWrapper.activateTexture(0, this.outlineHorizontal.texture.getID());
 		GLWrapper.activateTexture(1, this.outlineVertical.texture.getID());
@@ -199,15 +192,14 @@ public class BlockEntityESP extends BaseModule
 		RenderUtilV2.setShaderUniform("Sampler0", 0);
 		RenderUtilV2.setShaderUniform("Sampler1", 1);
 		RenderUtilV2.postProcessRect(fb.viewportWidth, fb.viewportHeight);
-		this.framebuffer.unbind();
-
+//		this.framebuffer.unbind();
+		if (true) return;
 
 		glowFramebuffer.bind();
 		RenderUtilV2.setShader(APIShaders.GLOW.getShader());
 		RenderUtilV2.setShaderUniform("Direction", new Vec2f(1, 0));
 		RenderUtilV2.setShaderUniform("Radius", radius.getValue());
 		RenderUtilV2.setShaderUniform("Colour", new Vector4f(1, 1, 1, 1));
-		/*3.5*/
 		RenderUtilV2.setShaderUniform("Exposure", exposure.getValue());
 //		TODO: Cache this ->
 		final FloatBuffer buffer = BufferUtils.createFloatBuffer(256);
@@ -230,7 +222,7 @@ public class BlockEntityESP extends BaseModule
 		RenderSystem.disableBlend();
 		this.outlineHorizontal.clear();
 		this.outlineVertical.clear();
-//		this.framebuffer.clear();
+		this.framebuffer.clear();
 		this.glowFramebuffer.clear();
 	}
 

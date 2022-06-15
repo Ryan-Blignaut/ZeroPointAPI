@@ -11,6 +11,5 @@ public class ReloadConfig extends BaseModule
 	public void onEnable()
 	{
 		ModuleManager.moduleConfig.register(ModuleManager.INSTANCE);
-//		ModuleManager.moduleConfig.register(ModuleManager.INSTANCE);
 	}
 }

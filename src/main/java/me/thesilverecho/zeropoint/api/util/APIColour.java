@@ -75,6 +75,11 @@ public final class APIColour
 
 	public int getAlpha() {return alpha;}
 
+	public int getAsInt()
+	{
+		return red << 16 | green << 8 | blue | alpha << 24;
+	}
+
 	public static class ColourQuad
 	{
 		private APIColour topLeft, topRight, bottomRight, bottomLeft;
@@ -91,6 +96,7 @@ public final class APIColour
 			this.bottomRight = colour.bottomRight;
 			this.bottomLeft = colour.bottomLeft;
 		}
+
 		public ColourQuad(APIColour topLeft, APIColour topRight, APIColour bottomRight, APIColour bottomLeft)
 		{
 			this.topLeft = topLeft;

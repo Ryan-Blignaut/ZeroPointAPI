@@ -12,4 +12,8 @@ out vec4 fragColor;
 
 void main() {
     fragColor = vertexColor * vec4(1.0, 1.0, 1.0, texture(Sampler0, textureCoord).r);
+    if (fragColor.a < 0.1) discard;
+  /*  if (fragColor.a < 0.3) {
+        discard;
+    }*/
 }

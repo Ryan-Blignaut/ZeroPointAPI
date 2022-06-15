@@ -1,3 +1,4 @@
+/*
 package me.thesilverecho.zeropoint.api.util;
 
 import club.minnced.discord.rpc.DiscordEventHandlers;
@@ -31,3 +32,4 @@ public class DiscordPresence
 		discordRPC.Discord_ClearPresence();
 	}
 }
+*/

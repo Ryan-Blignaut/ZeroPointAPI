@@ -28,7 +28,7 @@ public abstract class BufferBuilderStorageAccessor
 	@Inject(method = "<init>", at = @At("TAIL"))
 	protected void add(CallbackInfo ci)
 	{
-		ZeroLayers.registerLayers().forEach(modRenderLayer -> entityBuilders.put(modRenderLayer, new BufferBuilder(modRenderLayer.getExpectedBufferSize())));
+		ZeroLayers.registerLayers().forEach(modRenderLayer -> entityBuilders.putIfAbsent(modRenderLayer, new BufferBuilder(modRenderLayer.getExpectedBufferSize())));
 //		ApiRenderLayer.ALL_LAYERS.forEach(modRenderLayer -> entityBuilders.put(modRenderLayer, new BufferBuilder(modRenderLayer.getExpectedBufferSize())));
 //		CustomVertexConsumerProvider.INSTANCE.parent = getEntityVertexConsumers();
 

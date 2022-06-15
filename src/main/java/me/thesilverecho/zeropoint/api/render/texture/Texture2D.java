@@ -23,7 +23,16 @@ public class Texture2D implements AutoCloseable
 	private ByteBuffer imageBuffer;
 	private boolean mipmap;
 
-	private void bindTexture()
+	public static Texture2D resize(int width, int height, boolean keepOld, Texture2D oldTexture)
+	{
+		final Texture2D texture2D = new Texture2D(width, height, Format.A);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glCopyImageSubData(oldTexture.getID(), GL_TEXTURE_2D, 0, 0, 0, 0, texture2D.getID(), GL_TEXTURE_2D, 0, 0, 0, 0, oldTexture.width, oldTexture.height, 1);
+		return texture2D;
+	}
+
+
+	public void bindTexture()
 	{
 		GlStateManager._activeTexture(GL_TEXTURE0);
 		if (!RenderSystem.isOnRenderThreadOrInit())
@@ -49,6 +58,8 @@ public class Texture2D implements AutoCloseable
 
 	public Texture2D(int width, int height, Format format)
 	{
+		this.width = width;
+		this.height = height;
 		bindTexture();
 		GlStateManager._pixelStore(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 		GlStateManager._pixelStore(GL_UNPACK_LSB_FIRST, GL_FALSE);

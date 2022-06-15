@@ -24,6 +24,11 @@ public enum APIShaders
 
 	FONT_MASK_TEXTURE("text_mask_texture.frag", false),
 
+
+	SDF_FONT_MASK_TEXTURE("font_sdf_textured.frag", false),
+
+
+
 	BOKEH_TEXTURE_SHADER("bokeh_disc.frag", false),
 	WATER_RIPPLE("water_ripple.frag", "water_ripple.vert"),
 	OUTLINE("outline.frag", "colour_texture.vert"),
